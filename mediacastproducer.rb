@@ -29,7 +29,7 @@ require 'pathname'
 $LOAD_PATH.unshift(File.expand_path(File.dirname(Pathname.new(__FILE__).realpath))) unless 
   $LOAD_PATH.include?(File.dirname(Pathname.new(__FILE__).realpath)) || $LOAD_PATH.include?(File.expand_path(File.dirname(Pathname.new(__FILE__).realpath)))
 
-require 'qtactions'
+require 'mcactions'
 
 ASL.enable_logging_to_stderr(true)
 
@@ -54,7 +54,7 @@ $default_qc_height = 768
 ### helpers
 
 def print_version
-  $stderr.puts "Quicktime Producer action task, version 0.1"
+  $stderr.puts "Mediacast Producer action task, version 0.1"
   $stderr.puts "Copyright 2011 Stephan Jorek"
   $stderr.puts "based upon:"
   $stderr.puts "Podcast Producer action task, version 2.0"
@@ -64,8 +64,8 @@ end
 
 def print_usage
   print_version
-  $stderr.puts "usage: qtaction <subcommand> [options] [args]"
-  $stderr.puts "Type 'qtaction help <subcommand>' for help on a specific subcommand."
+  $stderr.puts "usage: mediacastproducer <subcommand> [options] [args]"
+  $stderr.puts "Type 'mediacastproducer help <subcommand>' for help on a specific subcommand."
   $stderr.puts
   $stderr.puts "Available subcommands:"
   $subcommands.sort! {|x,y| x.name <=> y.name}
@@ -73,7 +73,7 @@ def print_usage
     $stderr.puts "  " + subcommand.name
   end
   $stderr.puts
-  $stderr.puts "By specifying '--no_fail' qtaction will ignore any failures and always exit with an exit code of 0."
+  $stderr.puts "By specifying '--no_fail' mediacastproducer will ignore any failures and always exit with an exit code of 0."
   $stderr.puts
 end
 

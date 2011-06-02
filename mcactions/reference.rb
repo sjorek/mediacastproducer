@@ -9,7 +9,7 @@
 #
 
 require 'actions/base'
-require 'qtmov/qtmov'
+require 'mcqt/mcqt'
 require 'fileutils'
 
 module PodcastProducer
@@ -43,9 +43,9 @@ module PodcastProducer
 
         urlified_title = $subcommand_options[:title].gsub(/ /, "_")
 
-        movie_width = QTMovie.info(movie_file, "width").to_i
-        movie_height = QTMovie.info(movie_file, "height").to_i
-        has_video_track = QTMovie.info(movie_file, "hasVideo") == "1"
+        movie_width = McastQT.info(movie_file, "width").to_i
+        movie_height = McastQT.info(movie_file, "height").to_i
+        has_video_track = McastQT.info(movie_file, "hasVideo") == "1"
 
         publish_location = '/' # + ERB::Util.url_encode($subcommand_options[:title]) + '/'
         web_publish_folder = $subcommand_options[:web_root] + publish_location
@@ -79,7 +79,7 @@ module PodcastProducer
           multi_publish_filepaths_by_tier[tier] = multi_publish_filepath
           multi_publish_urls_by_tier[tier] = multi_publish_url
         end
-        QTMovie.reference(web_publish_filepath, multi_publish_urls_by_tier) || exit(-1)
+        McastQT.reference(web_publish_filepath, multi_publish_urls_by_tier) || exit(-1)
 
         web_publish_size = File.stat(web_publish_filepath).size.to_s
 
@@ -89,15 +89,15 @@ module PodcastProducer
           poster_url = web_publish_base_url + ERB::Util.url_encode(poster_filename)
 
           if has_video_track
-            QTMovie.posterimage(movie_file, poster_filepath) || exit(-1)
+            McastQT.posterimage(movie_file, poster_filepath) || exit(-1)
           else
             audio_file_icon_path = $properties["Global Resource Path"] + "/Images/audio_file_icon.png"
             check_input_file(audio_file_icon_path)
             check_output_file(poster_filepath)
             FileUtils.cp(audio_file_icon_path , poster_filepath)
             FileUtils.chmod_R(0644, poster_filepath)
-            movie_width = QTMovie.info(poster_filepath, "width").to_i
-            movie_height = QTMovie.info(poster_filepath, "height").to_i
+            movie_width = McastQT.info(poster_filepath, "width").to_i
+            movie_height = McastQT.info(poster_filepath, "height").to_i
           end
         end
 

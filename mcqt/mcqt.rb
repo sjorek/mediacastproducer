@@ -10,7 +10,7 @@
 
 require 'qt/qt'
 
-class QTMovie < PcastQT
+class McastQT < PcastQT
   
   def self.reference(destination, urls_by_tier)
     rmdas = []
