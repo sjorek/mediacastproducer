@@ -18,16 +18,25 @@ module PodcastProducer
     class Reference < Base
       def usage
         "multiref: copies a reference movie linking the input movies to\n" +
-        "           the document root of a web server.  \n\n" +
+        "          the document root of a web server.  \n\n" +
         "usage: multiref --basedir=BASEDIR --web_root=WEB_ROOT --web_url=WEB_URL\n"+
         "                --title=TITLE\n" +
         "                --edge_movie=EDGE --wifi_movie=WIFI --desktop_movie=DESKTOP\n" +
+        "                [--edge_stream=EDGE --wifi_stream=WIFI --desktop_stream=DESKTOP]\n" +
         "                [--iphone_edge_movie=EDGE] [--iphone_wifi_movie=WIFI]\n" +
+        "                [--iphone_edge_stream=EDGE] [--iphone_wifi_stream=WIFI]\n" +
         "                [--ipad_edge_movie=EDGE] [--ipad_wifi_movie=WIFI]\n" +
+        "                [--ipad_edge_stream=EDGE] [--ipad_wifi_stream=WIFI]\n" +
         "                [--type=MIME_TYPE] [--outfile[=OUTFILE]] [--create_poster_image]\n\n"
       end
       def options
-        ["web_root", "web_url", "title", "type", "outfile", "create_poster_image", "edge_movie", "wifi_movie", "desktop_movie"]
+        ["web_root", "web_url", "title", "type", "outfile", "create_poster_image",
+          "edge_movie", "wifi_movie", "desktop_movie",
+          "edge_stream", "wifi_stream", "desktop_stream",
+          "iphone_edge_movie", "iphone_wifi_movie",
+          "iphone_edge_stream", "iphone_wifi_stream",
+          "ipad_edge_movie", "ipad_wifi_movie",
+          "ipad_edge_stream", "ipad_wifi_stream"]
       end
       def run(arguments)
         $subcommand_options[:web_root] ||= $properties["Web Document Root"]
@@ -41,7 +50,22 @@ module PodcastProducer
         require_option(:edge_movie)
         require_option(:wifi_movie)
 
-        movie_file = $subcommand_options[:desktop_movie] || $subcommand_options[:wifi_movie] || $subcommand_options[:edge_movie]
+        $subcommand_options[:iphone_edge_movie] = $subcommand_options[:edge_movie] unless $subcommand_options[:iphone_edge_movie]
+        $subcommand_options[:iphone_wifi_movie] = $subcommand_options[:wifi_movie] unless $subcommand_options[:iphone_wifi_movie]
+        $subcommand_options[:ipad_edge_movie] = $subcommand_options[:edge_movie] unless $subcommand_options[:ipad_edge_movie]
+        $subcommand_options[:ipad_wifi_movie] = $subcommand_options[:wifi_movie] unless $subcommand_options[:ipad_wifi_movie]
+
+        unless $subcommand_options[:edge_stream].nil? && $subcommand_options[:wifi_stream].nil? && $subcommand_options[:desktop_stream].nil?
+          require_option(:desktop_stream)
+          require_option(:edge_stream)
+          require_option(:wifi_stream)
+          $subcommand_options[:iphone_edge_stream] = $subcommand_options[:edge_stream] unless $subcommand_options[:iphone_edge_stream]
+          $subcommand_options[:iphone_wifi_stream] = $subcommand_options[:wifi_stream] unless $subcommand_options[:iphone_wifi_stream]
+          $subcommand_options[:ipad_edge_stream] = $subcommand_options[:edge_stream] unless $subcommand_options[:ipad_edge_stream]
+          $subcommand_options[:ipad_wifi_stream] = $subcommand_options[:wifi_stream] unless $subcommand_options[:ipad_wifi_stream]
+        end
+
+        movie_file = $subcommand_options[:desktop_movie] # || $subcommand_options[:wifi_movie] || $subcommand_options[:edge_movie]
 
         urlified_title = $subcommand_options[:title].gsub(/ /, "_")
 
@@ -64,11 +88,40 @@ module PodcastProducer
         multi_publish_base_url = web_publish_base_url
         multi_publish_filepaths_by_tier = {}
         multi_publish_urls_by_tier = {}
+        equal_tiers_by_tier = {}
         movie_paths_by_tier = {}
         movie_paths_by_tier[:edge] = $subcommand_options[:edge_movie] # if $subcommand_options[:edge_movie]
         movie_paths_by_tier[:wifi] = $subcommand_options[:wifi_movie] # if $subcommand_options[:wifi_movie]
         movie_paths_by_tier[:desktop] = $subcommand_options[:desktop_movie] # if $subcommand_options[:desktop_movie]
+        movie_paths_by_tier[:iphone_edge] = $subcommand_options[:iphone_edge_movie] # if $subcommand_options[:iphone_edge_movie]
+        movie_paths_by_tier[:iphone_wifi] = $subcommand_options[:iphone_wifi_movie] # if $subcommand_options[:iphone_wifi_movie]
+        movie_paths_by_tier[:ipad_edge] = $subcommand_options[:ipad_edge_movie] # if $subcommand_options[:ipad_edge_movie]
+        movie_paths_by_tier[:ipad_wifi] = $subcommand_options[:ipad_wifi_movie] # if $subcommand_options[:ipad_wifi_movie]
+        movie_paths_by_tier[:edge_stream] = $subcommand_options[:edge_stream] if $subcommand_options[:edge_stream]
+        movie_paths_by_tier[:wifi_stream] = $subcommand_options[:wifi_stream] if $subcommand_options[:wifi_stream]
+        movie_paths_by_tier[:desktop_stream] = $subcommand_options[:desktop_stream] if $subcommand_options[:desktop_stream]
+        movie_paths_by_tier[:iphone_edge_stream] = $subcommand_options[:iphone_edge_stream] if $subcommand_options[:iphone_edge_stream]
+        movie_paths_by_tier[:iphone_wifi_stream] = $subcommand_options[:iphone_wifi_stream] if $subcommand_options[:iphone_wifi_stream]
+        movie_paths_by_tier[:ipad_edge_stream] = $subcommand_options[:ipad_edge_stream] if $subcommand_options[:ipad_edge_stream]
+        movie_paths_by_tier[:ipad_wifi_stream] = $subcommand_options[:ipad_wifi_stream] if $subcommand_options[:ipad_wifi_stream]
+#        movie_paths_by_tier.each do |tier, movie_path|
+#          print tier, " ", movie_path, "\n"
+#        end
         movie_paths_by_tier.each do |tier, movie_path|
+          equals_tier = nil
+          if tier.to_s =~ /^(iphone|ipad)_/
+            movie_paths_by_tier.each do |compare_tier, compare_path|
+              next if compare_tier.to_s == tier.to_s || compare_tier.to_s =~ /^(iphone|ipad)_/
+              equals_tier = compare_tier if movie_path.to_s == compare_path.to_s
+              break unless equals_tier.nil?
+            end
+          end
+          unless equals_tier.nil?
+            equal_tiers_by_tier[tier] = equals_tier
+#            print "skipping tier ", tier, "\n"
+            next
+          end
+#          print "processing tier ", tier, "\n"
           multi_publish_format = "ref-" + tier.to_s
           multi_publish_filename = get_publish_filename(urlified_title, multi_publish_format, movie_path, multi_publish_folder)
           multi_publish_filepath = multi_publish_folder + multi_publish_filename
@@ -81,6 +134,14 @@ module PodcastProducer
           multi_publish_filepaths_by_tier[tier] = multi_publish_filepath
           multi_publish_urls_by_tier[tier] = multi_publish_url
         end
+        equal_tiers_by_tier.each do |tier, equal_tier|
+#          print tier, " ", equal_tier, "\n"
+          multi_publish_urls_by_tier[tier] = multi_publish_urls_by_tier[equal_tier]
+        end
+#        multi_publish_urls_by_tier.each do |tier, movie_url|
+#          print tier, " ", movie_url, "\n"
+#        end
+#        exit(-1)
         McastQT.reference(web_publish_filepath, multi_publish_urls_by_tier) || exit(-1)
 
         web_publish_size = File.stat(web_publish_filepath).size.to_s
