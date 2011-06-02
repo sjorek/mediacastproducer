@@ -14,13 +14,14 @@ module PodcastProducer
   module Actions
   
     def self.load_actions
-#      Dir["/usr/lib/podcastproducer/actions/*.rb"].each do |path|
-#        name = File.join(File.dirname(path), File.basename(path, ".rb"))
-#        require name
-#      end
-      Dir[File.join(File.expand_path(File.dirname(__FILE__)), "qtactions/*.rb")].each do |path|
+      Dir["/usr/lib/podcastproducer/actions/*.rb"].each do |path|
         name = File.join(File.dirname(path), File.basename(path, ".rb"))
-        puts name
+        require name
+      end
+      Dir[File.join(File.join(File.expand_path(File.dirname(__FILE__)),
+                              File.basename(__FILE__, ".rb")), 
+                    "*.rb")].each do |path|
+        name = File.join(File.dirname(path), File.basename(path, ".rb"))
         require name
       end
     end
