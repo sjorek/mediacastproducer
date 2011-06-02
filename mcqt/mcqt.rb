@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby -I/usr/lib/podcastproducer
 #
 #  Copyright (c) 2011 Stephan Jorek.  All Rights Reserved.
 #  Copyright (c) 2006-2009 Apple Inc.  All Rights Reserved.
@@ -24,18 +25,13 @@ class McastQT < PcastQT
     
     datarates_by_tier = { :edge => "11200", :wifi => "100000", :desktop => "150000", # "2147483647"
                           :iphone_edge => "11200", :iphone_wifi => "100000",
-                          :iphone_edge_stream => "11200", :iphone_wifi_stream => "100000",
-                          :ipad_edge => "11200", :ipad_wifi => "100000",
-                          :ipad_edge_stream => "11200", :ipad_wifi_stream => "100000"}
+                          :ipad_edge => "11200", :ipad_wifi => "100000"}
     
     urls_by_tier.each do |tier, url|
       
-      is_stream = tier.to_s =~ /_stream$/
       is_iphone = tier.to_s =~ /^iphone_/
       is_ipad = tier.to_s =~ /^ipad_/
       datarate = datarates_by_tier[tier]
-      
-      next if is_stream # not yet supported
       
       # Data Reference Atom
       # Size (5 * long + url + 1) + Type ('rdrf') + Flags (not self-contained = null) + Data Reference Type ('url ') + Data Reference Size + Data Reference (null terminated)
