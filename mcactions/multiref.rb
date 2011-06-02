@@ -17,12 +17,14 @@ module PodcastProducer
 
     class Reference < Base
       def usage
-        "reference: copies a reference movie linking the input movies to\n" +
+        "multiref: copies a reference movie linking the input movies to\n" +
         "           the document root of a web server.  \n\n" +
-        "usage: reference --basedir=BASEDIR --web_root=WEB_ROOT --web_url=WEB_URL\n"+
-        "                 --title=TITLE\n" +
-        "                 --edge_movie=EDGE --wifi_movie=WIFI --desktop_movie=DESKTOP\n" +
-        "                 [--type=MIME_TYPE] [--outfile[=OUTFILE]] [--create_poster_image]\n\n"
+        "usage: multiref --basedir=BASEDIR --web_root=WEB_ROOT --web_url=WEB_URL\n"+
+        "                --title=TITLE\n" +
+        "                --edge_movie=EDGE --wifi_movie=WIFI --desktop_movie=DESKTOP\n" +
+        "                [--iphone_edge_movie=EDGE] [--iphone_wifi_movie=WIFI]\n" +
+        "                [--ipad_edge_movie=EDGE] [--ipad_wifi_movie=WIFI]\n" +
+        "                [--type=MIME_TYPE] [--outfile[=OUTFILE]] [--create_poster_image]\n\n"
       end
       def options
         ["web_root", "web_url", "title", "type", "outfile", "create_poster_image", "edge_movie", "wifi_movie", "desktop_movie"]
