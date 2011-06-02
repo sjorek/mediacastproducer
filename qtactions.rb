@@ -18,8 +18,9 @@ module PodcastProducer
 #        name = File.join(File.dirname(path), File.basename(path, ".rb"))
 #        require name
 #      end
-      Dir[File.join(File.dirname(__FILE__), "qtactions/*.rb")].each do |path|
+      Dir[File.join(File.expand_path(File.dirname(__FILE__)), "qtactions/*.rb")].each do |path|
         name = File.join(File.dirname(path), File.basename(path, ".rb"))
+        puts name
         require name
       end
     end

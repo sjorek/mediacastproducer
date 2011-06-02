@@ -18,7 +18,7 @@ module PodcastProducer
     class Reference < Base
       def usage
         "reference: copies a reference movie linking the input movies to\n" +
-        "         the document root of a web server.  \n\n" +
+        "           the document root of a web server.  \n\n" +
         "usage: reference --basedir=BASEDIR --web_root=WEB_ROOT --web_url=WEB_URL\n"+
         "                 --title=TITLE\n" +
         "                 --edge_movie=EDGE --wifi_movie=WIFI --desktop_movie=DESKTOP\n" +

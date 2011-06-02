@@ -24,6 +24,11 @@ require 'yaml'
 require '/usr/lib/podcastproducer/pcast_ruby' 
 
 require 'actions'
+
+require 'pathname'
+$LOAD_PATH.unshift(File.expand_path(File.dirname(Pathname.new(__FILE__).realpath))) unless 
+  $LOAD_PATH.include?(File.dirname(Pathname.new(__FILE__).realpath)) || $LOAD_PATH.include?(File.expand_path(File.dirname(Pathname.new(__FILE__).realpath)))
+
 require 'qtactions'
 
 ASL.enable_logging_to_stderr(true)
