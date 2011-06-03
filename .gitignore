@@ -1,4 +1,5 @@
 /.buildpath*
 /.project*
+/.pydev*
 /.settings*
-
+/bin/mp4-faststart

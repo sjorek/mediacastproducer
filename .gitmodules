@@ -1,3 +1,0 @@
-[submodule "lib/mp4seek"]
-	path = lib/mp4seek
-	url = https://github.com/arkadini/mp4seek.git
