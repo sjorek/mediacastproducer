@@ -94,4 +94,21 @@ class McastQT < PcastQT
     end
     return true
   end
+  
+  def self.is_streamable?(input)
+    atoms = %w(free junk mdat moov pnot skip wide PICT ftyp cmov stco co64)
+    File.open(input) do |f|
+      while !f.eof?
+        # the size is an unsigned 32bit integer, big-endian AKA network byte order
+        # the type is 4 ascii characters
+        size, type = f.read(8).unpack("Na4")
+        raise ArgumentError, "unknown atom type #{type} in #{file} at #{f.pos}" unless atoms.include?(type)
+        return f.pos < 0xff if type == "moov"
+        f.seek(size - 8, IO::SEEK_CUR)
+      end
+      raise ArgumentError, "no moov atom found"
+    end
+  rescue
+    return false
+  end
 end

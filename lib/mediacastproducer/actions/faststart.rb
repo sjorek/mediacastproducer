@@ -8,7 +8,7 @@
 #
 
 require 'actions/base'
-require 'mcqt/mcqt'
+require 'mediacastproducer/qt/qt'
 
 module PodcastProducer
   module Actions

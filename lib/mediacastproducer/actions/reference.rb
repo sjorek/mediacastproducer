@@ -8,14 +8,14 @@
 #  another platform without Apple's written consent.
 #
 
-require 'actions/publish'
-require 'mcqt/mcqt'
+require 'actions/base'
+require 'mediacastproducer/qt/qt'
 require 'fileutils'
 
 module PodcastProducer
   module Actions
 
-    class Reference < Publish
+    class Reference < Base
       def usage
         "reference: copies a reference movie linking the input movies to\n" +
         "           the document root of a web server.  \n\n" +

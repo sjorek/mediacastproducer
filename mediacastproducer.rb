@@ -23,13 +23,21 @@ require 'erb'
 require 'yaml'
 require '/usr/lib/podcastproducer/pcast_ruby' 
 
-require 'actions'
+# require 'actions'
 
 require 'pathname'
-$LOAD_PATH.unshift(File.expand_path(File.dirname(Pathname.new(__FILE__).realpath))) unless 
-  $LOAD_PATH.include?(File.dirname(Pathname.new(__FILE__).realpath)) || $LOAD_PATH.include?(File.expand_path(File.dirname(Pathname.new(__FILE__).realpath)))
 
-require 'mcactions'
+MCP_DIR = File.dirname(Pathname.new(__FILE__).realpath)
+MCP_BIN_DIR = File.join(MCP_DIR,'bin')
+MCP_LIB_DIR = File.join(MCP_DIR,'lib')
+MCP_LIBEXEC_DIR = File.join(MCP_DIR,'libexec')
+
+$LOAD_PATH.unshift(File.expand_path(MCP_LIB_DIR)) unless 
+  $LOAD_PATH.include?(MCP_LIB_DIR) || $LOAD_PATH.include?(File.expand_path(MCP_LIB_DIR))
+$LOAD_PATH.each do |path|
+  puts path
+end
+require 'mediacastproducer/actions'
 
 ASL.enable_logging_to_stderr(true)
 
