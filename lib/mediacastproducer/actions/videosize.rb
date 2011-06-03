@@ -16,9 +16,10 @@ module PodcastProducer
     class Videosize < Base
       def usage
         "videosize: get Quicktime or Mp4-alike movie and render dimensions\n\n" +
-        "usage: videosize --prb=PRB --input=INPUT\n"+
-        "                [--key=KEY]   lookup a specific KEY\n"
-        "                [--human]     display human readable values\n"
+        "usage: videosize --prb=PRB --input=INPUT\n" +
+        "                [--output=OUTPUT]  re-encode INPUT to OUTPUT if dimension differ\n" +
+        "                [--key=KEY]        KEY to lookup, forces the dimension if OUTPUT is given\n" +
+        "                [--human]          display human readable values\n"
       end
 
       def options
