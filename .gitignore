@@ -2,4 +2,5 @@
 /.project*
 /.pydev*
 /.settings*
+/bin/mediacastproducer
 /bin/mp4-faststart
