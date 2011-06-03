@@ -90,10 +90,10 @@ module PodcastProducer
           if equal_tier
             multi_publish_filepaths_by_tier[tier] = multi_publish_filepaths_by_tier[equal_tier]
             multi_publish_urls_by_tier[tier] = multi_publish_urls_by_tier[equal_tier]
-            print "skipped equal tier ", tier, " = ", equal_tier, "\n"
+            log_notice("skipped equal tier " + tier.to_s + " = " + equal_tier.to_s)
             next
           end
-          print "processing tier ", tier, "\n"
+          log_notice("processing tier "  + tier.to_s)
           multi_publish_format = tier.to_s + "-ref"
           multi_publish_filename = get_publish_filename(urlified_title, multi_publish_format, movie_path, multi_publish_folder)
           multi_publish_filepath = multi_publish_folder + multi_publish_filename

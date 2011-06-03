@@ -19,11 +19,11 @@ module PodcastProducer
 #        name = File.join(File.dirname(path), File.basename(path, ".rb"))
 #        require name
 #      end
-      puts MCP_LIB_DIR
+#      puts MCP_LIB_DIR
       Dir[File.join(File.expand_path(MCP_LIB_DIR), "mediacastproducer/actions/*.rb")].each do |path|
-        puts path
+#        puts path
         name = File.join(File.dirname(path), File.basename(path, ".rb"))
-        puts name
+#        puts name
         require name
       end
     end
