@@ -18,6 +18,8 @@ MOVIE_DIMENSION_FLAVORS = { :track => OSX::QTTrackDimensionsAttribute,
                             :clean => OSX::QTMovieApertureModeClean,
                             :prod => OSX::QTMovieApertureModeProduction }
 
+MOVIE_SIZE_CLEANER = File.join(MCP_LIB, 'mediacastproducer', 'encodings', 'qt_clean.plist')
+
 class McastQT < PcastQT
   
   def self.reference(destination, urls_by_tier)
@@ -203,6 +205,17 @@ class McastQT < PcastQT
       break
     end
     return aspect_ratio.to_s
+  end
+
+  def self.correct_aspect_ratio(input, output, force=nil)
+    raise PcastException.new(ERR_MISSING_INPUT, "Missing INPUT file: " + input.to_s) unless File.exist?(input)
+    raise PcastException.new(ERR_OUTPUT_EXISTS, "OUTPUT file already exists: " + output.to_s) if File.exist?(output)
+    exec_args = [MCP, 'encode', "--basedir=.",
+                 "--input", input.to_s,
+                 "--output", output.to_s,
+                 "--encoder", MOVIE_SIZE_CLEANER.to_s]
+    # log_notice('executing: ' + exec_args.join(' ').to_s)
+    self.encode(input,output,MOVIE_SIZE_CLEANER)
   end
 
   def self.verify_input_and_output_paths_are_not_equal(input, output)

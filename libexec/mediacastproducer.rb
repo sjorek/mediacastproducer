@@ -28,12 +28,13 @@ require '/usr/lib/podcastproducer/pcast_ruby'
 require 'pathname'
 
 MCP_DIR = File.dirname(File.dirname(Pathname.new(__FILE__).realpath))
-MCP_BIN_DIR = File.join(MCP_DIR,'bin')
-MCP_LIB_DIR = File.join(MCP_DIR,'lib')
-MCP_LIBEXEC_DIR = File.join(MCP_DIR,'libexec')
+MCP_BIN = File.join(MCP_DIR,'bin')
+MCP_LIB = File.join(MCP_DIR,'lib')
+MCP_LIBEXEC = File.join(MCP_DIR,'libexec')
+MCP = File.join(MCP_BIN, 'mediacastproducer')
 
-$LOAD_PATH.unshift(File.expand_path(MCP_LIB_DIR)) unless 
-  $LOAD_PATH.include?(MCP_LIB_DIR) || $LOAD_PATH.include?(File.expand_path(MCP_LIB_DIR))
+$LOAD_PATH.unshift(File.expand_path(MCP_LIB)) unless 
+  $LOAD_PATH.include?(MCP_LIB) || $LOAD_PATH.include?(File.expand_path(MCP_LIB))
 #$LOAD_PATH.each do |path|
 #  puts path
 #end

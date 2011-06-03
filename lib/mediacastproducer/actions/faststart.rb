@@ -11,6 +11,8 @@ require 'actions/base'
 require 'mediacastproducer/constants'
 require 'mediacastproducer/qt/qt'
 
+MP4_FASTSTART = File.join(MCP_BIN,"mp4-faststart")
+
 module PodcastProducer
   module Actions
 
@@ -56,12 +58,9 @@ module PodcastProducer
           end
         else
           log_notice('faststart optimization for streaming')
-          faststart = File.join(MCP_BIN_DIR,"mp4-faststart")
-          if output
-            system(faststart, input, output)
-          else
-            system(faststart, input)
-          end
+          exec_args = [MP4_FASTSTART, input]
+          exec_args << output if output
+          return McastQT.fork_exec_and_wait(*exec_args)
         end
         FileUtils.chmod_R(0644, output) if output
       end

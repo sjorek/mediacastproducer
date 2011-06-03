@@ -7,7 +7,9 @@
 #  another platform without Apple's written consent.
 #
 
+require 'fileutils'
 require 'actions/base'
+require 'actions/encode'
 require 'mediacastproducer/constants'
 require 'mediacastproducer/qt/qt'
 
@@ -51,7 +53,7 @@ module PodcastProducer
         video_dimensions[:movie_height] = movie_height
 
         movie_ratio = movie_width.to_f / movie_height.to_f
-        movie_ratio = McastQT.lookup_aspect_ratio(movie_ratio) if human
+        movie_ratio = McastQT.lookup_aspect_ratio(movie_ratio) if human && !output
         log_notice "movie ratio: " + movie_ratio.to_s
         video_dimensions[:movie_ratio] = movie_ratio
 
@@ -69,7 +71,7 @@ module PodcastProducer
           video_dimensions[(flavor + "_height").to_sym] = height
   
           ratio = width.to_f / height.to_f
-          ratio = McastQT.lookup_aspect_ratio(ratio) if human
+          ratio = McastQT.lookup_aspect_ratio(ratio) if human && !output
           log_notice flavor + " ratio: " + ratio.to_s
           video_dimensions[(flavor + "_ratio").to_sym] = ratio
         end
@@ -80,8 +82,19 @@ module PodcastProducer
               "track_width", "track_height", "track_ratio",
               "clean_width", "clean_height", "clean_ratio",
               "prod_width", "prod_height", "prod_ratio"].include?(key.to_s)
-          puts video_dimensions[key.to_sym].to_s
-          return
+        end
+        if output
+          force = {:force => key,:dims => video_dimensions} if key
+          begin
+            result = McastQT.correct_aspect_ratio(input, output, force)
+            puts result.to_s
+          rescue PcastException => e
+            log_crit_and_exit(e.message, e.return_code.to_i)
+#          rescue Exception => e
+#            log_crit_and_exit(e.message, 1)
+          end
+        else
+          puts video_dimensions[key.to_sym].to_s if key
         end
       end
     end
