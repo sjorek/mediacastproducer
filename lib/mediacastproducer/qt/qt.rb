@@ -18,7 +18,7 @@ MOVIE_DIMENSION_FLAVORS = { :track => OSX::QTTrackDimensionsAttribute,
                             :clean => OSX::QTMovieApertureModeClean,
                             :prod => OSX::QTMovieApertureModeProduction }
 
-MOVIE_SIZE_CLEANER = File.join(MCP_LIB, 'mediacastproducer', 'encodings', 'qt_clean.plist')
+MOVIE_SIZE_CLEANER = File.join(MCP_LIB, 'mediacastproducer', 'encodings', 'qt_clean_24fps_aac_192kbit_44100.plist') # 'qt_clean.plist')
 
 class McastQT < PcastQT
   
