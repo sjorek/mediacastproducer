@@ -8,6 +8,7 @@
 #
 
 require 'actions/base'
+require 'mediacastproducer/constants'
 require 'mediacastproducer/qt/qt'
 
 module PodcastProducer
@@ -29,18 +30,40 @@ module PodcastProducer
         
         input = $subcommand_options[:inputs][0]
         output = $subcommand_options[:output]
+        
+        movie_type = McastQT.info(input,'movieType')
+        log_notice('movie type: ' + movie_type.to_s)
+        log_crit_and_exit("missing movie type", ERR_MISSING_MOVIETYPE) if movie_type.nil?
+        
         is_streamable = McastQT.is_streamable?(input)
-        if is_streamable || $subcommand_options[:streamable]
-          log_notice "is already streamable: " + is_streamable.to_s
-          exit(is_streamable ? 0 : 1)
-          return
+        log_notice("is streamable: " + is_streamable.to_s)
+        log_crit_and_exit("FINISH", (is_streamable ? 0 : 1)) if $subcommand_options[:streamable]
+        
+        begin
+          output = McastQT.verify_input_and_output_paths_are_not_equal(input, output) if output
+        rescue PcastException => e
+          log_crit_and_exit(e.message, e.return_code.to_i)
+        rescue Exception => e
+          log_crit_and_exit(e.message, 1)
         end
-        faststart = File.join(MCP_BIN_DIR,"mp4-faststart")
-        if output
-          system(faststart, input, output)
+        if is_streamable
+          if output
+            log_notice('faststart not necessary, copying INPUT to OUTPUT')
+            FileUtils.cp(input , output)
+          else
+            log_crit_and_exit("skipped editing in place, input is already streamable", ERR_ALLREADY_STREAMABLE)
+            return
+          end
         else
-          system(faststart, input)
+          log_notice('faststart optimization for streaming')
+          faststart = File.join(MCP_BIN_DIR,"mp4-faststart")
+          if output
+            system(faststart, input, output)
+          else
+            system(faststart, input)
+          end
         end
+        FileUtils.chmod_R(0644, output) if output
       end
     end
     

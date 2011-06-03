@@ -9,7 +9,14 @@
 #  another platform without Apple's written consent.
 #
 
+require 'fileutils'
+require 'common/pcast_exception'
 require 'qt/qt'
+require 'mediacastproducer/constants'
+
+MOVIE_DIMENSION_FLAVORS = { :track => OSX::QTTrackDimensionsAttribute, 
+                            :clean => OSX::QTMovieApertureModeClean,
+                            :prod => OSX::QTMovieApertureModeProduction }
 
 class McastQT < PcastQT
   
@@ -102,13 +109,107 @@ class McastQT < PcastQT
         # the size is an unsigned 32bit integer, big-endian AKA network byte order
         # the type is 4 ascii characters
         size, type = f.read(8).unpack("Na4")
-        raise ArgumentError, "unknown atom type #{type} in #{file} at #{f.pos}" unless atoms.include?(type)
+        raise ArgumentError, "unknown atom type #{type} in #{input} at #{f.pos}" unless atoms.include?(type)
         return f.pos < 0xff if type == "moov"
         f.seek(size - 8, IO::SEEK_CUR)
       end
       raise ArgumentError, "no moov atom found"
     end
-  rescue
+  rescue Exception => e
+    log_error(e.to_s + ": " + e.message)
     return false
+  end
+  
+  def self.lookup_dimensions(input,
+                             mode = OSX::QTMovieApertureModeClean,
+                             key = nil,
+                             desired_types = [OSX::QTMediaTypeVideo])
+    sizes = {}
+    if key
+      log_crit_and_exit("invalid key",ERR_INVALID_KEY) unless 
+        ["width", "height"].include?(key)
+      sizes[key.to_sym] = nil
+    else
+      sizes[:width] = nil
+      sizes[:height] = nil
+    end
+    input_movie = self.load_movie(input)
+    return false unless input_movie
+#    log_notice("input movie: " + input_movie.to_s)
+#    log_notice("input movie tracks: " + input_movie.tracks.to_s)
+    dimensions = nil
+    input_movie.tracks.each do |track|
+#      log_notice("track:" + track.to_s)
+      media_type = track.media.attributeForKey(OSX::QTMediaTypeAttribute)
+#      log_notice("media type:" + media_type.to_s)
+      if desired_types.include?(media_type)
+#        log_notice("processing desired type")
+        if mode == OSX::QTTrackDimensionsAttribute
+          dimensions = track.attributeForKey(OSX::QTTrackDimensionsAttribute).sizeValue
+          dimensions = {:width => dimensions.width, :height => dimensions.height}
+#          log_notice("dimensions: " + dimensions[:width].to_s + " x " + dimensions[:height].to_s)
+        else
+          has_aperture = track.attributeForKey(OSX::QTTrackHasApertureModeDimensionsAttribute)
+#          log_notice("has aperture: " + has_aperture.to_s)
+          next unless has_aperture
+          dimensions = track.apertureModeDimensionsForMode(mode)
+          dimensions = {:width => dimensions.width, :height => dimensions.height}
+#          log_notice("dimensions: " + dimensions[:width].to_s + " x " + dimensions[:height].to_s)
+        end
+      else
+#        log_notice("skipped not desired track")
+      end
+      break if dimensions
+    end
+    log_notice("no dimensions found." + dimensions.to_s) unless dimensions
+    sizes.each do |size_key,size_val|
+      size_val = -1 if size_val.nil?
+      if dimensions
+        case size_key
+        when :width
+#          log_notice("processing key:" + size_key.to_s)
+          size_val = dimensions[size_key.to_sym]
+        when :height
+#          log_notice("processing key:" + size_key.to_s)
+          size_val = dimensions[size_key.to_sym]
+        else
+          log_error("invalid key:" + size_key.to_s)
+        end
+#        log_notice("processed value: " + size_val.to_s)
+      end
+      return size_val if key == size_key.to_s
+      sizes[size_key] = size_val
+    end
+    return sizes[:width], sizes[:height]
+  rescue
+    return -1 if key
+    return -1,-1
+  end
+
+  def self.lookup_aspect_ratio(ratio, ratios=nil)
+    aspect_ratio = ratio.to_f
+    aspect_ratios = DEFAULT_ASPTECT_RATIOS if ratios.nil?
+#    log_notice('aspect ratio: ' + aspect_ratio.to_s)
+    aspect_ratios.each do |name|
+      w, h = name.to_s.split(':')
+#      log_notice('comparing: ' + name)
+#      log_notice('comparing width/height: ' + w.to_s + "/" + h.to_s) 
+      ratio = w.to_f / h.to_f
+#      log_notice('comparing ratio: ' + ratio.to_s)
+      equal_ratios = (ratio==aspect_ratio)
+#      log_notice((equal_ratios ? 'ratios equal: ' : 'skipping ratio: ') + name.to_s)
+      next unless equal_ratios
+      return name
+      break
+    end
+    return aspect_ratio.to_s
+  end
+
+  def self.verify_input_and_output_paths_are_not_equal(input, output)
+    if (File.expand_path(input) == File.expand_path(output))
+      raise PcastException.new(ERR_EDITING_INPLACE, "Cannot modify files in place.")
+    else
+      return output
+    end
   end
 end

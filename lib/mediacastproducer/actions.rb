@@ -15,10 +15,10 @@ module PodcastProducer
   module Actions
   
     def self.load_actions
-#      Dir["/usr/lib/podcastproducer/actions/*.rb"].each do |path|
-#        name = File.join(File.dirname(path), File.basename(path, ".rb"))
-#        require name
-#      end
+      Dir["/usr/lib/podcastproducer/actions/*.rb"].each do |path|
+        name = File.join(File.dirname(path), File.basename(path, ".rb"))
+        require name
+      end
 #      puts MCP_LIB_DIR
       Dir[File.join(File.expand_path(MCP_LIB_DIR), "mediacastproducer/actions/*.rb")].each do |path|
 #        puts path
