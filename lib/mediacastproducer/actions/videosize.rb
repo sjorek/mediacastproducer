@@ -13,15 +13,17 @@ require 'actions/encode'
 require 'mediacastproducer/constants'
 require 'mediacastproducer/qt/qt'
 
+MCP_VIDEOSIZE_CLEANER = 'qt_clean_24fps_aac_192kbit_44100' # 'qt_clean.plist')
+
 module PodcastProducer
   module Actions
     class Videosize < Base
       def usage
         "videosize: get Quicktime or Mp4-alike movie and render dimensions\n\n" +
         "usage: videosize --prb=PRB --input=INPUT\n" +
-        "                [--output=OUTPUT]  re-encode INPUT to OUTPUT if dimension differ\n" +
-        "                [--key=KEY]        KEY to lookup, forces the dimension if OUTPUT is given\n" +
-        "                [--human]          display human readable values\n"
+        "                [--output=OUTPUT]    re-encode INPUT to OUTPUT if dimension differ\n" +
+        "                [--key=KEY]          KEY to lookup, forces the dimension if OUTPUT is given\n" +
+        "                [--human]            display human readable values\n"
       end
 
       def options
@@ -85,9 +87,17 @@ module PodcastProducer
         end
         if output
           force = {:force => key,:dims => video_dimensions} if key
+          log_notice('clean encoder: ' + MCP_VIDEOSIZE_CLEANER.to_s)
+          if File.exist?(MCP_VIDEOSIZE_CLEANER)
+            settings = MCP_VIDEOSIZE_CLEANER
+          else
+            require_encoder(MCP_VIDEOSIZE_CLEANER)
+            settings = settings_for_encoder(MCP_VIDEOSIZE_CLEANER)
+          end
           begin
-            result = McastQT.correct_aspect_ratio(input, output, force)
-            puts result.to_s
+#            log_notice('clean settings: ' + settings.to_s)
+            result = McastQT.correct_aspect_ratio(input, output, settings, force)
+            # puts result.to_s
           rescue PcastException => e
             log_crit_and_exit(e.message, e.return_code.to_i)
 #          rescue Exception => e

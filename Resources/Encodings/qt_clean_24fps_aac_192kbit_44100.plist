@@ -33,5 +33,7 @@
 	<string>MooV</string>
 	<key>componentType</key>
 	<string>spit</string>
+	<key>useCleanApertureMode</key>
+	<true />
 </dict>
 </plist>

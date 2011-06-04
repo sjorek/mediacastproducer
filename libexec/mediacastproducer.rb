@@ -31,6 +31,7 @@ MCP_DIR = File.dirname(File.dirname(Pathname.new(__FILE__).realpath))
 MCP_BIN = File.join(MCP_DIR,'bin')
 MCP_LIB = File.join(MCP_DIR,'lib')
 MCP_LIBEXEC = File.join(MCP_DIR,'libexec')
+MCP_RES = File.join(MCP_DIR,'Resources')
 MCP = File.join(MCP_BIN, 'mediacastproducer')
 
 $LOAD_PATH.unshift(File.expand_path(MCP_LIB)) unless 
@@ -166,13 +167,18 @@ def read_properties
       end
     end
   end
-  
+  properties["Global Resource Path"] = MCP_RES unless properties["Global Resource Path"]
+#  log_notice("Global Resource Path: " + properties["Global Resource Path"])
+#  properties.each do |pk,pv|
+#    log_notice(pk.to_s + ": "+ pv.to_s)
+#  end
   properties
 end
 
 PodcastProducer::Actions.load_actions
 
 $subcommands = PodcastProducer::Actions.action_instances
+$properties = read_properties
 
 ### main
 
