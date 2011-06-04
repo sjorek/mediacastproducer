@@ -19,7 +19,97 @@ MOVIE_DIMENSION_FLAVORS = { :track => OSX::QTTrackDimensionsAttribute,
                             :prod => OSX::QTMovieApertureModeProduction }
 
 class McastQT < PcastQT
-  
+
+  def self.encode(input, output, settings)
+    output_path = self.verify_input_and_output_paths_are_not_equal(input, output)
+    input_movie = self.load_movie(input)
+    return false unless input_movie
+    input_movie.setAttribute_forKey(true, OSX::QTMovieEditableAttribute)
+    settings_dictionary = OSX::NSDictionary.dictionaryWithContentsOfFile(settings)
+    component_subtype = OSX::QTOSTypeForString(settings_dictionary["componentSubtype"])
+    component_manufacturer = OSX::QTOSTypeForString(settings_dictionary["componentManufacturer"])
+    atom_container_data = settings_dictionary["atomContainerData"]
+    enable_audio_tracks = settings_dictionary["enableAudioTracks"]
+    enable_audio_tracks ||= 1
+    enable_video_tracks = settings_dictionary["enableVideoTracks"]
+    enable_video_tracks ||= 1
+    clean_aperture_mode = settings_dictionary["useCleanApertureMode"]
+    clean_aperture_mode ||= 1
+    componentPresetName = settings_dictionary["componentPresetName"]
+    
+    duration = input_movie.attributeForKey(OSX::QTMovieDurationAttribute).QTTimeValue
+    
+    attributes = {
+      OSX::QTMovieExport => true,
+      OSX::QTMovieExportType => component_subtype,
+      OSX::QTMovieExportManufacturer => component_manufacturer,
+    }    
+    
+    if componentPresetName
+      attributes["QTMovieExportPresetName"] = componentPresetName
+    end
+
+    if clean_aperture_mode == 1
+      input_movie.setAttribute_forKey(OSX::QTMovieApertureModeClean, OSX::QTMovieApertureModeAttribute)
+    end
+    
+    if enable_audio_tracks == 0 
+      input_movie.tracks.each do |track|
+        media_type = track.media.attributeForKey(OSX::QTMediaTypeAttribute)
+        if media_type == OSX::QTMediaTypeSound
+          input_movie.removeTrack(track) 
+          log_notice "Removing audio tracks"
+        end
+      end
+    end
+    
+    if enable_video_tracks == 0
+      input_movie.tracks.each do |track|
+        media_type = track.media.attributeForKey(OSX::QTMediaTypeAttribute)
+        if media_type == OSX::QTMediaTypeVideo or media_type == OSX::QTMediaTypeQuartzComposer
+          input_movie.removeTrack(track) 
+          log_notice "Removing video tracks"
+        end
+      end
+    end
+      
+    if ((enable_audio_tracks == 1) && (enable_video_tracks == 0) && PcastQT.info(input, "hasAudio") == "0")
+      silence_movie = self.load_movie(SILENCE_MOVIE)
+
+      qt_from_range = OSX::QTMakeTimeRange(OSX::QTZeroTime, silence_movie.duration)
+      qt_to_range = OSX::QTMakeTimeRange(OSX::QTZeroTime, input_movie.duration)
+      
+      input_movie.insertSegmentOfMovie_fromRange_scaledToRange(silence_movie, qt_from_range, qt_to_range)
+    end
+        
+    attributes[OSX::QTMovieExportSettings] = atom_container_data if atom_container_data
+    delegate = PcastQTMovieDelegate.alloc.init
+    input_movie.setDelegate(delegate)
+    random_string = Time.now.to_i.to_s + "_" + PcastUUID.new.gen_uuid
+    non_chapterized_output_path = File.basename(output, ".*").gsub(/[:\/]/, "_") + "-non_chapterized-" + random_string + File.extname(output)
+    error = nil
+    success, error = input_movie.writeToFile_withAttributes_error(non_chapterized_output_path, attributes)
+    unless success
+      log_error "could not save the movie: #{error.localizedDescription}" 
+      return false
+    end
+    
+    ext = File.extname(non_chapterized_output_path)
+    if ext == ".mov" || ext == ".m4a" || ext == ".m4b" || ext == ".m4v"
+      chapters = self.backup_chapters(input)
+      if chapters
+        if self.restore_chapters(non_chapterized_output_path, output_path, chapters, component_subtype, component_manufacturer) 
+          return true
+        else
+          log_error("Failed to restore chapters") 
+        end
+      end
+      FileUtils.mv(non_chapterized_output_path, output_path)
+    end
+
+    return true
+  end
+
   def self.reference(destination, urls_by_tier)
     rmdas = []
     rmdaslength = 0

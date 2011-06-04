@@ -8,7 +8,7 @@
 #
 
 require 'actions/base'
-require 'qt/qt'
+require 'mediacastproducer/qt/qt'
 
 module PodcastProducer
   module Actions
@@ -34,14 +34,15 @@ module PodcastProducer
         check_input_file(input)
         check_output_file(output)
         
-        if File.exist?(encoder)
+        if File.exist?(encoder) && !File.directory?(encoder)
           settings = encoder
         else
           require_encoder(encoder)
           settings = settings_for_encoder(encoder)
         end
-        
-        log_crit_and_exit("Failed to encode '#{input}' with '#{encoder}'", -1) unless PcastQT.encode(input, output, settings)
+        log_notice('encoder: ' + encoder.to_s)
+        log_notice('settings: ' + settings.to_s)
+        log_crit_and_exit("Failed to transcode '#{input}' with '#{encoder}'", -1) unless McastQT.encode(input, output, settings)
       
       end
     end

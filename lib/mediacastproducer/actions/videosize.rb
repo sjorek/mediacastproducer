@@ -13,7 +13,7 @@ require 'actions/encode'
 require 'mediacastproducer/constants'
 require 'mediacastproducer/qt/qt'
 
-MCP_VIDEOSIZE_CLEANER = 'qt_clean_24fps_aac_192kbit_44100' # 'qt_clean.plist')
+MCP_VIDEOSIZE_CLEANER = 'mcp_qt_clean_24fps_aac_192kbit_44100' # 'qt_clean.plist')
 
 module PodcastProducer
   module Actions

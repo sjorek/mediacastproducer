@@ -168,7 +168,7 @@ def read_properties
     end
   end
   properties["Global Resource Path"] = MCP_RES unless properties["Global Resource Path"]
-#  log_notice("Global Resource Path: " + properties["Global Resource Path"])
+  log_notice("Global Resource Path: " + properties["Global Resource Path"])
 #  properties.each do |pk,pv|
 #    log_notice(pk.to_s + ": "+ pv.to_s)
 #  end
