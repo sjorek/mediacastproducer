@@ -40,7 +40,7 @@ $LOAD_PATH.unshift(File.expand_path(MCP_LIB)) unless
 #$LOAD_PATH.each do |path|
 #  puts path
 #end
-require 'mediacastproducer/actions'
+require 'mcp/actions'
 
 ASL.enable_logging_to_stderr(true)
 

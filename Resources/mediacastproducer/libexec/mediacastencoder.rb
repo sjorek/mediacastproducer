@@ -40,7 +40,7 @@ $LOAD_PATH.unshift(File.expand_path(MCP_LIB)) unless
 #$LOAD_PATH.each do |path|
 #  puts path
 #end
-require 'mediacastproducer/transcoder'
+require 'mcp/transcoder'
 
 ASL.enable_logging_to_stderr(true)
 
@@ -68,7 +68,7 @@ def print_version
   $stderr.puts "Mediacast Encoder action task, version 0.1"
   $stderr.puts "Copyright 2011 Stephan Jorek"
   $stderr.puts "based upon:"
-  $stderr.puts "Podcast Encoder action task, version 2.0"
+  $stderr.puts "Podcast Producer action task, version 2.0"
   $stderr.puts "Copyright 2007 Apple, Inc."
   $stderr.puts
 end
