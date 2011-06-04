@@ -7,20 +7,17 @@
 #  another platform without Apple's written consent.
 #
 
-require 'actions/base'
-require 'mcp/transcoder'
+require 'mcp/transcoder/base'
+require 'mcp/qt/qt'
 
-MediacastProducer::Transcoders.load_transcoders
-$engines = PodcastProducer::Transcoders.action_instances
 
-module PodcastProducer
-  module Actions
-
-    class Transcode < Base
+module MediacastProducer
+  module Transcoder
+    class VLC < Base
       def usage
-        "transcode: transforms the input file to the output file with the specified preset\n\n" +
-        "usage: transcode --prb=PRB --input=INPUT --output=OUTPUT --preset=PRESET\n\n" +
-        "the available presets are:\n#{available_transcoders}\n\n"
+        "vlc: transcodes the input file to the output file with the specified preset\n\n" +
+        "usage:  vlc --prb=PRB --input=INPUT --output=OUTPUT --preset=PRESET\n\n" +
+        "the available presets are:\n#{available_encoders}\n\n"
       end
       def options
         ["input*", "output", "preset"]
@@ -33,17 +30,9 @@ module PodcastProducer
         preset = $subcommand_options[:preset]
         input = $subcommand_options[:inputs][0]
         output = $subcommand_options[:output]
-        if File.exist?(preset)
-          engine = "pcast" if File.extname(preset) == ".plist"
-          engine = File.basename(File.dirname(Pathname.new(__FILE__).realpath)) if File.extname(preset) == ".rb"
-        else
-          preset =~ %r{(.*)/(.*)}
-          engine, encoder = $1, $2
-        end
         
-#        check_input_file(input)
-#        check_output_file(output)
-#        
+        check_input_file(input)
+        check_output_file(output)
 #        if File.exist?(preset) && !File.directory?(preset)
 #          settings = preset
 #        else
@@ -53,9 +42,7 @@ module PodcastProducer
 #        log_notice('preset: ' + preset.to_s)
 #        log_notice('settings: ' + settings.to_s)
 #        log_crit_and_exit("Failed to transcode '#{input}' with '#{preset}'", -1) unless McastQT.encode(input, output, settings)
-      
       end
     end
-    
   end
 end
