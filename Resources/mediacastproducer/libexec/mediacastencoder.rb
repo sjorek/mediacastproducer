@@ -40,7 +40,7 @@ $LOAD_PATH.unshift(File.expand_path(MCP_LIB)) unless
 #$LOAD_PATH.each do |path|
 #  puts path
 #end
-require 'mediacastproducer/actions'
+require 'mediacastproducer/transcoder'
 
 ASL.enable_logging_to_stderr(true)
 
@@ -65,18 +65,18 @@ $default_qc_height = 768
 ### helpers
 
 def print_version
-  $stderr.puts "Mediacast Producer action task, version 0.1"
+  $stderr.puts "Mediacast Encoder action task, version 0.1"
   $stderr.puts "Copyright 2011 Stephan Jorek"
   $stderr.puts "based upon:"
-  $stderr.puts "Podcast Producer action task, version 2.0"
+  $stderr.puts "Podcast Encoder action task, version 2.0"
   $stderr.puts "Copyright 2007 Apple, Inc."
   $stderr.puts
 end
 
 def print_usage
   print_version
-  $stderr.puts "usage: mediacastproducer <subcommand> [options] [args]"
-  $stderr.puts "Type 'mediacastproducer help <subcommand>' for help on a specific subcommand."
+  $stderr.puts "usage: mediacastencoder <subcommand> [options] [args]"
+  $stderr.puts "Type 'mediacastencoder help <subcommand>' for help on a specific subcommand."
   $stderr.puts
   $stderr.puts "Available subcommands:"
   $subcommands.sort! {|x,y| x.name <=> y.name}
@@ -84,7 +84,7 @@ def print_usage
     $stderr.puts "  " + subcommand.name
   end
   $stderr.puts
-  $stderr.puts "By specifying '--no_fail' mediacastproducer will ignore any failures and always exit with an exit code of 0."
+  $stderr.puts "By specifying '--no_fail' mediacastencoder will ignore any failures and always exit with an exit code of 0."
   $stderr.puts
 end
 
@@ -176,9 +176,9 @@ def read_properties
   properties
 end
 
-PodcastProducer::Actions.load_actions
+MediacastProducer::Transcoder.load_actions
 
-$subcommands = PodcastProducer::Actions.action_instances
+$subcommands = MediacastProducer::Transcoder.action_instances
 $properties = read_properties
 
 ### main
@@ -222,7 +222,7 @@ class Main
     getopt_args = [["--basedir", GetoptLong::OPTIONAL_ARGUMENT], ["--prb", GetoptLong::OPTIONAL_ARGUMENT], ["--no_fail", GetoptLong::OPTIONAL_ARGUMENT],  ["--subcommand", GetoptLong::OPTIONAL_ARGUMENT],  ["--password_property", GetoptLong::OPTIONAL_ARGUMENT]]
     plural_options = []
     
-    PodcastProducer::Actions.options_list.each do |option|
+    MediacastProducer::Transcoder.options_list.each do |option|
       if option[-1..-1] == "*"
         option = option[0..-2] 
         plural_option = option + "s"

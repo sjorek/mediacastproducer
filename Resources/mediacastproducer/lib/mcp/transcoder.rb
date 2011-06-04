@@ -10,7 +10,7 @@
 require 'mcp/actions'
 
 module MediacastProducer
-  module Transcoders
+  module Transcoder
   
     @@action_classes = []
     
@@ -32,7 +32,7 @@ module MediacastProducer
       options_hash.keys
     end
     
-    def self.load_transcoder
+    def self.load_actions
       Dir[MCP_LIB + '/mcp/transcoder/*.rb'].each do |path|
         name = File.join(File.dirname(path), File.basename(path, ".rb"))
         log_notice('loading transcoder: ' + name.to_s)
@@ -47,12 +47,9 @@ end
 
 def transcoder_list
   transcoders = []
-  encoder_list.collect do |encoder|
-    transcoders << File.join("pcast", encoder).to_s
-  end
   Dir[MCP_LIB + '/mcp/transcoder/*/*.rb'].each do |path|
     path =~ %r{mcp/transcoder/(.*/.*)\.rb}
-    transcoders << $1 unless encoders.include?($1)
+    transcoders << $1
   end
   if $properties["Global Resource Path"]
     Dir["#{$properties["Global Resource Path"]}/Resources/Transcoder/*/*.rb"].each do |path|

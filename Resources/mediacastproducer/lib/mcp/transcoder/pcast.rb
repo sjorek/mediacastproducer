@@ -14,7 +14,23 @@ require 'mcp/qt/qt'
 module MediacastProducer
   module Transcoder
     class Pcast < Base
-      def run(input, output, preset)
+      def usage
+        "pcast: transcodes the input file to the output file with the specified preset\n\n" +
+        "usage:  pcast --prb=PRB --input=INPUT --output=OUTPUT --preset=PRESET\n\n" +
+        "the available presets are:\n#{available_encoders}\n\n"
+      end
+      def options
+        ["input*", "output", "preset"]
+      end
+      def run(arguments)
+        require_plural_option(:inputs, 1, 1)
+        require_option(:output)
+        require_option(:preset)
+        
+        preset = $subcommand_options[:preset]
+        input = $subcommand_options[:inputs][0]
+        output = $subcommand_options[:output]
+        
         check_input_file(input)
         check_output_file(output)
         if File.exist?(preset) && !File.directory?(preset)
