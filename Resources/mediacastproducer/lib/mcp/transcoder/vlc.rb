@@ -17,7 +17,7 @@ module MediacastProducer
       def usage
         "vlc: transcodes the input file to the output file with the specified preset\n\n" +
         "usage:  vlc --prb=PRB --input=INPUT --output=OUTPUT --preset=PRESET\n\n" +
-        "the available presets are:\n#{available_encoders}\n\n"
+        "the available presets are:\n#{available_transcoders('vlc')}\n"
       end
       def options
         ["input*", "output", "preset"]

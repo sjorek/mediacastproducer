@@ -17,7 +17,7 @@ module MediacastProducer
       def usage
         "ffmpeg: transcodes the input file to the output file with the specified preset\n\n" +
         "usage:  ffmpeg --prb=PRB --input=INPUT --output=OUTPUT --preset=PRESET\n\n" +
-        "the available presets are:\n#{available_encoders}\n\n"
+        "the available presets are:\n#{available_transcoders('ffmpeg')}\n"
       end
       def options
         ["input*", "output", "preset"]

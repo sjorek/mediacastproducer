@@ -66,9 +66,10 @@ def transcoder_list
   transcoders.sort
 end
 
-def available_transcoders
+def available_transcoders(engine)
+  return available_encoders if engine == "pcast"
   transcoder_list.collect do |transcoder|
-    "  #{transcoder}\n"
+    "  #{$1}\n" if transcoder =~ /^#{engine}\/(.+)/
   end
 end
 

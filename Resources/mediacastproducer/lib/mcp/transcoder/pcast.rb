@@ -17,7 +17,7 @@ module MediacastProducer
       def usage
         "pcast: transcodes the input file to the output file with the specified preset\n\n" +
         "usage:  pcast --prb=PRB --input=INPUT --output=OUTPUT --preset=PRESET\n\n" +
-        "the available presets are:\n#{available_encoders}\n\n"
+        "the available presets are:\n#{available_transcoders('pcast')}\n"
       end
       def options
         ["input*", "output", "preset"]
