@@ -11,7 +11,7 @@ require 'actions/base'
 require 'mcp/constants'
 require 'mcp/qt/qt'
 
-MP4_FASTSTART = File.join(MCP_BIN,"mp4-faststart")
+MP4_FASTSTART = File.join(MCP_LIBEXEC,"mp4-faststart.py")
 
 module PodcastProducer
   module Actions
