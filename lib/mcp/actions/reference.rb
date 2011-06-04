@@ -9,7 +9,7 @@
 #
 
 require 'actions/base'
-require 'mediacastproducer/qt/qt'
+require 'mcp/qt/qt'
 require 'fileutils'
 
 module PodcastProducer

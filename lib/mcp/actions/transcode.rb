@@ -8,7 +8,7 @@
 #
 
 require 'actions/base'
-require 'mediacastproducer/qt/qt'
+require 'mcp/qt/qt'
 
 module PodcastProducer
   module Actions
@@ -16,7 +16,7 @@ module PodcastProducer
     class Transcode < Base
       def usage
         "transcode: transforms the input file to the output file with the specified encoder\n\n" +
-        "usage: transcode --prb=PRB --input=INPUT --output=OUTPUT --encoder=ENCODER\n\n" +
+        "usage: transcode --prb=PRB --input=INPUT --output=OUTPUT --encoder=ENCODER --engine=[qt|vlc|ffmpeg]\n\n" +
         "the available encoders are:\n#{available_encoders}"
       end
       def options

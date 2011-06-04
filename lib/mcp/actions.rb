@@ -20,7 +20,7 @@ module PodcastProducer
         require name
       end
 #      puts MCP_LIB
-      Dir[File.join(File.expand_path(MCP_LIB), "mediacastproducer/actions/*.rb")].each do |path|
+      Dir[File.join(File.expand_path(MCP_LIB), "mcp/actions/*.rb")].each do |path|
 #        puts path
         name = File.join(File.dirname(path), File.basename(path, ".rb"))
 #        puts name

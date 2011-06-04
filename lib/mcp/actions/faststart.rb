@@ -8,8 +8,8 @@
 #
 
 require 'actions/base'
-require 'mediacastproducer/constants'
-require 'mediacastproducer/qt/qt'
+require 'mcp/constants'
+require 'mcp/qt/qt'
 
 MP4_FASTSTART = File.join(MCP_BIN,"mp4-faststart")
 

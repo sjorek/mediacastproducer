@@ -10,8 +10,8 @@
 require 'fileutils'
 require 'actions/base'
 require 'actions/encode'
-require 'mediacastproducer/constants'
-require 'mediacastproducer/qt/qt'
+require 'mcp/constants'
+require 'mcp/qt/qt'
 
 MCP_VIDEOSIZE_CLEANER = 'mcp_qt_clean_24fps_aac_192kbit_44100' # 'qt_clean.plist')
 

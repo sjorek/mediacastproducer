@@ -12,7 +12,7 @@
 require 'fileutils'
 require 'common/pcast_exception'
 require 'qt/qt'
-require 'mediacastproducer/constants'
+require 'mcp/constants'
 
 MOVIE_DIMENSION_FLAVORS = { :track => OSX::QTTrackDimensionsAttribute, 
                             :clean => OSX::QTMovieApertureModeClean,
@@ -104,9 +104,9 @@ class McastQT < PcastQT
           log_error("Failed to restore chapters") 
         end
       end
-      FileUtils.mv(non_chapterized_output_path, output_path)
     end
 
+    FileUtils.mv(non_chapterized_output_path, output_path) if File.exist?(non_chapterized_output_path)
     return true
   end
 
