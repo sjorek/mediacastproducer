@@ -16,7 +16,7 @@ module PodcastProducer
     class Transcode < Base
       def usage
         "transcode: transforms the input file to the output file with the specified encoder\n\n" +
-        "usage: transcode --prb=PRB --input=INPUT --output=OUTPUT --encoder=ENCODER --engine=[qt|vlc|ffmpeg]\n\n" +
+        "usage: transcode --prb=PRB --input=INPUT --output=OUTPUT --encoder=ENCODER\n\n" +
         "the available encoders are:\n#{available_encoders}"
       end
       def options
