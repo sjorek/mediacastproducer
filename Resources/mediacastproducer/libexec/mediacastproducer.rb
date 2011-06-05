@@ -25,13 +25,14 @@ $LOAD_PATH.unshift(File.expand_path(MCP_LIB)) unless
 #$LOAD_PATH.each do |path|
 #  puts path
 #end
-require 'mcp/command'
-require 'mcp/actions'
 
 ### globals
-$product_name = 'Mediacast Producer'
-$product_version = '0.1'
-$product_command = File.basename($0,'.rb')
+$productinfo ={ :name => 'Mediacast Producer',
+                :version => '0.1',
+                :command => File.basename($0,'.rb')}
+
+require 'mcp/command'
+require 'mcp/actions'
 
 PodcastProducer::Actions.load_actions
 

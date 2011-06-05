@@ -21,6 +21,7 @@ require 'erb'
 require 'yaml'
 require '/usr/lib/podcastproducer/pcast_ruby' 
 require 'pathname'
+require 'common'
 
 ASL.enable_logging_to_stderr(true)
 
@@ -45,7 +46,7 @@ $default_qc_height = 768
 ### helpers
 
 def print_version
-  $stderr.puts "#{$product_name} action task, version #{$product_version}"
+  $stderr.puts "#{$productinfo[:name]} action task, version #{$productinfo[:version]}"
   $stderr.puts "Copyright 2011 Stephan Jorek"
   $stderr.puts "based upon:"
   $stderr.puts "Podcast Producer action task, version 2.0"
@@ -55,8 +56,8 @@ end
 
 def print_usage
   print_version
-  $stderr.puts "usage: #{$product_command} <subcommand> [options] [args]"
-  $stderr.puts "Type '#{$product_command} help <subcommand>' for help on a specific subcommand."
+  $stderr.puts "usage: #{$productinfo[:command]} <subcommand> [options] [args]"
+  $stderr.puts "Type '#{$productinfo[:command]} help <subcommand>' for help on a specific subcommand."
   $stderr.puts
   $stderr.puts "Available subcommands:"
   $subcommands.sort! {|x,y| x.name <=> y.name}
@@ -64,7 +65,7 @@ def print_usage
     $stderr.puts "  " + subcommand.name
   end
   $stderr.puts
-  $stderr.puts "By specifying '--no_fail' #{product_command} will ignore any failures and always exit with an exit code of 0."
+  $stderr.puts "By specifying '--no_fail' #{$productinfo[:command]} will ignore any failures and always exit with an exit code of 0."
   $stderr.puts
 end
 
