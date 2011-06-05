@@ -1,4 +1,5 @@
 #  
+#  Copyright (c) 2011 Stephan Jorek.  All Rights Reserved.
 #  Copyright (c) 2006-2010 Apple Inc.  All Rights Reserved.
 #
 #  IMPORTANT NOTE:  This file is licensed only for use on Apple-labeled computers 
@@ -35,7 +36,7 @@ module MediacastProducer
     def self.load_actions
       Dir[MCP_LIB + '/mcp/transcoder/*.rb'].each do |path|
         name = File.join(File.dirname(path), File.basename(path, ".rb"))
-        log_notice('loading transcoder: ' + name.to_s)
+        # log_notice('loading transcoder: ' + name.to_s)
         require name
       end
     end
