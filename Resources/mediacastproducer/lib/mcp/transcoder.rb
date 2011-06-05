@@ -36,8 +36,22 @@ module MediacastProducer
     def self.load_actions
       Dir[MCP_LIB + '/mcp/transcoder/*.rb'].each do |path|
         name = File.join(File.dirname(path), File.basename(path, ".rb"))
-        # log_notice('loading transcoder: ' + name.to_s)
+#        log_notice('loading internal transcoder: ' + name.to_s)
         require name
+      end
+      if $properties["Global Resource Path"]
+        Dir["#{$properties["Global Resource Path"]}/Resources/Transcoder/*.rb"].each do |path|
+          name = File.join(File.dirname(path), File.basename(path, ".rb"))
+#          log_notice('loading global transcoder: ' + name.to_s)
+          require name
+        end
+      end
+      if $properties["Workflow Resource Path"]
+        Dir["#{$properties["Workflow Resource Path"]}/Resources/Transcoder/*.rb"].each do |path|
+          name = File.join(File.dirname(path), File.basename(path, ".rb"))
+#          log_notice('loading workflow transcoder: ' + name.to_s)
+          require name
+        end
       end
     end
     
