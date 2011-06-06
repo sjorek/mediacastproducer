@@ -10,10 +10,23 @@
 require 'mcp/transcoder/base'
 require 'mcp/qt/qt'
 
+FFMPEG_BIN = "ffmpeg"
+FFMPEG_WHICH = "/usr/bin/which #{FFMPEG_BIN}"
 
 module MediacastProducer
   module Transcoder
     class FFMpeg < Base
+      @@ffmpeg = nil
+      def self.ffmpeg
+        @@ffmpeg
+      end
+      def self.lookup_tools
+        log_notice("searching ffmpeg: #{FFMPEG_WHICH}")
+        ffmpeg = `#{FFMPEG_WHICH}`.chop
+        return false if ffmpeg == "" || !File.executable?(ffmpeg)
+        log_notice("found ffmpeg: " + ffmpeg.to_s)
+        @@ffmpeg = ffmpeg
+      end
       def usage
         "ffmpeg: transcodes the input file to the output file with the specified preset\n\n" +
         "usage:  ffmpeg --prb=PRB --input=INPUT --output=OUTPUT --preset=PRESET\n\n" +

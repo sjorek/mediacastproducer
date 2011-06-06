@@ -15,6 +15,9 @@ require 'mcp/qt/qt'
 module MediacastProducer
   module Transcoder
     class Pcast < Base
+      def self.lookup_tools
+        return true # allways returns true
+      end
       def usage
         "pcast: transcodes the input file to the output file with the specified preset\n\n" +
         "usage:  pcast --prb=PRB --input=INPUT --output=OUTPUT --preset=PRESET\n\n" +

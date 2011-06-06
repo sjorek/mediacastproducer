@@ -10,9 +10,8 @@
 #
 
 require 'fileutils'
-require 'common/pcast_exception'
 require 'qt/qt'
-require 'mcp/constants'
+require 'mcp/mcast_common'
 
 MOVIE_DIMENSION_FLAVORS = { :track => OSX::QTTrackDimensionsAttribute, 
                             :clean => OSX::QTMovieApertureModeClean,

@@ -21,7 +21,7 @@ require 'erb'
 require 'yaml'
 require '/usr/lib/podcastproducer/pcast_ruby' 
 require 'pathname'
-require 'common'
+require 'mcp/mcast_common'
 
 ASL.enable_logging_to_stderr(true)
 

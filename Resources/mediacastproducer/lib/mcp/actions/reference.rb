@@ -8,9 +8,9 @@
 #  another platform without Apple's written consent.
 #
 
+require 'fileutils'
 require 'actions/base'
 require 'mcp/qt/qt'
-require 'fileutils'
 
 module PodcastProducer
   module Actions

@@ -20,7 +20,7 @@ MCP_RES = File.dirname(MCP_DIR)
 MCP = File.join(MCP_BIN, 'mediacastproducer')
 MCE = File.join(MCP_BIN, 'mediacastencoder')
 
-$LOAD_PATH.unshift(File.expand_path(MCP_LIB)) unless 
+$LOAD_PATH.push(File.expand_path(MCP_LIB)) unless 
   $LOAD_PATH.include?(MCP_LIB) || $LOAD_PATH.include?(File.expand_path(MCP_LIB))
 #$LOAD_PATH.each do |path|
 #  puts path

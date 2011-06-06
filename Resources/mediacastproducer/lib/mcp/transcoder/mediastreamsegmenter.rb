@@ -10,26 +10,27 @@
 require 'mcp/transcoder/base'
 require 'mcp/qt/qt'
 
-SEGMENTER_PATH = File.join(MCP_BIN,"segmenter")
+MEDIASTREAMSEGMENTER_BIN = "mediastreamsegmenter"
+MEDIASTREAMSEGMENTER_WHICH = "/usr/bin/which #{MEDIASTREAMSEGMENTER_BIN}"
 
 module MediacastProducer
   module Transcoder
-    class Segmenter < Base
-      @@segmenter = nil
-      def self.segmenter
-        @@segmenter
+    class MediastreamSegmenter < Base
+      @@mediastreamsegmenter = nil
+      def self.mediastreamsegmenter
+        @@mediastreamsegmenter
       end
       def self.lookup_tools
-        log_notice("searching segmenter: " + SEGMENTER_PATH.to_s)
-        segmenter = Pathname.new(SEGMENTER_PATH).realpath
-        return false unless File.executable?(segmenter)
-        log_notice("found segmenter: " + segmenter.to_s)
-        @@segmenter = segmenter
+        log_notice("searching mediastreamsegmenter: #{MEDIASTREAMSEGMENTER_WHICH}")
+        mediastreamsegmenter = `#{MEDIASTREAMSEGMENTER_WHICH}`.chop
+        return false if mediastreamsegmenter == "" || !File.executable?(mediastreamsegmenter)
+        log_notice("found mediastreamsegmenter: " + mediastreamsegmenter.to_s)
+        @@mediastreamsegmenter = mediastreamsegmenter
       end
       def usage
-        "segmenter: transcodes the input file to the output file with the specified preset\n\n" +
-        "usage:  segmenter --prb=PRB --input=INPUT --output=OUTPUT --preset=PRESET\n\n" +
-        "the available presets are:\n#{available_transcoders('segmenter')}\n"
+        "mediastreamsegmenter: transcodes the input file to the output file with the specified preset\n\n" +
+        "usage:  mediastreamsegmenter --prb=PRB --input=INPUT --output=OUTPUT --preset=PRESET\n\n" +
+        "the available presets are:\n#{available_transcoders('mediastreamsegmenter')}\n"
       end
       def options
         ["input*", "output", "preset"]

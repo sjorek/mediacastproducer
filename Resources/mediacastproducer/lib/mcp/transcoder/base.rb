@@ -9,6 +9,7 @@
 #
 
 require 'mcp/transcoder'
+require 'mcp/common/mcast_exception'
 
 module MediacastProducer
   module Transcoder
@@ -17,6 +18,10 @@ module MediacastProducer
       
       def self.inherited(subclass)
         MediacastProducer::Transcoder.add_action_class(subclass)
+      end
+      
+      def self.lookup_tools
+        raise McastToolException.new, self.to_s + ": Missing 'lookup_tools' implementation."
       end
       
       def name

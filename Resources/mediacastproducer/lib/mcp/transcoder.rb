@@ -9,6 +9,7 @@
 #
 
 require 'mcp/actions'
+require 'mcp/common/mcast_exception'
 
 module MediacastProducer
   module Transcoder
@@ -19,8 +20,20 @@ module MediacastProducer
       @@action_classes << action_class
     end
     
+    def self.lookup_action_tools
+      action_classes = @@action_classes
+      @@action_classes = []
+      action_classes.each do |action_class|
+        begin
+          @@action_classes << action_class if action_class.lookup_tools
+        rescue McastToolException => e
+          log_error(e.message) #,e.return_code.to_i)
+        end
+      end
+    end
+    
     def self.action_instances
-      @@action_classes.map { |action_class| action_class.new }
+      @@action_classes.map {|action_class| action_class.new }
     end
     
     def self.options_list
@@ -36,25 +49,22 @@ module MediacastProducer
     def self.load_actions
       Dir[MCP_LIB + '/mcp/transcoder/*.rb'].each do |path|
         name = File.join(File.dirname(path), File.basename(path, ".rb"))
-#        log_notice('loading internal transcoder: ' + name.to_s)
         require name
       end
       if $properties["Global Resource Path"]
         Dir["#{$properties["Global Resource Path"]}/Resources/Transcoder/*.rb"].each do |path|
           name = File.join(File.dirname(path), File.basename(path, ".rb"))
-#          log_notice('loading global transcoder: ' + name.to_s)
           require name
         end
       end
       if $properties["Workflow Resource Path"]
         Dir["#{$properties["Workflow Resource Path"]}/Resources/Transcoder/*.rb"].each do |path|
           name = File.join(File.dirname(path), File.basename(path, ".rb"))
-#          log_notice('loading workflow transcoder: ' + name.to_s)
           require name
         end
       end
+      lookup_action_tools
     end
-    
   end
 end
 
