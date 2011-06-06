@@ -13,15 +13,29 @@ require 'mcp/common/mcast_exception'
 
 module MediacastProducer
   module Transcoder
-      
+    
+    class Tool
+      @binary = nil
+      def self.binary
+         return @binary unless @binary.nil?
+         @binary = lookup
+      end
+      def self.lookup
+        raise McastToolException.new, self.to_s + ": Missing 'lookup' implementation."
+      end
+      def self.load
+        return self.binary.nil? ? nil : self
+      end
+    end
+    
     class Base
       
       def self.inherited(subclass)
         MediacastProducer::Transcoder.add_action_class(subclass)
       end
       
-      def self.lookup_tools
-        raise McastToolException.new, self.to_s + ": Missing 'lookup_tools' implementation."
+      def self.load_tools
+        raise McastToolException.new, self.to_s + ": Missing 'load_tools' implementation."
       end
       
       def name

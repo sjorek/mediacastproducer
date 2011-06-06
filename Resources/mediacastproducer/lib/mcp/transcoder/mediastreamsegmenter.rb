@@ -15,17 +15,21 @@ MEDIASTREAMSEGMENTER_WHICH = "/usr/bin/which #{MEDIASTREAMSEGMENTER_BIN}"
 
 module MediacastProducer
   module Transcoder
+    
+    class MediastreamSegmenterTool < Tool
+      def self.lookup
+        log_notice("searching mediastreamsegmenter: #{MEDIASTREAMSEGMENTER_WHICH}")
+        path = `#{MEDIASTREAMSEGMENTER_WHICH}`.chop
+        return nil if path == "" || !File.executable?(path)
+        log_notice("found mediastreamsegmenter: " + path.to_s)
+        path
+      end
+    end
+    
     class MediastreamSegmenter < Base
       @@mediastreamsegmenter = nil
-      def self.mediastreamsegmenter
-        @@mediastreamsegmenter
-      end
-      def self.lookup_tools
-        log_notice("searching mediastreamsegmenter: #{MEDIASTREAMSEGMENTER_WHICH}")
-        mediastreamsegmenter = `#{MEDIASTREAMSEGMENTER_WHICH}`.chop
-        return false if mediastreamsegmenter == "" || !File.executable?(mediastreamsegmenter)
-        log_notice("found mediastreamsegmenter: " + mediastreamsegmenter.to_s)
-        @@mediastreamsegmenter = mediastreamsegmenter
+      def self.load_tools
+        @@mediastreamsegmenter = MediastreamSegmenterTool.load
       end
       def usage
         "mediastreamsegmenter: transcodes the input file to the output file with the specified preset\n\n" +
@@ -38,7 +42,7 @@ module MediacastProducer
       end
       def run(arguments)
         unless $subcommand_options[:binary].nil?
-          puts MediastreamSegmenter.mediastreamsegmenter
+          puts @@mediastreamsegmenter.binary
           return
         end
         

@@ -15,17 +15,21 @@ FFMPEG_WHICH = "/usr/bin/which #{FFMPEG_BIN}"
 
 module MediacastProducer
   module Transcoder
+
+    class FFMpegTool < Tool
+      def self.lookup
+        log_notice("searching ffmpeg: #{FFMPEG_WHICH}")
+        path = `#{FFMPEG_WHICH}`.chop
+        return nil if path == "" || !File.executable?(path)
+        log_notice("found ffmpeg: " + path.to_s)
+        path
+      end
+    end
+
     class FFMpeg < Base
       @@ffmpeg = nil
-      def self.ffmpeg
-        @@ffmpeg
-      end
-      def self.lookup_tools
-        log_notice("searching ffmpeg: #{FFMPEG_WHICH}")
-        ffmpeg = `#{FFMPEG_WHICH}`.chop
-        return false if ffmpeg == "" || !File.executable?(ffmpeg)
-        log_notice("found ffmpeg: " + ffmpeg.to_s)
-        @@ffmpeg = ffmpeg
+      def self.load_tools
+        @@ffmpeg = FFMpegTool.load
       end
       def usage
         "ffmpeg: transcodes the input file to the output file with the specified preset\n\n" +
@@ -38,7 +42,7 @@ module MediacastProducer
       end
       def run(arguments)
         unless $subcommand_options[:binary].nil?
-          puts FFMpeg.ffmpeg
+          puts @@ffmpeg.binary
           return
         end
         

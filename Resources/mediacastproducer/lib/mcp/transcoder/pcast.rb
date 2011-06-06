@@ -15,7 +15,7 @@ require 'mcp/qt/qt'
 module MediacastProducer
   module Transcoder
     class Pcast < Base
-      def self.lookup_tools
+      def self.load_tools
         return true # allways returns true
       end
       def usage

@@ -14,17 +14,21 @@ SEGMENTER_PATH = File.join(MCP_BIN,"segmenter")
 
 module MediacastProducer
   module Transcoder
+    
+    class SegmenterTool < Tool
+      def self.lookup
+        log_notice("searching segmenter: " + SEGMENTER_PATH.to_s)
+        path = Pathname.new(SEGMENTER_PATH).realpath
+        return nil unless File.executable?(path)
+        log_notice("found segmenter: " + path.to_s)
+        path
+      end
+    end
+    
     class Segmenter < Base
       @@segmenter = nil
-      def self.segmenter
-        @@segmenter
-      end
-      def self.lookup_tools
-        log_notice("searching segmenter: " + SEGMENTER_PATH.to_s)
-        segmenter = Pathname.new(SEGMENTER_PATH).realpath
-        return false unless File.executable?(segmenter)
-        log_notice("found segmenter: " + segmenter.to_s)
-        @@segmenter = segmenter
+      def self.load_tools
+        @@segmenter = SegmenterTool.load
       end
       def usage
         "segmenter: transcodes the input file to the output file with the specified preset\n\n" +
@@ -37,7 +41,7 @@ module MediacastProducer
       end
       def run(arguments)
         unless $subcommand_options[:binary].nil?
-          puts Segmenter.segmenter
+          puts @@segmenter.binary
           return
         end
         

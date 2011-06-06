@@ -14,32 +14,36 @@ VLC_SEARCH_PATH = "/Applications"
 VLC_BIN_NAME = "VLC"
 VLC_BIN_PATH = "Contents/MacOS/#{VLC_BIN_NAME}"
 VLC_LOCATE = "locate \"#{VLC_BIN_PATH}\" | grep -E \"^#{VLC_SEARCH_PATH}.*#{VLC_BIN_PATH}$\""
-VLC_MDFIND = "mdfind -onlyin \"#{VLC_SEARCH_PATH}\" VLC.app"
+VLC_MDFIND = "mdfind -onlyin \"#{VLC_SEARCH_PATH}\" \"#{VLC_BIN_NAME}.app\""
 VLC_FIND = "find \"#{VLC_SEARCH_PATH}\" -type f -name \"#{VLC_BIN_NAME}\" | grep -E \"#{VLC_BIN_PATH}$\""
 
 module MediacastProducer
   module Transcoder
-    class VLC < Base
-      @@vlc = nil
-      def self.vlc
-        @@vlc
-      end
-      def self.lookup_tools
+    
+    class VLCTool < Tool
+      def self.lookup
         log_notice("searching VLC.app: #{VLC_LOCATE}")
-        vlc = `#{VLC_LOCATE} | head -n 1`.chop
-        if vlc == ""
+        path = `#{VLC_LOCATE} | head -n 1`.chop
+        if path == ""
           log_notice("searching VLC.app: #{VLC_MDFIND}")
-          vlc = `#{VLC_MDFIND} | head -n 1`.chop
-          unless vlc == "" || !File.directory?(vlc)
-            vlc = File.join(vlc, VLC_BIN_PATH) 
+          path = `#{VLC_MDFIND} | head -n 1`.chop
+          unless path == "" || !File.directory?(path)
+            path = File.join(path, VLC_BIN_PATH) 
           else
             log_notice("searching VLC.app: #{VLC_FIND}")
-            vlc = `#{VLC_FIND} | head -n 1`.chop
+            path = `#{VLC_FIND} | head -n 1`.chop
           end
         end
-        return false if vlc == "" || !File.executable?(vlc)
-        log_notice("found VLC.app: " + vlc.to_s)
-        @@vlc = vlc
+        return nil if path == "" || !File.executable?(path)
+        log_notice("found VLC.app: " + path.to_s)
+        path
+      end
+    end
+    
+    class VLC < Base
+      @@vlc = nil
+      def self.load_tools
+        @@vlc = VLCTool.load
       end
       def usage
         "vlc: transcodes the input file to the output file with the specified preset\n\n" +
@@ -52,7 +56,7 @@ module MediacastProducer
       end
       def run(arguments)
         unless $subcommand_options[:binary].nil?
-          puts VLC.vlc
+          puts @@vlc.binary
           return
         end
         

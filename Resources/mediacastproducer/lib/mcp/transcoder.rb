@@ -20,12 +20,12 @@ module MediacastProducer
       @@action_classes << action_class
     end
     
-    def self.lookup_action_tools
+    def self.load_action_tools
       action_classes = @@action_classes
       @@action_classes = []
       action_classes.each do |action_class|
         begin
-          @@action_classes << action_class if action_class.lookup_tools
+          @@action_classes << action_class if action_class.load_tools
         rescue McastToolException => e
           log_error(e.message) #,e.return_code.to_i)
         end
@@ -63,7 +63,7 @@ module MediacastProducer
           require name
         end
       end
-      lookup_action_tools
+      load_action_tools
     end
   end
 end

@@ -15,17 +15,21 @@ FFMPEG2THEORA_WHICH = "/usr/bin/which #{FFMPEG2THEORA_BIN}"
 
 module MediacastProducer
   module Transcoder
+    
+    class FFMpeg2TheoraTool < Tool
+      def self.lookup
+        log_notice("searching ffmpeg2theora: #{FFMPEG2THEORA_WHICH}")
+        path = `#{FFMPEG2THEORA_WHICH}`.chop
+        return nil if path == "" || !File.executable?(path)
+        log_notice("found ffmpeg2theora: " + path.to_s)
+        path
+      end
+    end
+    
     class FFMpeg2Theora < Base
       @@ffmpeg2theora = nil
-      def self.ffmpeg2theora
-        @@ffmpeg2theora
-      end
-      def self.lookup_tools
-        log_notice("searching ffmpeg2theora: #{FFMPEG2THEORA_WHICH}")
-        ffmpeg2theora = `#{FFMPEG2THEORA_WHICH}`.chop
-        return false if ffmpeg2theora == "" || !File.executable?(ffmpeg2theora)
-        log_notice("found ffmpeg2theora: " + ffmpeg2theora.to_s)
-        @@ffmpeg2theora = ffmpeg2theora
+      def self.load_tools
+        @@ffmpeg2theora = FFMpeg2TheoraTool.load
       end
       def usage
         "ffmpeg2theora: transcodes the input file to the output file with the specified preset\n\n" +
@@ -38,7 +42,7 @@ module MediacastProducer
       end
       def run(arguments)
         unless $subcommand_options[:binary].nil?
-          puts FFMpeg2Theora.ffmpeg2theora
+          puts @@ffmpeg2theora.binary
           return
         end
         require_plural_option(:inputs, 1, 1)
