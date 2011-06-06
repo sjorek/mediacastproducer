@@ -28,13 +28,19 @@ module MediacastProducer
       end
       def usage
         "segmenter: transcodes the input file to the output file with the specified preset\n\n" +
-        "usage:  segmenter --prb=PRB --input=INPUT --output=OUTPUT --preset=PRESET\n\n" +
+        "usage:  segmenter --prb=PRB --input=INPUT --output=OUTPUT --preset=PRESET\n" +
+        "                 [--binary]  print path to executable binary and exit\n\n" +
         "the available presets are:\n#{available_transcoders('segmenter')}\n"
       end
       def options
-        ["input*", "output", "preset"]
+        ["input*", "output", "preset", "binary"]
       end
       def run(arguments)
+        unless $subcommand_options[:binary].nil?
+          puts Segmenter.segmenter
+          return
+        end
+        
         require_plural_option(:inputs, 1, 1)
         require_option(:output)
         require_option(:preset)
