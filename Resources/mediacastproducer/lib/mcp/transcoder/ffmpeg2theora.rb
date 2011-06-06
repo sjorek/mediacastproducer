@@ -12,17 +12,24 @@ require 'mcp/qt/qt'
 
 FFMPEG2THEORA_BIN = "ffmpeg2theora"
 FFMPEG2THEORA_WHICH = "/usr/bin/which #{FFMPEG2THEORA_BIN}"
+FFMPEG2THEORA_MIN_VERSION = "0.27"
+FFMPEG2THEORA_MAX_VERSION = nil
 
 module MediacastProducer
   module Transcoder
     
     class FFMpeg2TheoraTool < Tool
-      def self.lookup
-        log_notice("searching ffmpeg2theora: #{FFMPEG2THEORA_WHICH}")
+      @require_min_version = FFMPEG2THEORA_MIN_VERSION
+      @require_max_version = FFMPEG2THEORA_MAX_VERSION
+      def self.lookup_binary
+#        log_notice(self.to_s + ": searching ffmpeg2theora: #{FFMPEG2THEORA_WHICH}")
         path = `#{FFMPEG2THEORA_WHICH}`.chop
         return nil if path == "" || !File.executable?(path)
-        log_notice("found ffmpeg2theora: " + path.to_s)
+        log_notice(self.to_s + ": found ffmpeg2theora: " + path.to_s)
         path
+      end
+      def self.lookup_version
+        `#{self.binary} | head -n 1 | cut -f2 -d' '`.chop
       end
     end
     
@@ -34,17 +41,25 @@ module MediacastProducer
       def usage
         "ffmpeg2theora: transcodes the input file to the output file with the specified preset\n\n" +
         "usage:  ffmpeg2theora --prb=PRB --input=INPUT --output=OUTPUT --preset=PRESET\n" +
-        "                     [--binary]  print path to executable binary and exit\n\n" +
+        "                     [--binary]   print path to executable binary and exit\n" +
+        "                     [--version]  print executable binary version and exit\n\n" +
         "the available presets are:\n#{available_transcoders('ffmpeg2theora')}\n"
       end
       def options
         ["input*", "output", "preset", "binary"]
       end
       def run(arguments)
+        
         unless $subcommand_options[:binary].nil?
           puts @@ffmpeg2theora.binary
           return
         end
+        
+        unless $subcommand_options[:version].nil?
+          puts @@ffmpeg2theora.version
+          return
+        end
+        
         require_plural_option(:inputs, 1, 1)
         require_option(:output)
         require_option(:preset)

@@ -12,17 +12,24 @@ require 'mcp/qt/qt'
 
 FFMPEG_BIN = "ffmpeg"
 FFMPEG_WHICH = "/usr/bin/which #{FFMPEG_BIN}"
+FFMPEG_MIN_VERSION = "0.6.3"
+FFMPEG_MAX_VERSION = nil
 
 module MediacastProducer
   module Transcoder
 
     class FFMpegTool < Tool
-      def self.lookup
-        log_notice("searching ffmpeg: #{FFMPEG_WHICH}")
+      @require_min_version = FFMPEG_MIN_VERSION
+      @require_max_version = FFMPEG_MAX_VERSION
+      def self.lookup_binary
+#        log_notice(self.to_s + ": searching ffmpeg: #{FFMPEG_WHICH}")
         path = `#{FFMPEG_WHICH}`.chop
         return nil if path == "" || !File.executable?(path)
-        log_notice("found ffmpeg: " + path.to_s)
+        log_notice(self.to_s + ": found ffmpeg: " + path.to_s)
         path
+      end
+      def self.lookup_version
+        `#{self.binary} -version 2>/dev/null | head -n 1 | cut -f2 -d' '`.chop
       end
     end
 
@@ -34,15 +41,22 @@ module MediacastProducer
       def usage
         "ffmpeg: transcodes the input file to the output file with the specified preset\n\n" +
         "usage:  ffmpeg --prb=PRB --input=INPUT --output=OUTPUT --preset=PRESET\n" +
-        "              [--binary]  print path to executable binary and exit\n\n" +
+        "              [--binary]   print path to executable binary and exit\n" +
+        "              [--version]  print executable binary version and exit\n\n" +
         "the available presets are:\n#{available_transcoders('ffmpeg')}\n"
       end
       def options
         ["input*", "output", "preset", "binary"]
       end
       def run(arguments)
+        
         unless $subcommand_options[:binary].nil?
           puts @@ffmpeg.binary
+          return
+        end
+        
+        unless $subcommand_options[:version].nil?
+          puts @@ffmpeg.version
           return
         end
         

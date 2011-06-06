@@ -16,27 +16,34 @@ VLC_BIN_PATH = "Contents/MacOS/#{VLC_BIN_NAME}"
 VLC_LOCATE = "locate \"#{VLC_BIN_PATH}\" | grep -E \"^#{VLC_SEARCH_PATH}.*#{VLC_BIN_PATH}$\""
 VLC_MDFIND = "mdfind -onlyin \"#{VLC_SEARCH_PATH}\" \"#{VLC_BIN_NAME}.app\""
 VLC_FIND = "find \"#{VLC_SEARCH_PATH}\" -type f -name \"#{VLC_BIN_NAME}\" | grep -E \"#{VLC_BIN_PATH}$\""
+VLC_MIN_VERSION = "1.1.9"
+VLC_MAX_VERSION = nil
 
 module MediacastProducer
   module Transcoder
     
     class VLCTool < Tool
-      def self.lookup
-        log_notice("searching VLC.app: #{VLC_LOCATE}")
+      @require_min_version = VLC_MIN_VERSION
+      @require_max_version = VLC_MAX_VERSION
+      def self.lookup_binary
+#        log_notice(self.to_s + ": searching VLC.app: #{VLC_LOCATE}")
         path = `#{VLC_LOCATE} | head -n 1`.chop
         if path == ""
-          log_notice("searching VLC.app: #{VLC_MDFIND}")
+#          log_notice(self.to_s + ": searching VLC.app: #{VLC_MDFIND}")
           path = `#{VLC_MDFIND} | head -n 1`.chop
           unless path == "" || !File.directory?(path)
             path = File.join(path, VLC_BIN_PATH) 
           else
-            log_notice("searching VLC.app: #{VLC_FIND}")
+#            log_notice(self.to_s + ": searching VLC.app: #{VLC_FIND}")
             path = `#{VLC_FIND} | head -n 1`.chop
           end
         end
         return nil if path == "" || !File.executable?(path)
-        log_notice("found VLC.app: " + path.to_s)
+        log_notice(self.to_s + ": found VLC.app: " + path.to_s)
         path
+      end
+      def self.lookup_version
+        `#{self.binary} --intf dummy --version | head -n 1 | cut -f2 -d' '`.chop
       end
     end
     
@@ -48,15 +55,22 @@ module MediacastProducer
       def usage
         "vlc: transcodes the input file to the output file with the specified preset\n\n" +
         "usage:  vlc --prb=PRB --input=INPUT --output=OUTPUT --preset=PRESET\n" +
-        "           [--binary]  print path to executable binary and exit\n\n" +
+        "           [--binary]   print path to executable binary and exit\n" +
+        "           [--version]  print executable binary version and exit\n\n" +
         "the available presets are:\n#{available_transcoders('vlc')}\n"
       end
       def options
-        ["input*", "output", "preset", "binary"]
+        ["input*", "output", "preset", "binary", "version"]
       end
       def run(arguments)
+        
         unless $subcommand_options[:binary].nil?
           puts @@vlc.binary
+          return
+        end
+        
+        unless $subcommand_options[:version].nil?
+          puts @@vlc.version
           return
         end
         

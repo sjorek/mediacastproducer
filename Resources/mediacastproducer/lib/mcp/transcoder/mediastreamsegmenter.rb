@@ -12,17 +12,26 @@ require 'mcp/qt/qt'
 
 MEDIASTREAMSEGMENTER_BIN = "mediastreamsegmenter"
 MEDIASTREAMSEGMENTER_WHICH = "/usr/bin/which #{MEDIASTREAMSEGMENTER_BIN}"
+MEDIASTREAMSEGMENTER_MIN_VERSION = "10.2.10"
+MEDIASTREAMSEGMENTER_MAX_VERSION = nil
 
 module MediacastProducer
   module Transcoder
     
     class MediastreamSegmenterTool < Tool
-      def self.lookup
-        log_notice("searching mediastreamsegmenter: #{MEDIASTREAMSEGMENTER_WHICH}")
+      @require_min_version = MEDIASTREAMSEGMENTER_MIN_VERSION
+      @require_max_version = MEDIASTREAMSEGMENTER_MAX_VERSION
+      def self.lookup_binary
+#        log_notice(self.to_s + ": searching mediastreamsegmenter: #{MEDIASTREAMSEGMENTER_WHICH}")
         path = `#{MEDIASTREAMSEGMENTER_WHICH}`.chop
         return nil if path == "" || !File.executable?(path)
-        log_notice("found mediastreamsegmenter: " + path.to_s)
+        log_notice(self.to_s + ": found mediastreamsegmenter: " + path.to_s)
         path
+      end
+      def self.lookup_version
+        v = `#{self.binary} -v 2>&1 | cut -f2- -d' '`.chop
+        v =~ %r{\(([0-9]{2})([0-9]{2})([0-9]{2})\)}
+        "#{$1.to_i}.#{$2.to_i}.#{$3.to_i}"
       end
     end
     
@@ -34,15 +43,22 @@ module MediacastProducer
       def usage
         "mediastreamsegmenter: transcodes the input file to the output file with the specified preset\n\n" +
         "usage:  mediastreamsegmenter --prb=PRB --input=INPUT --output=OUTPUT --preset=PRESET\n" +
-        "                            [--binary]  print path to executable binary and exit\n\n" +
+        "                            [--binary]   print path to executable binary and exit\n" +
+        "                            [--version]  print executable binary version and exit\n\n" +
         "the available presets are:\n#{available_transcoders('mediastreamsegmenter')}\n"
       end
       def options
         ["input*", "output", "preset", "binary"]
       end
       def run(arguments)
+        
         unless $subcommand_options[:binary].nil?
           puts @@mediastreamsegmenter.binary
+          return
+        end
+        
+        unless $subcommand_options[:version].nil?
+          puts @@mediastreamsegmenter.version
           return
         end
         
