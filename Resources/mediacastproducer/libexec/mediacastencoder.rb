@@ -32,7 +32,7 @@ $productinfo ={ :name => 'Mediacast Encoder',
                 :version => '0.1',
                 :command => File.basename($0,'.rb')}
 
-require 'mcp/command'
+require 'mcp/main'
 require 'mcp/transcoder'
 
 MediacastProducer::Transcoder.load_actions
@@ -42,7 +42,7 @@ $subcommands = MediacastProducer::Transcoder.action_instances
 ### run
 
 begin
-  Command.run(MediacastProducer::Transcoder.options_list)
+  Main.run(MediacastProducer::Transcoder.options_list)
 rescue
   $stderr.puts $!.class.name + ": " + $!.message
   $!.backtrace.each { |frame| $stderr.puts "\tfrom " + frame }

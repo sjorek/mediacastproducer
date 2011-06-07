@@ -157,9 +157,9 @@ def read_properties
   properties
 end
 
-### Command
+### Main
 
-class Command
+class Main
   def self.run(options_list)
 
     $properties = read_properties

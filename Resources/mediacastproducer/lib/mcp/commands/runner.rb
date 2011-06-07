@@ -1,11 +1,6 @@
 #
 #  Copyright (c) 2011 Stephan Jorek.  All Rights Reserved.
-#  Copyright (c) 2006-2010 Apple Inc.  All Rights Reserved.
-#
-#  IMPORTANT NOTE:  This file is licensed only for use on Apple-labeled computers
-#  and is subject to the terms and conditions of the Apple Software License Agreement
-#  accompanying the package this file is a part of.  You may not port this file to
-#  another platform without Apple's written consent.
+#  Copyright (c) 2004 Steven Kah Hien Wong.  All Rights Reserved.
 #
 
 module MediacastProducer
@@ -64,22 +59,26 @@ module MediacastProducer
           exec(*@command)
         end
 
-        @waitingThread = Thread.new do
-          return_code = -1
-
-          begin
-            return_code = Process.waitpid2(@childPid)
-          rescue SystemError
-            raise "Process finished running already!"
+        if @childPid
+          @waitingThread = Thread.new do
+            return_code = -1
+  
+            begin
+              return_code = Process.waitpid2(@childPid)
+            rescue SystemError
+              raise "Process finished running already!"
+            end
+            return_code = return_code[1].exitstatus
+  
+            return_code
           end
-          return_code = return_code[1].exitstatus
-
-          return_code
         end
 
         child_to_parent_write.close
         child_to_parent_error_write.close
         parent_to_child_read.close
+
+        return nil unless @childPid
 
         @readPipe      = child_to_parent_read
         @readErrorPipe = child_to_parent_error_read
@@ -88,6 +87,8 @@ module MediacastProducer
         # Tell child we are ready
         @writePipe.write("R")
         @writePipe.flush
+
+        @childPid
       end
 
       #--------------------------------------------------------------------------
@@ -108,7 +109,20 @@ module MediacastProducer
       end
 
       def write(string)
+        if not @childPid or not @waitingThread
+          raise "Writing to a process that has not started"
+        end
+
         @writePipe.write(string)
+      end
+
+      def self.fork_exec_and_wait(*command)
+        cmd = self.new(*command)
+        cmd.wait unless cmd.run
+      end
+
+      def self.fork_exec_and_wait_for_success(*command)
+        self.fork_exec_and_wait(*command) == 0
       end
     end
   end

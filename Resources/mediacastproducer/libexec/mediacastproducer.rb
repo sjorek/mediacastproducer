@@ -31,7 +31,7 @@ $productinfo ={ :name => 'Mediacast Producer',
                 :version => '0.1',
                 :command => File.basename($0,'.rb')}
 
-require 'mcp/command'
+require 'mcp/main'
 require 'mcp/actions'
 
 PodcastProducer::Actions.load_actions
@@ -41,7 +41,7 @@ $subcommands = PodcastProducer::Actions.action_instances
 ### run
 
 begin
-  Command.run(PodcastProducer::Actions.options_list)
+  Main.run(PodcastProducer::Actions.options_list)
 rescue
   $stderr.puts $!.class.name + ": " + $!.message
   $!.backtrace.each { |frame| $stderr.puts "\tfrom " + frame }
