@@ -7,7 +7,7 @@
 #  another platform without Apple's written consent.
 #
 
-require 'mcp/commands/command'
+require 'mcp/commands/base'
 
 MEDIASTREAMSEGMENTER_BIN = "mediastreamsegmenter"
 MEDIASTREAMSEGMENTER_WHICH = "/usr/bin/which #{MEDIASTREAMSEGMENTER_BIN}"

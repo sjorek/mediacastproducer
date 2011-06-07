@@ -7,7 +7,7 @@
 #  another platform without Apple's written consent.
 #
 
-require 'mcp/commands/command'
+require 'mcp/commands/base'
 
 FFMPEG2THEORA_BIN = "ffmpeg2theora"
 FFMPEG2THEORA_WHICH = "/usr/bin/which #{FFMPEG2THEORA_BIN}"
