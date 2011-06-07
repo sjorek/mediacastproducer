@@ -8,35 +8,15 @@
 #
 
 require 'mcp/transcoder/base'
-require 'mcp/qt/qt'
-
-FFMPEG2THEORA_BIN = "ffmpeg2theora"
-FFMPEG2THEORA_WHICH = "/usr/bin/which #{FFMPEG2THEORA_BIN}"
-FFMPEG2THEORA_MIN_VERSION = "0.27"
-FFMPEG2THEORA_MAX_VERSION = nil
+require 'mcp/tools/ffmpeg2theora'
 
 module MediacastProducer
   module Transcoder
-    
-    class FFMpeg2TheoraTool < Tool
-      @require_min_version = FFMPEG2THEORA_MIN_VERSION
-      @require_max_version = FFMPEG2THEORA_MAX_VERSION
-      def self.lookup_binary
-#        log_notice(self.to_s + ": searching ffmpeg2theora: #{FFMPEG2THEORA_WHICH}")
-        path = `#{FFMPEG2THEORA_WHICH}`.chop
-        return nil if path == "" || !File.executable?(path)
-        log_notice(self.to_s + ": found ffmpeg2theora: " + path.to_s)
-        path
-      end
-      def self.lookup_version
-        `#{self.binary} | head -n 1 | cut -f2 -d' '`.chop
-      end
-    end
-    
+
     class FFMpeg2Theora < Base
       @@ffmpeg2theora = nil
       def self.load_tools
-        @@ffmpeg2theora = FFMpeg2TheoraTool.load
+        @@ffmpeg2theora = MediacastProducer::Tools::FFMpeg2Theora.load
       end
       def usage
         "ffmpeg2theora: transcodes the input file to the output file with the specified preset\n\n" +
@@ -81,5 +61,6 @@ module MediacastProducer
 #        log_crit_and_exit("Failed to transcode '#{input}' with '#{preset}'", -1) unless McastQT.encode(input, output, settings)
       end
     end
+
   end
 end

@@ -8,41 +8,22 @@
 #
 
 require 'mcp/transcoder/base'
-require 'mcp/qt/qt'
-
-SEGMENTER_PATH = File.join(MCP_BIN,"segmenter")
-SEGMENTER_MIN_VERSION = "1.0.1"
-SEGMENTER_MAX_VERSION = nil
+require 'mcp/tools/streamsegmenter'
 
 module MediacastProducer
   module Transcoder
-    
-    class SegmenterTool < Tool
-      @require_min_version = SEGMENTER_MIN_VERSION
-      @require_max_version = SEGMENTER_MAX_VERSION
-      def self.lookup_binary
-#        log_notice(self.to_s + ": searching segmenter: " + SEGMENTER_PATH.to_s)
-        path = Pathname.new(SEGMENTER_PATH).realpath
-        return nil unless File.executable?(path)
-        log_notice(self.to_s + ": found segmenter: " + path.to_s)
-        path
-      end
-      def self.lookup_version
-        `#{self.binary} -v | head -n 1 | cut -f2 -d' '`.chop
-      end
-    end
-    
-    class Segmenter < Base
+
+    class StreamSegmenter < Base
       @@segmenter = nil
       def self.load_tools
-        @@segmenter = SegmenterTool.load
+        @@segmenter = MediacastProducer::Tools::StreamSegmenter.load
       end
       def usage
-        "segmenter: transcodes the input file to the output file with the specified preset\n\n" +
-        "usage:  segmenter --prb=PRB --input=INPUT --output=OUTPUT --preset=PRESET\n" +
-        "                 [--binary]   print path to executable binary and exit\n" +
-        "                 [--version]  print executable binary version and exit\n\n" +
-        "the available presets are:\n#{available_transcoders('segmenter')}\n"
+        "streamsegmenter: transcodes the input file to the output file with the specified preset\n\n" +
+        "usage:  streamsegmenter --prb=PRB --input=INPUT --output=OUTPUT --preset=PRESET\n" +
+        "                       [--binary]   print path to executable binary and exit\n" +
+        "                       [--version]  print executable binary version and exit\n\n" +
+        "the available presets are:\n#{available_transcoders('streamsegmenter')}\n"
       end
       def options
         ["input*", "output", "preset", "binary"]
@@ -80,5 +61,6 @@ module MediacastProducer
 #        log_crit_and_exit("Failed to transcode '#{input}' with '#{preset}'", -1) unless McastQT.encode(input, output, settings)
       end
     end
+
   end
 end

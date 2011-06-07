@@ -14,13 +14,14 @@ require 'mcp/qt/qt'
 
 module MediacastProducer
   module Transcoder
-    class Pcast < Base
+
+    class Quicktime < Base
       def self.load_tools
         return true # allways returns true
       end
       def usage
-        "pcast: transcodes the input file to the output file with the specified preset\n\n" +
-        "usage:  pcast --prb=PRB --input=INPUT --output=OUTPUT --preset=PRESET\n\n" +
+        "quicktime: transcodes the input file to the output file with the specified preset\n\n" +
+        "usage:  quicktime --prb=PRB --input=INPUT --output=OUTPUT --preset=PRESET\n\n" +
         "the available presets are:\n#{available_transcoders('pcast')}\n"
       end
       def options
@@ -48,5 +49,6 @@ module MediacastProducer
         log_crit_and_exit("Failed to transcode '#{input}' with '#{preset}'", -1) unless McastQT.encode(input, output, settings)
       end
     end
+
   end
 end

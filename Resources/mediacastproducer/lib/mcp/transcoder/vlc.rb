@@ -8,49 +8,15 @@
 #
 
 require 'mcp/transcoder/base'
-require 'mcp/qt/qt'
-
-VLC_SEARCH_PATH = "/Applications"
-VLC_BIN_NAME = "VLC"
-VLC_BIN_PATH = "Contents/MacOS/#{VLC_BIN_NAME}"
-VLC_LOCATE = "locate \"#{VLC_BIN_PATH}\" | grep -E \"^#{VLC_SEARCH_PATH}.*#{VLC_BIN_PATH}$\""
-VLC_MDFIND = "mdfind -onlyin \"#{VLC_SEARCH_PATH}\" \"#{VLC_BIN_NAME}.app\""
-VLC_FIND = "find \"#{VLC_SEARCH_PATH}\" -type f -name \"#{VLC_BIN_NAME}\" | grep -E \"#{VLC_BIN_PATH}$\""
-VLC_MIN_VERSION = "1.1.9"
-VLC_MAX_VERSION = nil
+require 'mcp/tools/vlc'
 
 module MediacastProducer
   module Transcoder
-    
-    class VLCTool < Tool
-      @require_min_version = VLC_MIN_VERSION
-      @require_max_version = VLC_MAX_VERSION
-      def self.lookup_binary
-#        log_notice(self.to_s + ": searching VLC.app: #{VLC_LOCATE}")
-        path = `#{VLC_LOCATE} | head -n 1`.chop
-        if path == ""
-#          log_notice(self.to_s + ": searching VLC.app: #{VLC_MDFIND}")
-          path = `#{VLC_MDFIND} | head -n 1`.chop
-          unless path == "" || !File.directory?(path)
-            path = File.join(path, VLC_BIN_PATH) 
-          else
-#            log_notice(self.to_s + ": searching VLC.app: #{VLC_FIND}")
-            path = `#{VLC_FIND} | head -n 1`.chop
-          end
-        end
-        return nil if path == "" || !File.executable?(path)
-        log_notice(self.to_s + ": found VLC.app: " + path.to_s)
-        path
-      end
-      def self.lookup_version
-        `#{self.binary} --intf dummy --version | head -n 1 | cut -f2 -d' '`.chop
-      end
-    end
-    
+
     class VLC < Base
       @@vlc = nil
       def self.load_tools
-        @@vlc = VLCTool.load
+        @@vlc = MediacastProducer::Tools::VLC.load
       end
       def usage
         "vlc: transcodes the input file to the output file with the specified preset\n\n" +
@@ -95,5 +61,6 @@ module MediacastProducer
 #        log_crit_and_exit("Failed to transcode '#{input}' with '#{preset}'", -1) unless McastQT.encode(input, output, settings)
       end
     end
+
   end
 end

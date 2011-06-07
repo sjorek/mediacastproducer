@@ -14,53 +14,7 @@ require 'rubygems'
 
 module MediacastProducer
   module Transcoder
-    
-    class Tool
-      @binary = nil
-      @version = nil
-      @require_min_version = nil
-      @require_max_version = nil
-      def self.binary
-         return @binary unless @binary.nil?
-         @binary = lookup_binary
-      end
-      def self.version
-         return @version unless @version.nil?
-         @version = lookup_version
-      end
-      def self.lookup_binary
-        raise McastToolException.new, self.to_s + ": Missing 'lookup_binary' implementation."
-      end
-      def self.lookup_version
-        raise McastToolException.new, self.to_s + ": Missing 'lookup_version' implementation."
-      end
-      def self.check_version
-        return false if self.version.nil?
-        return true  if @require_min_version.nil? && @require_max_version.nil?
-        ver = Gem::Version.new(self.version)
-        unless @require_min_version.nil?
-          min = Gem::Version.new(@require_min_version)
-          unless min <= ver
-            log_error(self.to_s + ": minimum version #{@require_min_version} requirement failed for version #{self.version}")
-            return false
-          end
-        end
-        unless @require_max_version.nil?
-          max = Gem::Version.new(@require_max_version)
-          log_crit_and_exit(self.to_s + ": invalid requirement version maximum #{@require_max_version} < minimum #{@require_min_version}", -1) unless @require_min_version.nil? || min <= max
-          unless ver <= max
-            log_error(self.to_s + ": maximum version #{@require_max_version} requirement failed for version #{self.version}")
-            return false
-          end
-        end
-        log_notice(self.to_s + ": passed version check")
-        return true
-      end
-      def self.load
-        return (self.binary.nil? || !self.check_version) ? nil : self
-      end
-    end
-    
+
     class Base
       
       def self.inherited(subclass)

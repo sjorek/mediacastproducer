@@ -8,35 +8,15 @@
 #
 
 require 'mcp/transcoder/base'
-require 'mcp/qt/qt'
-
-FFMPEG_BIN = "ffmpeg"
-FFMPEG_WHICH = "/usr/bin/which #{FFMPEG_BIN}"
-FFMPEG_MIN_VERSION = "0.6.3"
-FFMPEG_MAX_VERSION = nil
+require 'mcp/tools/ffmpeg'
 
 module MediacastProducer
   module Transcoder
 
-    class FFMpegTool < Tool
-      @require_min_version = FFMPEG_MIN_VERSION
-      @require_max_version = FFMPEG_MAX_VERSION
-      def self.lookup_binary
-#        log_notice(self.to_s + ": searching ffmpeg: #{FFMPEG_WHICH}")
-        path = `#{FFMPEG_WHICH}`.chop
-        return nil if path == "" || !File.executable?(path)
-        log_notice(self.to_s + ": found ffmpeg: " + path.to_s)
-        path
-      end
-      def self.lookup_version
-        `#{self.binary} -version 2>/dev/null | head -n 1 | cut -f2 -d' '`.chop
-      end
-    end
-
     class FFMpeg < Base
       @@ffmpeg = nil
       def self.load_tools
-        @@ffmpeg = FFMpegTool.load
+        @@ffmpeg = MediacastProducer::Tools::FFMpeg.load
       end
       def usage
         "ffmpeg: transcodes the input file to the output file with the specified preset\n\n" +
@@ -81,5 +61,6 @@ module MediacastProducer
 #        log_crit_and_exit("Failed to transcode '#{input}' with '#{preset}'", -1) unless McastQT.encode(input, output, settings)
       end
     end
+
   end
 end
