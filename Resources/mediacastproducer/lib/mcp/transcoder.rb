@@ -118,3 +118,14 @@ def action_for_transcoder(transcoder)
   end
   action
 end
+
+def preset_for_transcoder(engine, preset)
+  transcoder = "#{engine}/#{preset}"
+  if preset && File.exist?(preset)
+    path = preset
+  else
+    require_transcoder(transcoder)
+    path = action_for_transcoder(transcoder)
+  end
+  File.join(File.dirname(path), File.basename(path, ".rb"))
+end

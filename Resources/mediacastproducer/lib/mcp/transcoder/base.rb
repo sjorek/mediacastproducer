@@ -37,6 +37,21 @@ module MediacastProducer
         []
       end
       
+      def preset_usage
+        ""
+      end
+      
+      def preset_options
+        []
+      end
+      
+      def transcoder_options
+        options + preset_options
+      end
+      
+      def require_preset_options
+      end
+      
       def log_crit(msg)
         ASLLogger.crit(self.class.to_s + ": " + msg)
       end

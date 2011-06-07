@@ -8,7 +8,7 @@
 #
 
 module MediacastProducer
-  module Transcoder
+  module Preset
     
     @input            = nil
     @output           = nil

@@ -14,20 +14,28 @@ module MediacastProducer
   module Transcoder
 
     class VLC < Base
+      
+      include preset_for_transcoder("vlc", $transcoder_preset) if $transcoder_engine == 'vlc' && !$transcoder_preset.nil?
+      
       @@vlc = nil
+      
       def self.load_tools
         @@vlc = MediacastProducer::Commands::VLC.load
       end
+      
       def usage
         "vlc: transcodes the input file to the output file with the specified preset\n\n" +
         "usage:  vlc --prb=PRB --input=INPUT --output=OUTPUT --preset=PRESET\n" +
         "           [--binary]   print path to executable binary and exit\n" +
-        "           [--version]  print executable binary version and exit\n\n" +
+        "           [--version]  print executable binary version and exit\n" +
+        "#{preset_usage}\n" +
         "the available presets are:\n#{available_transcoders('vlc')}\n"
       end
+      
       def options
         ["input*", "output", "preset", "binary", "version"]
       end
+      
       def run(arguments)
         
         unless $subcommand_options[:binary].nil?
@@ -44,12 +52,14 @@ module MediacastProducer
         require_option(:output)
         require_option(:preset)
         
-        preset = $subcommand_options[:preset]
-        input = $subcommand_options[:inputs][0]
-        output = $subcommand_options[:output]
+        require_preset_options
         
-        check_input_file(input)
-        check_output_file(output)
+        @preset = $subcommand_options[:preset]
+        @input = $subcommand_options[:inputs][0]
+        @output = $subcommand_options[:output]
+        
+        check_input_file(@input)
+        check_output_file(@output)
 #        if File.exist?(preset) && !File.directory?(preset)
 #          settings = preset
 #        else
