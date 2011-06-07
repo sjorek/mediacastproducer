@@ -7,7 +7,7 @@
 #  another platform without Apple's written consent.
 #
 
-require 'mcp/tools/command'
+require 'mcp/commands/command'
 
 FFMPEG_BIN = "ffmpeg"
 FFMPEG_WHICH = "/usr/bin/which #{FFMPEG_BIN}"

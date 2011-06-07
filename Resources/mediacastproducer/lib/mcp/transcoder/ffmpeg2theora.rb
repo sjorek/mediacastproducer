@@ -8,7 +8,7 @@
 #
 
 require 'mcp/transcoder/base'
-require 'mcp/tools/ffmpeg2theora'
+require 'mcp/commands/ffmpeg2theora'
 
 module MediacastProducer
   module Transcoder

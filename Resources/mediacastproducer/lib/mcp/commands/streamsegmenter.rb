@@ -7,7 +7,7 @@
 #  another platform without Apple's written consent.
 #
 
-require 'mcp/tools/command'
+require 'mcp/commands/command'
 
 STREAMSEGMENTER_PATH = File.join(MCP_BIN,"segmenter")
 STREAMSEGMENTER_MIN_VERSION = "1.0.1"

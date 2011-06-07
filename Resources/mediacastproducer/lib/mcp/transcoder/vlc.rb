@@ -8,7 +8,7 @@
 #
 
 require 'mcp/transcoder/base'
-require 'mcp/tools/vlc'
+require 'mcp/commands/vlc'
 
 module MediacastProducer
   module Transcoder

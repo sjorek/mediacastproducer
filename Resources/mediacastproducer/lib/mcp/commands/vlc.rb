@@ -7,7 +7,7 @@
 #  another platform without Apple's written consent.
 #
 
-require 'mcp/tools/command'
+require 'mcp/commands/command'
 
 VLC_SEARCH_PATH = "/Applications"
 VLC_BIN_NAME = "VLC"

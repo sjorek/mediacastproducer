@@ -8,7 +8,7 @@
 #
 
 require 'mcp/transcoder/base'
-require 'mcp/tools/ffmpeg'
+require 'mcp/commands/ffmpeg'
 
 module MediacastProducer
   module Transcoder

@@ -8,7 +8,7 @@
 #
 
 require 'mcp/transcoder/base'
-require 'mcp/tools/mediastreamsegmenter'
+require 'mcp/commands/mediastreamsegmenter'
 
 module MediacastProducer
   module Transcoder
