@@ -15,9 +15,9 @@ MEDIASTREAMSEGMENTER_MIN_VERSION = "10.2.10"
 MEDIASTREAMSEGMENTER_MAX_VERSION = nil
 
 module MediacastProducer
-  module Tools
+  module Commands
 
-    class MediastreamSegmenter < Command
+    class MediastreamSegmenter < Base
       @require_min_version = MEDIASTREAMSEGMENTER_MIN_VERSION
       @require_max_version = MEDIASTREAMSEGMENTER_MAX_VERSION
       def self.lookup_binary

@@ -16,7 +16,7 @@ module MediacastProducer
     class StreamSegmenter < Base
       @@segmenter = nil
       def self.load_tools
-        @@segmenter = MediacastProducer::Tools::StreamSegmenter.load
+        @@segmenter = MediacastProducer::Commands::StreamSegmenter.load
       end
       def usage
         "streamsegmenter: transcodes the input file to the output file with the specified preset\n\n" +

@@ -15,9 +15,9 @@ FFMPEG2THEORA_MIN_VERSION = "0.27"
 FFMPEG2THEORA_MAX_VERSION = nil
 
 module MediacastProducer
-  module Tools
+  module Commands
 
-    class FFMpeg2Theora < Command
+    class FFMpeg2Theora < Base
       @require_min_version = FFMPEG2THEORA_MIN_VERSION
       @require_max_version = FFMPEG2THEORA_MAX_VERSION
       def self.lookup_binary

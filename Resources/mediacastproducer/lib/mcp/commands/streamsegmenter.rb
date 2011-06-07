@@ -14,9 +14,9 @@ STREAMSEGMENTER_MIN_VERSION = "1.0.1"
 STREAMSEGMENTER_MAX_VERSION = nil
 
 module MediacastProducer
-  module Tools
+  module Commands
 
-    class StreamSegmenter < Command
+    class StreamSegmenter < Base
       @require_min_version = STREAMSEGMENTER_MIN_VERSION
       @require_max_version = STREAMSEGMENTER_MAX_VERSION
       def self.lookup_binary

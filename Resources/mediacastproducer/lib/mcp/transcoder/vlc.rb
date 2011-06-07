@@ -16,7 +16,7 @@ module MediacastProducer
     class VLC < Base
       @@vlc = nil
       def self.load_tools
-        @@vlc = MediacastProducer::Tools::VLC.load
+        @@vlc = MediacastProducer::Commands::VLC.load
       end
       def usage
         "vlc: transcodes the input file to the output file with the specified preset\n\n" +

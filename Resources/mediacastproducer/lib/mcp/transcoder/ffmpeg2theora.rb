@@ -16,7 +16,7 @@ module MediacastProducer
     class FFMpeg2Theora < Base
       @@ffmpeg2theora = nil
       def self.load_tools
-        @@ffmpeg2theora = MediacastProducer::Tools::FFMpeg2Theora.load
+        @@ffmpeg2theora = MediacastProducer::Commands::FFMpeg2Theora.load
       end
       def usage
         "ffmpeg2theora: transcodes the input file to the output file with the specified preset\n\n" +

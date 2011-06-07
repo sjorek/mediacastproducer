@@ -19,9 +19,9 @@ VLC_MIN_VERSION = "1.1.9"
 VLC_MAX_VERSION = nil
 
 module MediacastProducer
-  module Tools
+  module Commands
 
-    class VLC < Command
+    class VLC < Base
       @require_min_version = VLC_MIN_VERSION
       @require_max_version = VLC_MAX_VERSION
       def self.lookup_binary

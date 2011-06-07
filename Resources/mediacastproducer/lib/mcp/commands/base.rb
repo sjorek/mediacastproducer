@@ -12,8 +12,8 @@ require 'mcp/common/mcast_exception'
 require 'rubygems'
 
 module MediacastProducer
-  module Tools
-    class Command
+  module Commands
+    class Base
       @binary = nil
       @version = nil
       @require_min_version = nil

@@ -15,9 +15,9 @@ FFMPEG_MIN_VERSION = "0.6.3"
 FFMPEG_MAX_VERSION = nil
 
 module MediacastProducer
-  module Tools
+  module Commands
 
-    class FFMpeg < Command
+    class FFMpeg < Base
       @require_min_version = FFMPEG_MIN_VERSION
       @require_max_version = FFMPEG_MAX_VERSION
       def self.lookup_binary

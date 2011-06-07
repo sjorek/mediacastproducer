@@ -16,7 +16,7 @@ module MediacastProducer
     class FFMpeg < Base
       @@ffmpeg = nil
       def self.load_tools
-        @@ffmpeg = MediacastProducer::Tools::FFMpeg.load
+        @@ffmpeg = MediacastProducer::Commands::FFMpeg.load
       end
       def usage
         "ffmpeg: transcodes the input file to the output file with the specified preset\n\n" +
