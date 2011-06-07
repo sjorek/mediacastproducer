@@ -31,7 +31,7 @@ $productinfo ={ :name => 'Mediacast Producer',
                 :version => '0.1',
                 :command => File.basename($0,'.rb')}
 
-require 'mcp/main'
+require 'mcp/producer'
 require 'mcp/actions'
 
 PodcastProducer::Actions.load_actions

@@ -32,7 +32,7 @@ $productinfo ={ :name => 'Mediacast Encoder',
                 :version => '0.1',
                 :command => File.basename($0,'.rb')}
 
-require 'mcp/main'
+require 'mcp/encoder'
 require 'mcp/transcoder'
 
 MediacastProducer::Transcoder.load_actions

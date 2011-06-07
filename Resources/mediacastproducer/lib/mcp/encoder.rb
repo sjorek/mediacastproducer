@@ -1,0 +1,2 @@
+
+require "mcp/producer"
