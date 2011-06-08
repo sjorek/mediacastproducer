@@ -10,15 +10,50 @@
 
 $transcoder_engine = nil
 $transcoder_preset = nil
+$subcommands_loaded = false
 
-MediacastProducer::Transcoder.load_actions
+$subcommand_is_help = ARGV.length == 0 || ['--help', '-h', 'help'].include?(ARGV[0])
 
-$subcommands = MediacastProducer::Transcoder.action_instances
+def load_subcommands
+  unless $subcommands_loaded
+    log_notice('load_subcommands called')
+    $subcommands_loaded = true
+    MediacastProducer::Transcoder.load_actions
+    $subcommands = MediacastProducer::Transcoder.action_instances
+  else
+    log_notice('load_subcommands skipped')
+  end
+end
+
+def options_list
+  load_subcommands
+  MediacastProducer::Transcoder.options_list
+end
+
+def subcommand_with_name(subcommand_name)
+  if subcommand_name =~ /(.*)\/(.*)/
+    $transcoder_engine = $1
+    $transcoder_preset = $2
+    subcommand_name = $transcoder_engine
+    unless $subcommand_is_help
+      ARGV.push("--preset=\"#{$transcoder_preset}\"")
+    end
+  end
+  load_subcommands
+  $subcommands.find {|obj| obj.name == subcommand_name}
+end
+
+alias _print_usage print_usage
+
+def print_usage
+  load_subcommands
+  _print_usage
+end
 
 ### Encoder
 
 class Encoder
-  def self.run(options_list)
+  def self.run()
 
     $properties = read_properties
 
@@ -124,6 +159,13 @@ class Encoder
       log_crit_and_exit("Neither --basedir nor --prb were specified. Please specify one and only one of these parameters.", -1)
     end
     
+    if !$subcommand_options[:preset].nil?
+      $transcoder_engine = subcommand_name
+      $transcoder_preset = $subcommand_options[:preset]
+    else 
+      log_crit_and_exit("No preset specified. Please specify one.", -1)
+    end
+    
     $no_fail = !$subcommand_options[:no_fail].nil?
     
     log_crit_and_exit("Working directory ('#{$working_directory}') does not exist.") unless File.exists?($working_directory)
@@ -141,7 +183,7 @@ class Encoder
     end
     
     sanitized_arguments = passed_args.gsub(/--(master_)?pass(word)?(=|\s)(\".*\"|\S*)/, '--\1pass\2=*****')
-    subcommand.log_notice("START: [Working directory: #{$working_directory}] {Arguments: #{sanitized_arguments}} v.#{$pcastaction_version}")
+    subcommand.log_notice("START: [Working directory: #{$working_directory}] {Arguments: #{sanitized_arguments}} v.#{$productinfo[:version]}")
     subcommand.run(ARGV)
     subcommand.log_notice("FINISH")
     

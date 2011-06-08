@@ -30,3 +30,11 @@ module PodcastProducer
     
   end
 end
+
+def check_input_and_output_paths_are_not_equal(input, output)
+  if (File.expand_path(input) == File.expand_path(output))
+    log_crit_and_exit("Cannot modify files in place.",ERR_EDITING_INPLACE)
+  else
+    return output
+  end
+end

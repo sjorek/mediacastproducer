@@ -33,6 +33,7 @@ module MediacastProducer
     end
     
     def self.action_instances
+#      log_notice("fetching action_instances for #{self.to_s}")
       @@action_classes.map {|action_class| action_class.new }
     end
     
@@ -92,9 +93,9 @@ def transcoder_list
 end
 
 def available_transcoders(engine)
-  return available_encoders if engine == "pcast"
+  return available_encoders if engine == "quicktime"
   transcoder_list.collect do |transcoder|
-    "  #{$1}\n" if transcoder =~ /^#{engine}\/(.+)/
+    "  #{$1}\n" if transcoder =~ /^#{engine}\/(.*)/
   end
 end
 
@@ -119,13 +120,20 @@ def action_for_transcoder(transcoder)
   action
 end
 
-def preset_for_transcoder(engine, preset)
-  transcoder = "#{engine}/#{preset}"
-  if preset && File.exist?(preset)
-    path = preset
+def preset_for_transcoder(engine)
+  return false if [ $transcoder_engine, $transcoder_preset ].include?(nil) || engine == "quicktime"
+  return false unless $transcoder_engine == engine
+  path = nil
+  if $transcoder_preset =~ /.*\.rb$/ && File.exist?($transcoder_preset)
+    path = $transcoder_preset
   else
+    transcoder = File.join($transcoder_engine, $transcoder_preset)
     require_transcoder(transcoder)
     path = action_for_transcoder(transcoder)
   end
-  File.join(File.dirname(path), File.basename(path, ".rb"))
+  return false if path.nil?
+  name = File.join(File.dirname(path), File.basename(path, ".rb"))
+  log_notice("requiring preset #{name} for engine #{engine}")
+  require name
+  return true
 end

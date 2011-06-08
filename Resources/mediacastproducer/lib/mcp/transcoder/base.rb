@@ -17,6 +17,10 @@ module MediacastProducer
 
     class Base
       
+      def initialize()
+        preset_for_transcoder(name)
+      end
+      
       def self.inherited(subclass)
         MediacastProducer::Transcoder.add_action_class(subclass)
       end
@@ -45,11 +49,47 @@ module MediacastProducer
         []
       end
       
+      def require_preset
+      end
+      
       def transcoder_options
         options + preset_options
       end
       
-      def require_preset_options
+      def run(arguments)
+        
+        unless $subcommand_options[:binary].nil?
+          puts command.binary
+          return
+        end
+        
+        unless $subcommand_options[:version].nil?
+          puts command.version
+          return
+        end
+        
+        require_plural_option(:inputs, 1, 1)
+        require_option(:output)
+        require_option(:preset)
+        
+        @input = $subcommand_options[:inputs][0]
+        @output = $subcommand_options[:output]
+        @preset = $subcommand_options[:preset]
+        
+        if $transcoder_engine.nil? && $transcoder_preset.nil?
+          $transcoder_engine = name
+          $transcoder_preset = @preset
+          log_notice("running again with preset #{@preset}")
+          return self.class.new.run(arguments)
+        end
+        
+        check_input_and_output_paths_are_not_equal(@input, @output)
+        check_input_file(@input)
+        check_output_file(@output)
+        
+        preset_defaults
+        require_preset
+        run_preset(arguments)
       end
       
       def log_crit(msg)

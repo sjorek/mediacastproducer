@@ -138,7 +138,7 @@ class Producer
     end
     
     sanitized_arguments = passed_args.gsub(/--(master_)?pass(word)?(=|\s)(\".*\"|\S*)/, '--\1pass\2=*****')
-    subcommand.log_notice("START: [Working directory: #{$working_directory}] {Arguments: #{sanitized_arguments}} v.#{$pcastaction_version}")
+    subcommand.log_notice("START: [Working directory: #{$working_directory}] {Arguments: #{sanitized_arguments}} v.#{$productinfo[:version]}")
     subcommand.run(ARGV)
     subcommand.log_notice("FINISH")
     

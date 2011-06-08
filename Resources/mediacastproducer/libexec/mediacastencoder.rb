@@ -39,7 +39,7 @@ require 'mcp/encoder'
 ### run
 
 begin
-  Encoder.run(MediacastProducer::Transcoder.options_list)
+  Encoder.run()
 rescue
   $stderr.puts $!.class.name + ": " + $!.message
   $!.backtrace.each { |frame| $stderr.puts "\tfrom " + frame }

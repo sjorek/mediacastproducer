@@ -22,7 +22,7 @@ module MediacastProducer
       def usage
         "quicktime: transcodes the input file to the output file with the specified preset\n\n" +
         "usage:  quicktime --prb=PRB --input=INPUT --output=OUTPUT --preset=PRESET\n\n" +
-        "the available presets are:\n#{available_transcoders('pcast')}\n"
+        "the available presets are:\n#{available_transcoders('quicktime')}\n"
       end
       def options
         ["input*", "output", "preset"]
@@ -38,7 +38,7 @@ module MediacastProducer
         
         check_input_file(input)
         check_output_file(output)
-        if File.exist?(preset) && !File.directory?(preset)
+        if preset =~ /.*\.plist$/ && File.exist?(preset)
           settings = preset
         else
           require_encoder(preset)

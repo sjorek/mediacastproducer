@@ -15,12 +15,14 @@ module MediacastProducer
 
     class VLC < Base
       
-      include preset_for_transcoder("vlc", $transcoder_preset) if $transcoder_engine == 'vlc' && !$transcoder_preset.nil?
-      
       @@vlc = nil
       
       def self.load_tools
-        @@vlc = MediacastProducer::Commands::VLC.load
+        @@vlc = MediacastProducer::Commands::VLC.load if @@vlc.nil?
+      end
+      
+      def command
+        @@vlc
       end
       
       def usage
@@ -36,41 +38,6 @@ module MediacastProducer
         ["input*", "output", "preset", "binary", "version"]
       end
       
-      def run(arguments)
-        
-        unless $subcommand_options[:binary].nil?
-          puts @@vlc.binary
-          return
-        end
-        
-        unless $subcommand_options[:version].nil?
-          puts @@vlc.version
-          return
-        end
-        
-        require_plural_option(:inputs, 1, 1)
-        require_option(:output)
-        require_option(:preset)
-        
-        require_preset_options
-        
-        @preset = $subcommand_options[:preset]
-        @input = $subcommand_options[:inputs][0]
-        @output = $subcommand_options[:output]
-        
-        check_input_file(@input)
-        check_output_file(@output)
-#        if File.exist?(preset) && !File.directory?(preset)
-#          settings = preset
-#        else
-#          require_encoder(preset)
-#          settings = settings_for_encoder(preset)
-#        end
-#        log_notice('preset: ' + preset.to_s)
-#        log_notice('settings: ' + settings.to_s)
-#        log_crit_and_exit("Failed to transcode '#{input}' with '#{preset}'", -1) unless McastQT.encode(input, output, settings)
-      end
     end
-
   end
 end
