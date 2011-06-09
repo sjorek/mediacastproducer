@@ -8,52 +8,14 @@
 #  another platform without Apple's written consent.
 #
 
-$transcoder_engine = nil
-$transcoder_preset = nil
-$subcommands_loaded = false
+MediacastProducer::Transcoder.load_actions
 
-$subcommand_is_help = ARGV.length == 0 || ['--help', '-h', 'help'].include?(ARGV[0])
-
-def load_subcommands
-  unless $subcommands_loaded
-    log_notice('load_subcommands called')
-    $subcommands_loaded = true
-    MediacastProducer::Transcoder.load_actions
-    $subcommands = MediacastProducer::Transcoder.action_instances
-  else
-    log_notice('load_subcommands skipped')
-  end
-end
-
-def options_list
-  load_subcommands
-  MediacastProducer::Transcoder.options_list
-end
-
-def subcommand_with_name(subcommand_name)
-  if subcommand_name =~ /(.*)\/(.*)/
-    $transcoder_engine = $1
-    $transcoder_preset = $2
-    subcommand_name = $transcoder_engine
-    unless $subcommand_is_help
-      ARGV.push("--preset=\"#{$transcoder_preset}\"")
-    end
-  end
-  load_subcommands
-  $subcommands.find {|obj| obj.name == subcommand_name}
-end
-
-alias _print_usage print_usage
-
-def print_usage
-  load_subcommands
-  _print_usage
-end
+$subcommands = MediacastProducer::Transcoder.action_instances
 
 ### Encoder
 
 class Encoder
-  def self.run()
+  def self.run(options_list)
 
     $properties = read_properties
 
@@ -158,13 +120,6 @@ class Encoder
     else 
       log_crit_and_exit("Neither --basedir nor --prb were specified. Please specify one and only one of these parameters.", -1)
     end
-    
-#    if !$subcommand_options[:preset].nil?
-#      $transcoder_engine = subcommand_name
-#      $transcoder_preset = $subcommand_options[:preset]
-#    else 
-#      log_crit_and_exit("No preset specified. Please specify one.", -1)
-#    end
     
     $no_fail = !$subcommand_options[:no_fail].nil?
     

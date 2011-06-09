@@ -14,30 +14,15 @@ module MediacastProducer
   module Transcoder
 
     class VLC < Base
-      
+      include MediacastProducer::Transcoder::CommandWithArguments
       @@vlc = nil
-      
-      def self.load_tools
+      def self.setup
         @@vlc = MediacastProducer::Commands::VLC.load if @@vlc.nil?
       end
-      
       def command
         @@vlc
       end
-      
-      def usage
-        "vlc: transcodes the input file to the output file with the specified preset\n\n" +
-        "usage:  vlc --prb=PRB --input=INPUT --output=OUTPUT --preset=PRESET\n" +
-        "           [--binary]   print path to executable binary and exit\n" +
-        "           [--version]  print executable binary version and exit\n" +
-        "#{preset_usage}\n" +
-        "the available presets are:\n#{available_transcoders('vlc')}\n"
-      end
-      
-      def options
-        ["input*", "output", "preset", "binary", "version"]
-      end
-      
     end
+
   end
 end

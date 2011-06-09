@@ -16,37 +16,27 @@ module MediacastProducer
   module Transcoder
 
     class Quicktime < Base
-      def self.load_tools
-        return true # allways returns true
+      include MediacastProducer::Transcoder::CommandWithIO
+      def self.setup
+        true
       end
-      def usage
-        "quicktime: transcodes the input file to the output file with the specified preset\n\n" +
-        "usage:  quicktime --prb=PRB --input=INPUT --output=OUTPUT --preset=PRESET\n\n" +
-        "the available presets are:\n#{available_transcoders('quicktime')}\n"
+      def more_options
+        []
       end
-      def options
-        ["input*", "output", "preset"]
+      def more_options_usage
+        ""
       end
-      def run(arguments)
-        require_plural_option(:inputs, 1, 1)
-        require_option(:output)
+      def encode(arguments)
+        
         require_option(:preset)
+        log_notice('preset: ' + @preset.to_s)
         
-        preset = $subcommand_options[:preset]
-        input = $subcommand_options[:inputs][0]
-        output = $subcommand_options[:output]
-        
-        check_input_file(input)
-        check_output_file(output)
-        if preset =~ /.*\.plist$/ && File.exist?(preset)
-          settings = preset
-        else
-          require_encoder(preset)
-          settings = settings_for_encoder(preset)
-        end
-        log_notice('preset: ' + preset.to_s)
+        settings = preset_for_transcoder(name, @preset)
         log_notice('settings: ' + settings.to_s)
-        log_crit_and_exit("Failed to transcode '#{input}' with '#{preset}'", -1) unless McastQT.encode(input, output, settings)
+        
+        unless McastQT.encode(@input, @output, settings)
+          log_crit_and_exit("Failed to transcode '#{@input}' to '#{@output}' with preset '#{@preset}'", -1) 
+        end
       end
     end
 

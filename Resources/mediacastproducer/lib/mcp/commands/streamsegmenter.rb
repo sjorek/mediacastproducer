@@ -21,9 +21,9 @@ module MediacastProducer
       @require_max_version = STREAMSEGMENTER_MAX_VERSION
       def self.lookup_binary
 #        log_notice(self.to_s + ": searching segmenter: " + STREAMSEGMENTER_PATH.to_s)
-        path = Pathname.new(STREAMSEGMENTER_PATH).realpath
+        path = Pathname.new(STREAMSEGMENTER_PATH).realpath.to_s
         return nil unless File.executable?(path)
-        log_notice(self.to_s + ": found segmenter: " + path.to_s)
+        log_notice(self.to_s + ": found segmenter: " + path)
         path
       end
       def self.lookup_version

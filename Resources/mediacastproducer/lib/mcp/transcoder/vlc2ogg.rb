@@ -12,6 +12,31 @@ require 'mcp/transcoder/vlc'
 module MediacastProducer
   module Transcoder
     class VLC2Ogg < VLC
+      include MediacastProducer::Transcoder::CommandWithIO
+      def more_options
+        super + 
+        ["video_quality", "video_bitrate", "video_width", "video_height",
+         "audio_quality", "audio_bitrate", "audio_channels", "audio_samplerate"]
+      end
+      
+      def more_options_usage
+        super + 
+        "preset usage ...\n"
+      end
+      
+      def encode(arguments, input, output, preset=nil)
+        
+        require_option(:preset)
+        log_notice('preset: ' + preset.to_s)
+        
+        settings = preset_for_transcoder(name, preset)
+        log_notice('settings: ' + settings.to_s)
+        
+        unless true
+          log_crit_and_exit("Failed to transcode '#{input}' to '#{output}' with preset '#{preset}'", -1) 
+        end
+      end
+      
       def preset_defaults
         @video_quality    = 5
         @video_bitrate    = 700
@@ -22,15 +47,6 @@ module MediacastProducer
         @audio_bitrate    = 64
         @audio_channels   = 2
         @audio_samplerate = 44100
-      end
-      
-      def preset_usage
-        "preset usage ...\n"
-      end
-      
-      def preset_options
-        ["video_quality", "video_bitrate", "video_width", "video_height",
-         "audio_quality", "audio_bitrate", "audio_channels", "audio_samplerate"]
       end
       
       def validate_preset

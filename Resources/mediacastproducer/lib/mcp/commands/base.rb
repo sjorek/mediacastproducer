@@ -57,6 +57,10 @@ module MediacastProducer
       def self.load
         return (self.binary.nil? || !self.check_version) ? nil : self
       end
+      def self.run(arguments)
+        log_notice("running: #{self.binary} #{arguments.join(' ')}")
+        return do_script(self.binary.to_s, arguments)
+      end
     end
   end
 end

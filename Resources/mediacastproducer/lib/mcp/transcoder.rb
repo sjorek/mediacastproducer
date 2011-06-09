@@ -20,18 +20,6 @@ module MediacastProducer
       @@action_classes << action_class
     end
     
-    def self.load_action_tools
-      action_classes = @@action_classes
-      @@action_classes = []
-      action_classes.each do |action_class|
-        begin
-          @@action_classes << action_class if action_class.load_tools
-        rescue McastToolException => e
-          log_error(e.message) #,e.return_code.to_i)
-        end
-      end
-    end
-    
     def self.action_instances
 #      log_notice("fetching action_instances for #{self.to_s}")
       @@action_classes.map {|action_class| action_class.new }
@@ -64,76 +52,67 @@ module MediacastProducer
           require name
         end
       end
-      load_action_tools
     end
   end
 end
 
 ### Helper methods
 
-def transcoder_list
-  transcoders = []
-  Dir[MCP_LIB + '/mcp/transcoder/*/*.rb'].each do |path|
-    path =~ %r{mcp/transcoder/(.*/.*)\.rb}
-    transcoders << $1
+def preset_list
+  presets = []
+  Dir[MCP_LIB + '/mcp/transcoder/*/*.plist'].each do |path|
+    path =~ %r{mcp/transcoder/(.*/.*)\.plist}
+    presets << $1
   end
   if $properties["Global Resource Path"]
-    Dir["#{$properties["Global Resource Path"]}/Resources/Transcoder/*/*.rb"].each do |path|
-      path =~ %r{.*/Resources/Transcoder/(.*/.*)\.rb}
-      transcoders << $1 unless transcoders.include?($1)
+    Dir["#{$properties["Global Resource Path"]}/Resources/Transcoder/*/*.plist"].each do |path|
+      path =~ %r{.*/Resources/Transcoder/(.*/.*)\.plist}
+      presets << $1 unless presets.include?($1)
     end
   end
   if $properties["Workflow Resource Path"]
-    Dir["#{$properties["Workflow Resource Path"]}/Resources/Transcoder/*/*.rb"].each do |path|
-      path =~ %r{.*/Resources/Transcoder/(.*/.*)\.rb}
-      transcoders << $1 unless transcoders.include?($1)
+    Dir["#{$properties["Workflow Resource Path"]}/Resources/Transcoder/*/*.plist"].each do |path|
+      path =~ %r{.*/Resources/Transcoder/(.*/.*)\.plist}
+      presets << $1 unless presets.include?($1)
     end
   end
-  transcoders.sort
+  presets.sort
 end
 
-def available_transcoders(engine)
+def available_presets(engine)
   return available_encoders if engine == "quicktime"
-  transcoder_list.collect do |transcoder|
-    "  #{$1}\n" if transcoder =~ /^#{engine}\/(.*)/
+  preset_list.collect do |preset|
+    "  #{$1}\n" if preset =~ /^#{engine}\/(.*)/
   end
 end
 
-def require_transcoder(transcoder)
-  unless transcoder_list.include? transcoder
-    log_crit_and_exit("specified transcoder '#{transcoder}' not found",-1)
+def require_preset(engine, preset)
+  unless preset_list.include? "#{engine}/#{preset}"
+    log_crit_and_exit("specified preset '#{preset}' not found for engine '#{engine}'",-1)
   end
 end
 
-def action_for_transcoder(transcoder)
-  if $properties["Workflow Resource Path"]
-    action = "#{$properties["Workflow Resource Path"]}/Resources/Transcoder/#{transcoder}.rb"
-  end
-  unless action && File.exist?(action)
-    if $properties["Global Resource Path"]
-      action = "#{$properties["Global Resource Path"]}/Resources/Transcoder/#{transcoder}.rb"
+def preset_for_transcoder(engine, preset)
+  if preset =~ /.*\.plist$/ && File.exist?(preset) && !File.directory?(preset)
+    settings = preset
+  else
+    if engine == 'quicktime'
+      require_encoder(preset)
+      settings = settings_for_encoder(preset)
+    else
+      require_preset(engine, preset)
+      if $properties["Workflow Resource Path"]
+        settings = "#{$properties["Workflow Resource Path"]}/Resources/Transcoder/#{engine}/#{preset}.plist"
+      end
+      unless settings && File.exist?(settings)
+        if $properties["Global Resource Path"]
+          settings = "#{$properties["Global Resource Path"]}/Resources/Transcoder/#{engine}/#{preset}.plist"
+        end
+      end
+      unless settings && File.exist?(settings)
+        settings = MCP_LIB + "/mcp/transcoder/#{engine}/#{preset}.plist"
+      end
     end
   end
-  unless action && File.exist?(action)
-    action = MCP_LIB + "/mcp/transcoder/#{transcoder}.rb"
-  end
-  action
-end
-
-def preset_for_transcoder(engine)
-  return false if [ $transcoder_engine, $transcoder_preset ].include?(nil) || engine == "quicktime"
-  return false unless $transcoder_engine == engine
-  path = nil
-  if $transcoder_preset =~ /.*\.rb$/ && File.exist?($transcoder_preset)
-    path = $transcoder_preset
-  else
-    transcoder = File.join($transcoder_engine, $transcoder_preset)
-    require_transcoder(transcoder)
-    path = action_for_transcoder(transcoder)
-  end
-  return false if path.nil?
-  name = File.join(File.dirname(path), File.basename(path, ".rb"))
-  log_notice("requiring preset #{name} for engine #{engine}")
-  require name
-  return true
+  settings
 end

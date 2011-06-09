@@ -17,81 +17,45 @@ module MediacastProducer
 
     class Base
       
-      def initialize()
-        preset_for_transcoder(name)
-      end
-      
       def self.inherited(subclass)
         MediacastProducer::Transcoder.add_action_class(subclass)
       end
       
-      def self.load_tools
-        raise McastToolException.new, self.to_s + ": Missing 'load_tools' implementation."
+      def self.setup
+        raise McastToolException.new, self.to_s + ": Missing 'self.setup' implementation."
+      end
+      
+      def command
+        raise McastToolException.new, self.to_s + ": Missing 'command' implementation."
       end
       
       def name
         self.class.name.split("::").last.downcase
       end
       
+      def description
+        "..."
+      end
+      
       def usage
-        "usage"
+        "#{name}: #{description}\n\n" +
+        "#{options_usage}"
       end
       
       def options
-        []
+        [] + more_options
       end
       
-      def preset_usage
+      def options_usage
         ""
       end
       
-      def preset_options
+      def more_options
         []
       end
       
-      def require_preset
-      end
-      
-      def transcoder_options
-        options + preset_options
-      end
-      
-      def run(arguments)
-        
-        unless $subcommand_options[:binary].nil?
-          puts command.binary
-          return
-        end
-        
-        unless $subcommand_options[:version].nil?
-          puts command.version
-          return
-        end
-        
-        require_plural_option(:inputs, 1, 1)
-        require_option(:output)
-        require_option(:preset)
-        
-        @input = $subcommand_options[:inputs][0]
-        @output = $subcommand_options[:output]
-        @preset = $subcommand_options[:preset]
-        
-        if $transcoder_engine.nil? && $transcoder_preset.nil?
-          $transcoder_engine = name
-          $transcoder_preset = @preset
-          log_notice("running again with preset #{@preset}")
-          return self.class.new.run(arguments)
-        end
-        
-        check_input_and_output_paths_are_not_equal(@input, @output)
-        check_input_file(@input)
-        check_output_file(@output)
-        
-        run_preset(arguments)
-      end
-      
-      def run_preset(arguments)
-        log_notice(arguments.join(" "))
+      def more_options_usage
+        ""
       end
       
       def log_crit(msg)
@@ -130,5 +94,100 @@ module MediacastProducer
       
     end
 
+    module CommandWithIO
+      def description
+        "transcodes the input file to the output file with the specified preset"
+      end
+      
+      def options
+        ["input*", "output", "preset"] + more_options
+      end
+      
+      def options_usage
+        "usage:  #{name} --prb=PRB --input=INPUT --output=OUTPUT --preset=PRESET\n" +
+        "#{more_options_usage}\n" +
+        "the available presets are:\n#{available_presets(name)}\n"
+      end
+      
+      def more_options
+        ["binary", "version"]
+      end
+      
+      def more_options_usage
+        "           [--binary]   print path to executable binary and exit\n" +
+        "           [--version]  print executable binary version and exit\n"
+      end
+      
+      def run(arguments)
+        
+        log_crit_and_exit("Failed to setup tools for transcoder: #{name}", -1) unless self.class.setup()
+        
+        if options.include?("binary") && !$subcommand_options[:binary].nil?
+          puts command.binary
+          return
+        end
+        
+        if options.include?("version") && !$subcommand_options[:version].nil?
+          puts command.version
+          return
+        end
+        
+        require_plural_option(:inputs, 1, 1) if options.include?("input*")
+        @input = $subcommand_options[:inputs][0]
+        
+        require_option(:output) if options.include?("output")
+        @output = $subcommand_options[:output]
+        #require_option(:preset)
+        
+        @preset = $subcommand_options[:preset]
+        
+        if options.include?("input*")
+          check_input_and_output_paths_are_not_equal(@input, @output) if options.include?("output")
+          check_input_file(@input)
+        end
+        check_output_file(@output) if options.include?("output")
+        
+        encode(arguments)
+      end
+      
+      def encode(arguments)
+        raise McastToolException.new, self.to_s + ": Missing 'encode' implementation."
+      end
+    end
+    
+    module CommandWithArguments
+      def description
+        "execute #{name} with passed arguments"
+      end
+      def options_usage
+        "usage: #{name} --prb=PRB -- [--arguments passed to #{name}]\n" +
+        "         [--binary]   print path to executable binary and exit\n" +
+        "         [--version]  print executable binary version and exit\n" +
+        "#{more_options_usage}"# +
+        # "the available presets are:\n#{available_presets(name)}\n"
+      end
+      def options
+        ["binary", "version"] + more_options
+      end
+      def run(arguments)
+        
+        log_crit_and_exit("Failed to setup tools for transcoder: #{name}", -1) unless self.class.setup()
+        
+        if options.include?("binary") && !$subcommand_options[:binary].nil?
+          puts command.binary
+          return
+        end
+        
+        if options.include?("version") && !$subcommand_options[:version].nil?
+          puts command.version
+          return
+        end
+        
+        if arguments.nil? || arguments.empty?
+          log_error "No command or arguments were specified."
+        end
+        command.run(arguments)
+      end
+    end
   end
 end
