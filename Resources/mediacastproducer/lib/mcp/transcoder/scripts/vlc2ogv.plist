@@ -2,19 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>commands</key>
-    <string>vlc</string>
-    <key>options</key>
-    <array>
-        <string>video_quality</string>
-        <string>video_bitrate</string>
-        <string>video_width</string>
-        <string>video_height</string>
-        <string>audio_quality</string>
-        <string>audio_bitrate</string>
-        <string>audio_channels</string>
-        <string>audio_samplerate</string>
-    </array>
     <key>arguments</key>
     <array>
         <string>#{vlc}</string>
@@ -38,5 +25,20 @@
             afilter=ugly_resampler}\
             :standard{access=file,mux=ogg,dst='#{output}'}"]]></string>
     </array>
+    <key>commands</key>
+    <string>vlc</string>
+    <key>options</key>
+    <array>
+        <string>video_quality</string>
+        <string>video_bitrate</string>
+        <string>video_width</string>
+        <string>video_height</string>
+        <string>audio_quality</string>
+        <string>audio_bitrate</string>
+        <string>audio_channels</string>
+        <string>audio_samplerate</string>
+    </array>
+    <key>usage</key>
+    <string>vlc2ogv ...</string>
 </dict>
 </plist>

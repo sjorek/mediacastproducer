@@ -10,7 +10,6 @@
 
 require 'mcp/transcoder'
 require 'mcp/common/mcast_exception'
-require 'rubygems'
 
 module MediacastProducer
   module Transcoder
@@ -94,7 +93,7 @@ module MediacastProducer
       
     end
 
-    module CommandWithIO
+    module CommandWithIOPreset
       def description
         "transcodes the input file to the output file with the specified preset"
       end
@@ -152,6 +151,48 @@ module MediacastProducer
       
       def encode(arguments)
         raise McastToolException.new, self.to_s + ": Missing 'encode' implementation."
+      end
+    end
+    
+    module CommandWithIOScript
+      def description
+        "transcodes the INPUT file to the OUTPUT file with the specified SCRIPT"
+      end
+      
+      def options
+        ["input*", "output", "script"] + more_options
+      end
+      
+      def options_usage
+        "usage:  #{name} --prb=PRB --input=INPUT --output=OUTPUT --script=SCRIPT\n" +
+        "#{more_options_usage}\n" +
+        "the available scripts are:\n#{available_scripts}\n"
+      end
+      
+      def run(arguments)
+        
+        log_crit_and_exit("Failed to setup tools for transcoder: #{name}", -1) unless self.class.setup()
+        
+        require_plural_option(:inputs, 1, 1) if options.include?("input*")
+        @input = $subcommand_options[:inputs][0]
+        
+        require_option(:output) if options.include?("output")
+        @output = $subcommand_options[:output]
+        
+        require_option(:script) if options.include?("script")
+        @script = $subcommand_options[:script]
+        
+        if options.include?("input*")
+          check_input_and_output_paths_are_not_equal(@input, @output) if options.include?("output")
+          check_input_file(@input)
+        end
+        check_output_file(@output) if options.include?("output")
+        
+        script(arguments)
+      end
+      
+      def script(arguments)
+        raise McastToolException.new, self.to_s + ": Missing 'script' implementation."
       end
     end
     

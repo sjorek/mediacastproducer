@@ -16,7 +16,7 @@ module MediacastProducer
   module Transcoder
 
     class Quicktime < Base
-      include MediacastProducer::Transcoder::CommandWithIO
+      include MediacastProducer::Transcoder::CommandWithIOPreset
       def self.setup
         true
       end

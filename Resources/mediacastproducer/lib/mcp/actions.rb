@@ -38,3 +38,4 @@ def check_input_and_output_paths_are_not_equal(input, output)
     return output
   end
 end
+

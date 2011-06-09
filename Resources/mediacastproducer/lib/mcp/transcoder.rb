@@ -94,27 +94,27 @@ end
 
 def preset_for_transcoder(engine, preset)
   if preset =~ /.*\.plist$/ && File.exist?(preset) && !File.directory?(preset)
-    settings = preset
+    path = preset
   else
     if engine == 'quicktime'
       require_encoder(preset)
-      settings = settings_for_encoder(preset)
+      path = settings_for_encoder(preset)
     else
       require_preset(engine, preset)
       if $properties["Workflow Resource Path"]
-        settings = "#{$properties["Workflow Resource Path"]}/Resources/Transcoder/Presets/#{engine}/#{preset}.plist"
+        path = "#{$properties["Workflow Resource Path"]}/Resources/Transcoder/Presets/#{engine}/#{preset}.plist"
       end
-      unless settings && File.exist?(settings)
+      unless path && File.exist?(path)
         if $properties["Global Resource Path"]
-          settings = "#{$properties["Global Resource Path"]}/Resources/Transcoder/Presets/#{engine}/#{preset}.plist"
+          path = "#{$properties["Global Resource Path"]}/Resources/Transcoder/Presets/#{engine}/#{preset}.plist"
         end
       end
-      unless settings && File.exist?(settings)
-        settings = MCP_LIB + "/mcp/transcoder/presets/#{engine}/#{preset}.plist"
+      unless path && File.exist?(path)
+        path = MCP_LIB + "/mcp/transcoder/presets/#{engine}/#{preset}.plist"
       end
     end
   end
-  settings
+  path
 end
 
 ### script helper methods
@@ -140,9 +140,9 @@ def script_list
   scripts.sort
 end
 
-def available_scripts(engine)
+def available_scripts
   script_list.collect do |script|
-    "  #{$1}\n"
+    "  #{script}\n"
   end
 end
 
@@ -152,28 +152,22 @@ def require_script(script)
   end
 end
 
-def script_for_transcoder(engine, script)
+def script_for_transcoder(script)
   if script =~ /.*\.plist$/ && File.exist?(script) && !File.directory?(script)
-    settings = script
+    path = script
   else
-    if engine == 'quicktime'
-      require_encoder(script)
-      settings = settings_for_encoder(script)
-    else
-      require_script(engine, script)
-      if $properties["Workflow Resource Path"]
-        settings = "#{$properties["Workflow Resource Path"]}/Resources/Transcoder/Scripts/#{script}.plist"
-      end
-      unless settings && File.exist?(settings)
-        if $properties["Global Resource Path"]
-          settings = "#{$properties["Global Resource Path"]}/Resources/Transcoder/Scripts/#{script}.plist"
-        end
-      end
-      unless settings && File.exist?(settings)
-        settings = MCP_LIB + "/mcp/transcoder/scripts/#{script}.plist"
+    require_script(script)
+    if $properties["Workflow Resource Path"]
+      path = "#{$properties["Workflow Resource Path"]}/Resources/Transcoder/Scripts/#{script}.plist"
+    end
+    unless path && File.exist?(path)
+      if $properties["Global Resource Path"]
+        path = "#{$properties["Global Resource Path"]}/Resources/Transcoder/Scripts/#{script}.plist"
       end
     end
+    unless path && File.exist?(path)
+      path = MCP_LIB + "/mcp/transcoder/scripts/#{script}.plist"
+    end
   end
-  settings
+  path
 end
-

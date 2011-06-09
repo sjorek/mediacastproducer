@@ -2,7 +2,9 @@
 /.project*
 /.pydev*
 /.settings*
+/Resources/cfpropertylist*
 /Resources/mediacastproducer/bin/mediacastencoder
 /Resources/mediacastproducer/bin/mediacastproducer
 /Resources/mediacastproducer/bin/segmenter
 /Resources/mediacastproducer/libexec/mp4-faststart.py
+
