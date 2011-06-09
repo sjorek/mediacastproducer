@@ -36,11 +36,12 @@ module MediacastProducer
           ![command.binary, @input, @output,
             @video_quality, @video_bitrate, @video_width, @video_height,
             @audio_quality, @audio_bitrate, @audio_channels, @audio_samplerate].include?(nil)
-        
         end
+        
         def compile_preset
-          [command.binary,
-           "-v", "-I", "dummy", "--play-and-exit", @input,
+          [#"-vvvv",
+           "-I", "dummy", 
+           "--play-and-exit", @input,
            "--no-sout-transcode-hurry-up",
            "--no-ffmpeg-hurry-up",
            "--sout-transcode-high-priority",
@@ -58,7 +59,6 @@ module MediacastProducer
         end
         
         def run_preset(arguments)
-          log_notice(compile_preset.join(" "))
     #      if File.exist?(preset) && !File.directory?(preset)
     #        settings = preset
     #      else
@@ -68,6 +68,9 @@ module MediacastProducer
     #      log_notice('preset: ' + preset.to_s)
     #      log_notice('settings: ' + settings.to_s)
     #      log_crit_and_exit("Failed to transcode '#{input}' with '#{preset}'", -1) unless McastQT.encode(input, output, settings)
+            c = compile_preset.join(" ")
+            log_notice("\n" + c)
+            `#{c}`
         end
       end
     end

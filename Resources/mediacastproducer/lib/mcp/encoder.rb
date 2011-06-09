@@ -159,12 +159,12 @@ class Encoder
       log_crit_and_exit("Neither --basedir nor --prb were specified. Please specify one and only one of these parameters.", -1)
     end
     
-    if !$subcommand_options[:preset].nil?
-      $transcoder_engine = subcommand_name
-      $transcoder_preset = $subcommand_options[:preset]
-    else 
-      log_crit_and_exit("No preset specified. Please specify one.", -1)
-    end
+#    if !$subcommand_options[:preset].nil?
+#      $transcoder_engine = subcommand_name
+#      $transcoder_preset = $subcommand_options[:preset]
+#    else 
+#      log_crit_and_exit("No preset specified. Please specify one.", -1)
+#    end
     
     $no_fail = !$subcommand_options[:no_fail].nil?
     

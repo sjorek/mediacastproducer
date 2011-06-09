@@ -87,9 +87,11 @@ module MediacastProducer
         check_input_file(@input)
         check_output_file(@output)
         
-        preset_defaults
-        require_preset
         run_preset(arguments)
+      end
+      
+      def run_preset(arguments)
+        log_notice(arguments.join(" "))
       end
       
       def log_crit(msg)
