@@ -56,23 +56,23 @@ module MediacastProducer
   end
 end
 
-### Helper methods
+### preset helper methods
 
 def preset_list
   presets = []
-  Dir[MCP_LIB + '/mcp/transcoder/*/*.plist'].each do |path|
-    path =~ %r{mcp/transcoder/(.*/.*)\.plist}
+  Dir[MCP_LIB + '/mcp/transcoder/presets/*/*.plist'].each do |path|
+    path =~ %r{mcp/transcoder/presets/(.*/.*)\.plist}
     presets << $1
   end
   if $properties["Global Resource Path"]
-    Dir["#{$properties["Global Resource Path"]}/Resources/Transcoder/*/*.plist"].each do |path|
-      path =~ %r{.*/Resources/Transcoder/(.*/.*)\.plist}
+    Dir["#{$properties["Global Resource Path"]}/Resources/Transcoder/Presets/*/*.plist"].each do |path|
+      path =~ %r{.*/Resources/Transcoder/Presets/(.*/.*)\.plist}
       presets << $1 unless presets.include?($1)
     end
   end
   if $properties["Workflow Resource Path"]
-    Dir["#{$properties["Workflow Resource Path"]}/Resources/Transcoder/*/*.plist"].each do |path|
-      path =~ %r{.*/Resources/Transcoder/(.*/.*)\.plist}
+    Dir["#{$properties["Workflow Resource Path"]}/Resources/Transcoder/Presets/*/*.plist"].each do |path|
+      path =~ %r{.*/Resources/Transcoder/Presets/(.*/.*)\.plist}
       presets << $1 unless presets.include?($1)
     end
   end
@@ -102,17 +102,78 @@ def preset_for_transcoder(engine, preset)
     else
       require_preset(engine, preset)
       if $properties["Workflow Resource Path"]
-        settings = "#{$properties["Workflow Resource Path"]}/Resources/Transcoder/#{engine}/#{preset}.plist"
+        settings = "#{$properties["Workflow Resource Path"]}/Resources/Transcoder/Presets/#{engine}/#{preset}.plist"
       end
       unless settings && File.exist?(settings)
         if $properties["Global Resource Path"]
-          settings = "#{$properties["Global Resource Path"]}/Resources/Transcoder/#{engine}/#{preset}.plist"
+          settings = "#{$properties["Global Resource Path"]}/Resources/Transcoder/Presets/#{engine}/#{preset}.plist"
         end
       end
       unless settings && File.exist?(settings)
-        settings = MCP_LIB + "/mcp/transcoder/#{engine}/#{preset}.plist"
+        settings = MCP_LIB + "/mcp/transcoder/presets/#{engine}/#{preset}.plist"
       end
     end
   end
   settings
 end
+
+### script helper methods
+
+def script_list
+  scripts = []
+  Dir[MCP_LIB + '/mcp/transcoder/scripts/*.plist'].each do |path|
+    path =~ %r{mcp/transcoder/scripts/(.*)\.plist}
+    scripts << $1
+  end
+  if $properties["Global Resource Path"]
+    Dir["#{$properties["Global Resource Path"]}/Resources/Transcoder/Scripts/*.plist"].each do |path|
+      path =~ %r{.*/Resources/Transcoder/Scripts/(.*)\.plist}
+      scripts << $1 unless scripts.include?($1)
+    end
+  end
+  if $properties["Workflow Resource Path"]
+    Dir["#{$properties["Workflow Resource Path"]}/Resources/Transcoder/Scripts/*.plist"].each do |path|
+      path =~ %r{.*/Resources/Transcoder/Scripts/(.*)\.plist}
+      scripts << $1 unless scripts.include?($1)
+    end
+  end
+  scripts.sort
+end
+
+def available_scripts(engine)
+  script_list.collect do |script|
+    "  #{$1}\n"
+  end
+end
+
+def require_script(script)
+  unless script_list.include? script
+    log_crit_and_exit("specified script '#{script}' not found",-1)
+  end
+end
+
+def script_for_transcoder(engine, script)
+  if script =~ /.*\.plist$/ && File.exist?(script) && !File.directory?(script)
+    settings = script
+  else
+    if engine == 'quicktime'
+      require_encoder(script)
+      settings = settings_for_encoder(script)
+    else
+      require_script(engine, script)
+      if $properties["Workflow Resource Path"]
+        settings = "#{$properties["Workflow Resource Path"]}/Resources/Transcoder/Scripts/#{script}.plist"
+      end
+      unless settings && File.exist?(settings)
+        if $properties["Global Resource Path"]
+          settings = "#{$properties["Global Resource Path"]}/Resources/Transcoder/Scripts/#{script}.plist"
+        end
+      end
+      unless settings && File.exist?(settings)
+        settings = MCP_LIB + "/mcp/transcoder/scripts/#{script}.plist"
+      end
+    end
+  end
+  settings
+end
+

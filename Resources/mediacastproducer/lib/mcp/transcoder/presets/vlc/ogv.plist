@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>mimetype</key>
+    <string>video/ogv</string>
+    <key>extension</key>
+    <string>ogv</string>
+    <key>script</key>
+    <string>vlc2ogv</string>
+    <key>defaults</key>
+    <dict>
+        <key>video_quality</key>
+        <integer>5</integer>
+        <key>video_bitrate</key>
+        <integer>700</integer>
+        <key>video_width</key>
+        <integer>320</integer>
+        <key>video_height</key>
+        <integer>240</integer>
+        <key>audio_quality</key>
+        <integer>1</integer>
+        <key>audio_bitrate</key>
+        <integer>64</integer>
+        <key>audio_channels</key>
+        <integer>2</integer>
+        <key>audio_samplerate</key>
+        <integer>44100</integer>
+    </dict>
+</dict>
+</plist>
