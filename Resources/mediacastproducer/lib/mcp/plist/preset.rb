@@ -1,10 +1,10 @@
 #
 #  Copyright (c) 2011 Stephan Jorek.  All Rights Reserved.
 #
-require 'mcp/encoder/template'
+require 'mcp/plist/template'
 
 module MediacastProducer
-  module Encoder
+  module Plist
     class Preset < MediacastProducer::PropertyList
       def defaults
         return @defaults unless @defaults.nil?

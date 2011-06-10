@@ -9,8 +9,8 @@
 #
 
 require 'mcp/transcoder/base'
-require 'mcp/contrib/plists'
-require 'mcp/template_string'
+require 'mcp/plist/preset'
+require 'mcp/misc/template_string'
 require 'shellwords'
 
 module MediacastProducer
@@ -41,23 +41,19 @@ module MediacastProducer
         path = template_for_transcoder(@template)
         log_notice('path: ' + path.to_s)
 
-        plist = CFPropertyList::List.new.load(path)
-        #        puts plist.to_xml
-        config = CFPropertyList.native_types(plist)
-        @more_options_usage = config['usage']
+        tpl = MediacastProducer::Plist::Template.new(path)
+        @more_options_usage = tpl.usage
         print_subcommand_usage(name) if arguments.nil? || arguments.empty?
-        data = {}
-        opts = {}
         getopt_args = []
         plural_options = []
-        config['options'].collect do |option,opttype|
+        tpl.options.each do |option,opttype|
           if option[-1..-1] == "*"
             option = option[0..-2]
             plural_option = option + "s"
             plural_options << plural_option
           end
           getopt_args << ["--#{option}", GetoptLong::OPTIONAL_ARGUMENT]
-          opts[option.to_sym] = opttype
+          @more_options << option
         end
         subcommand_getopt = GetoptLong.new(*getopt_args)
         subcommand_getopt.each do |option, value|
@@ -73,39 +69,19 @@ module MediacastProducer
             end
           end
         end
-        @more_options = opts
-        #        $subcommand_options.each do |k,v|
-        #          puts "#{k}: #{v}"
-        #        end
-        opts.each do |option,opttype|
+        arguments = ARGV
+        data = {}
+        tpl.sanatize_options($subcommand_options).collect do |option, value|
           require_option(option)
-          puts "#{option}: #{opttype}"
-
-          val = $subcommand_options[option]
-          begin
-            if opttype.downcase == "integer"
-              val = Integer(val)
-            elsif opttype.downcase == "real"
-              val = Float(val)
-            end
-          rescue ArgumentError => e
-            log_crit_and_exit("argument '--#{option}' got an #{e.message}", ERR_INVALID_ARG_TYPE)
-          end
-          data[option.to_s] = val.to_s.shellescape
+          data[option] = value.to_s.shellescape
         end
-        commands = []
-        config['commands'].split(',').each do |c|
-          #          puts c
-          commands << c
-          data[c.to_s] = c.to_s.shellescape
+        tpl.commands.each do |c|
+          data[c] = c.to_s.shellescape
         end
         data['input'] = @input.to_s.shellescape
         data['output'] = @output.to_s.shellescape
-        config['arguments'].collect do |a|
-          #          puts a
-          b = MediacastProducer::Template.substitute(a,data)
-          #          puts b
-          arguments << b
+        tpl.arguments.each do |arg|
+          arguments << MediacastProducer::Misc::TemplateString.substitute(arg,data)
         end
         log_notice("arguments: #{arguments.join(' ')}")
         unless true

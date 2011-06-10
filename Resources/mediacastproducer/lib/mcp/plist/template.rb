@@ -1,10 +1,10 @@
 #
 #  Copyright (c) 2011 Stephan Jorek.  All Rights Reserved.
 #
-require 'mcp/propertylist'
+require 'mcp/plist/propertylist'
 
 module MediacastProducer
-  module Encoder
+  module Plist
     class Template < MediacastProducer::PropertyList
       def arguments
         return @arguments unless @arguments.nil?
@@ -19,6 +19,11 @@ module MediacastProducer
       def options
         return @options unless @options.nil?
         @options = data['options'].collect
+      end
+
+      def usage
+        return @usage unless @usage.nil?
+        @usage = data['usage']
       end
 
       def sanatize_option(value, type)
