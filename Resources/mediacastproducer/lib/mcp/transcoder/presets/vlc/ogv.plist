@@ -4,9 +4,9 @@
 <dict>
     <key>mimetype</key>
     <string>video/ogv</string>
-    <key>extension</key>
-    <string>ogv</string>
-    <key>script</key>
+    <key>extensions</key>
+    <string>ogv,ogg</string>
+    <key>template</key>
     <string>vlc2ogv</string>
     <key>defaults</key>
     <dict>

@@ -10,7 +10,7 @@
 
 require 'mcp/transcoder/base'
 require 'mcp/contrib/plists'
-require 'mcp/template'
+require 'mcp/template_string'
 require 'shellwords'
 
 module MediacastProducer
@@ -34,11 +34,11 @@ module MediacastProducer
         @more_options_usage
       end
 
-      def script(arguments)
+      def template(arguments)
 
-        log_notice('script: ' + @script.to_s)
+        log_notice('template: ' + @template.to_s)
 
-        path = script_for_transcoder(@script)
+        path = template_for_transcoder(@template)
         log_notice('path: ' + path.to_s)
 
         plist = CFPropertyList::List.new.load(path)
@@ -109,7 +109,7 @@ module MediacastProducer
         end
         log_notice("arguments: #{arguments.join(' ')}")
         unless true
-          log_crit_and_exit("Failed to transcode '#{@input}' to '#{@output}' with script '#{@script}'", -1)
+          log_crit_and_exit("Failed to transcode '#{@input}' to '#{@output}' with template '#{@template}'", -1)
         end
       end
     end

@@ -156,17 +156,17 @@ module MediacastProducer
     
     module ToolWithIOScript
       def description
-        "transcodes the INPUT file to the OUTPUT file with the specified SCRIPT"
+        "transcodes the INPUT file to the OUTPUT file with the specified tool TEMPLATE"
       end
       
       def options
-        ["input*", "output", "script"] + more_options
+        ["input*", "output", "template"] + more_options
       end
       
       def options_usage
-        "usage:  #{name} --prb=PRB --input=INPUT --output=OUTPUT --script=SCRIPT\n" +
+        "usage:  #{name} --prb=PRB --input=INPUT --output=OUTPUT --template=TEMPLATE\n" +
         "#{more_options_usage}\n" +
-        "the available scripts are:\n#{available_scripts}\n"
+        "the available templates are:\n#{available_templates}\n"
       end
       
       def run(arguments)
@@ -179,8 +179,8 @@ module MediacastProducer
         require_option(:output) if options.include?("output")
         @output = $subcommand_options[:output]
         
-        require_option(:script) if options.include?("script")
-        @script = $subcommand_options[:script]
+        require_option(:template) if options.include?("template")
+        @template = $subcommand_options[:template]
         
         if options.include?("input*")
           check_input_and_output_paths_are_not_equal(@input, @output) if options.include?("output")
@@ -188,11 +188,11 @@ module MediacastProducer
         end
         check_output_file(@output) if options.include?("output")
         
-        script(arguments)
+        template(arguments)
       end
       
-      def script(arguments)
-        raise McastToolException.new, self.to_s + ": Missing 'script' implementation."
+      def template(arguments)
+        raise McastToolException.new, self.to_s + ": Missing 'template' implementation."
       end
     end
     

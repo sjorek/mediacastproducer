@@ -19,7 +19,7 @@
 # be used as a replacement.
 
 module MediacastProducer
-  class Template
+  class TemplateString
     # Construct the template object with the template and the
     # replacement values.  "values" can be a hash, a function,
     # or a method.
@@ -67,7 +67,7 @@ module MediacastProducer
     # A class method for direct calls
     # returns in_str with values substituted
     def self.substitute(in_str, values, replace_str='###')
-      MediacastProducer::Template.new(in_str, values, replace_str).to_s
+      self.new(in_str, values, replace_str).to_s
     end
   end
 
