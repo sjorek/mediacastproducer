@@ -9,17 +9,17 @@
 
 require 'mcp/tools/base'
 
-MPEG4_FASTSTART = File.join(MCP_LIBEXEC,"mp4-faststart.py")
+MP4_FASTSTART = File.join(MCP_LIBEXEC,"mp4-faststart.py")
 
 module MediacastProducer
   module Tools
-    class Mpeg4Faststart < Base
+    class MP4Faststart < Base
       def initialize(path_to_tool=nil)
         super(path_to_tool)
       end
 
       def lookup_path
-        path = MPEG4_FASTSTART
+        path = MP4_FASTSTART
         return nil if path == "" || !File.executable?(path)
         log_notice(self.to_s + ": found #{name}: " + path.to_s)
         path

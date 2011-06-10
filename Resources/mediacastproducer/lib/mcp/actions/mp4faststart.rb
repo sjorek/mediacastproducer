@@ -14,14 +14,14 @@ require 'mcp/qt/qt'
 module PodcastProducer
   module Actions
 
-    class Mpeg4Faststart < Base
+    class MP4Faststart < Base
       def command
         return @command unless @command.nil?
         c = tool_with_name(name)
         @command = c.valid? unless c.nil?
       end
       def usage
-        "#{name}: optimize Quicktime or Mp4-alike for streaming\n\n" +
+        "#{name}: optimize Mp4-alike (inkl. Quicktime) or for streaming\n\n" +
         "usage: #{name} --prb=PRB --input=INPUT\n"+
         "                [--output=OUTPUT]  write to OUTPUT, otherwise work in place on INPUT\n" +
         "                [--streamable]     test and exits accordingly with 0 or 1; e.g.:\n" +
@@ -31,7 +31,6 @@ module PodcastProducer
         ["input*", "streamable", "output"]
       end
       def run(arguments)
-        log_crit_and_exit("Failed to setup tools: #{name}", -1) if command.nil?
         
         require_plural_option(:inputs, 1, 1)
         
@@ -62,6 +61,7 @@ module PodcastProducer
             return
           end
         else
+          log_crit_and_exit("Failed to setup tools: #{name}", -1) if command.nil?
           log_notice('faststart optimization for streaming')
           exec_args = [input]
           exec_args << output if output
