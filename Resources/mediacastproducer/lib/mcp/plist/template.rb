@@ -5,7 +5,7 @@ require 'mcp/plist/propertylist'
 
 module MediacastProducer
   module Plist
-    class Template < MediacastProducer::PropertyList
+    class Template < PropertyList
       def arguments
         return @arguments unless @arguments.nil?
         @arguments = data['arguments'].collect
@@ -28,7 +28,7 @@ module MediacastProducer
 
       def sanatize_option(value, type)
         if value == nil
-          raise ArgumentError.new, 'invalid value: nil'
+          raise ArgumentError.new, 'invalid or missing value'
         elsif type.downcase == "integer"
           return Integer(value)
         elsif type.downcase == "real"
@@ -37,15 +37,18 @@ module MediacastProducer
         value
       end
 
-      def sanatize_options(input)
+      def sanatize_options(required=true)
         options.each do |opt,type|
+          require_option(opt.to_sym) if required
           begin
-            yield opt, sanatize_option(input[opt.to_sym], type)
+            val = sanatize_option($subcommand_options[opt.to_sym], type)
           rescue ArgumentError => e
             log_crit_and_exit("argument '--#{opt}' got an #{e.message}", ERR_INVALID_ARG_TYPE)
           end
+          yield opt, val if block_given?
         end
       end
+
     end
 
   end

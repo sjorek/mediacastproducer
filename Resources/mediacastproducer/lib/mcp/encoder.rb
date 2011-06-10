@@ -139,7 +139,11 @@ class Encoder
     
     sanitized_arguments = passed_args.gsub(/--(master_)?pass(word)?(=|\s)(\".*\"|\S*)/, '--\1pass\2=*****')
     subcommand.log_notice("START: [Working directory: #{$working_directory}] {Arguments: #{sanitized_arguments}} v.#{$productinfo[:version]}")
-    subcommand.run(ARGV)
+    begin
+      subcommand.run(ARGV)
+    rescue McastException => e
+      log_crit_and_exit(e.message,e.return_code.to_i)
+    end
     subcommand.log_notice("FINISH")
     
   end

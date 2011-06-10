@@ -8,9 +8,10 @@
 #  another platform without Apple's written consent.
 #
 
-require 'mcp/common/mcast_exception'
 require 'rubygems'
 require 'shellwords'
+require 'mcp/common/mcast_exception'
+require 'mcp/tools'
 
 module MediacastProducer
   module Tools

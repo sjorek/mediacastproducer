@@ -18,8 +18,10 @@
 # which is the key, and returns a single value, which is the string to
 # be used as a replacement.
 
+require 'mcp/common/mcast_exception'
+
 module MediacastProducer
-  module Misc
+  module Common
     class TemplateString
       # Construct the template object with the template and the
       # replacement values.  "values" can be a hash, a function,
@@ -52,9 +54,11 @@ module MediacastProducer
         out_str = @template.clone()
         @replace_strs.keys.each { |replace_str|
           out_str.gsub!( /#{replace_str}(.*?)#{replace_str}/ ) {
-            puts $1
-            val = @replace_strs[ replace_str ].call( $1 )
-            raise McastTemplateException.new, "Key '#{$1}' found in template but the value has not been set" if val.nil?
+            begin
+              val = @replace_strs[ replace_str ].call( $1 )
+            rescue IndexError => e
+              raise McastTemplateException.new, "Unknown key '#{$1}' found in template"
+            end
             val.to_s
           }
         }

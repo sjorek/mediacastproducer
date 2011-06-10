@@ -5,7 +5,7 @@ require 'mcp/plist/template'
 
 module MediacastProducer
   module Plist
-    class Preset < MediacastProducer::PropertyList
+    class Preset < PropertyList
       def defaults
         return @defaults unless @defaults.nil?
         @defaults = data['defaults'].collect
@@ -30,10 +30,11 @@ module MediacastProducer
         template.options.each do |opt, type|
           value = (input.nil? || input[opt.to_sym].nil?) ? defaults[opt] : input[opt.to_sym]
           begin
-            yield opt, template.sanatize_option(value, type)
+            val = template.sanatize_option(value, type)
           rescue ArgumentError => e
             log_crit_and_exit("argument '--#{opt}' got an #{e.message}", ERR_INVALID_ARG_TYPE)
           end
+          yield opt, val if block_given?
         end
       end
     end

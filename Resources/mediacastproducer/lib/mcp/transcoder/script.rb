@@ -10,7 +10,7 @@
 
 require 'mcp/transcoder/base'
 require 'mcp/plist/preset'
-require 'mcp/misc/template_string'
+require 'mcp/common/template_string'
 require 'shellwords'
 
 module MediacastProducer
@@ -43,10 +43,13 @@ module MediacastProducer
 
         tpl = MediacastProducer::Plist::Template.new(path)
         @more_options_usage = tpl.usage
+        
         print_subcommand_usage(name) if arguments.nil? || arguments.empty?
+        
         getopt_args = []
         plural_options = []
         tpl.options.each do |option,opttype|
+          log_notice("#{option}: #{opttype}")
           if option[-1..-1] == "*"
             option = option[0..-2]
             plural_option = option + "s"
@@ -69,10 +72,9 @@ module MediacastProducer
             end
           end
         end
-        arguments = ARGV
         data = {}
-        tpl.sanatize_options($subcommand_options).collect do |option, value|
-          require_option(option)
+        tpl.sanatize_options.each do |option, value|
+          log_notice("#{option}: #{value}")
           data[option] = value.to_s.shellescape
         end
         tpl.commands.each do |c|
@@ -80,11 +82,15 @@ module MediacastProducer
         end
         data['input'] = @input.to_s.shellescape
         data['output'] = @output.to_s.shellescape
-        tpl.arguments.each do |arg|
-          arguments << MediacastProducer::Misc::TemplateString.substitute(arg,data)
+        begin
+          tpl.arguments.each do |arg|
+            arguments << MediacastProducer::Common::TemplateString.substitute(arg, data)
+          end
+        rescue McastTemplateException => e
+          log_crit_and_exit(e.message,e.return_code.to_i)
         end
-        log_notice("arguments: #{arguments.join(' ')}")
-        unless true
+        log_notice(arguments.join(' '))
+        unless false
           log_crit_and_exit("Failed to transcode '#{@input}' to '#{@output}' with template '#{@template}'", -1)
         end
       end
