@@ -25,12 +25,12 @@ module MediacastProducer
         #        log_notice(self.to_s + ": searching ffmpeg: #{FFMPEG_WHICH}")
         path = `#{FFMPEG_WHICH}`.chop
         return nil if path == "" || !File.executable?(path)
-        log_notice(self.to_s + ": found ffmpeg: " + path.to_s)
+        log_notice(self.to_s + ": found #{name}: " + path.to_s)
         path
       end
 
       def lookup_version
-        `#{self.path} -version 2>/dev/null | head -n 1 | cut -f2 -d' '`.chop
+        `#{tool_path} -version 2>/dev/null | head -n 1 | cut -f2 -d' '`.chop
       end
     end
 

@@ -21,24 +21,29 @@ module MediacastProducer
       end
 
       def initialize(path_to_tool=nil, min_version=nil, max_version=nil)
-        @path = path_to_tool
-        @version = nil
+        @tool_path = path_to_tool
+        @tool_version = nil
         @required_min_version = min_version
         @required_max_version = max_version
+        @version_checked = nil
       end
 
-      def path
-        return @path unless @path.nil?
-        @path = lookup_path
-        raise McastToolException.new, self.class.to_s + ": could not lookup tool path: #{name}" if @path.nil?
-        @path
+      def name
+        self.class.name.split("::").last.downcase
       end
 
-      def version
-        return @version unless @version.nil?
-        @version = lookup_version
-        raise McastToolException.new, self.class.to_s + ": could not lookup tool version: #{name}" if @version.nil?
-        @version
+      def tool_path
+        return @tool_path unless @tool_path.nil?
+        @tool_path = lookup_path
+        raise McastToolException.new, self.class.to_s + ": could not lookup tool path: #{name}" if @tool_path.nil?
+        @tool_path
+      end
+
+      def tool_version
+        return @tool_version unless @tool_version.nil?
+        @tool_version = lookup_version
+        raise McastToolException.new, self.class.to_s + ": could not lookup tool version: #{name}" if @tool_version.nil?
+        @tool_version
       end
 
       def lookup_path
@@ -50,42 +55,38 @@ module MediacastProducer
       end
 
       def check_version
-        return false if version.nil?
-        return true  if @required_min_version.nil? && @required_max_version.nil?
-        ver = Gem::Version.new(version)
+        return @version_checked unless @version_checked.nil?
+        return (@version_checked = true)  if @required_min_version.nil? && @required_max_version.nil?
+        return (@version_checked = false) if tool_version.nil?
+        ver = Gem::Version.new(tool_version)
         unless @required_min_version.nil?
           min = Gem::Version.new(@required_min_version)
           unless min <= ver
-            log_error(self.class.to_s + ": minimum version #{@required_min_version} requirement failed for version #{version}")
-            return false
+            log_error(self.class.to_s + ": minimum version #{@required_min_version} requirement failed for version #{tool_version}")
+            return (@version_checked = false)
           end
         end
         unless @required_max_version.nil?
           max = Gem::Version.new(@required_max_version)
           log_crit_and_exit(self.class.to_s + ": invalid requirement version maximum #{@required_max_version} < minimum #{@required_min_version}", -1) unless @required_min_version.nil? || min <= max
           unless ver <= max
-            log_error(self.class.to_s + ": maximum version #{@required_max_version} requirement failed for version #{version}")
-            return false
+            log_error(self.class.to_s + ": maximum version #{@required_max_version} requirement failed for version #{tool_version}")
+            return (@version_checked = false)
           end
         end
         log_notice(self.class.to_s + ": passed version check")
-        return true
+        return (@version_checked = true)
       end
 
       def valid?
-        return (path.nil? || !check_version) ? nil : self
+        return (tool_path.nil? || !check_version) ? nil : self
       end
 
-      def path
-        log_crit_and_exit("failed to get command for tool, due to unsatisfied dependencies",ERR_TOOL_FAILURE) unless valid?
-        log_notice("running: #{path} #{arguments.join(' ')}")
-        path.to_s.shellescape
-      end
-
-      def run(arguments)
+      def run(*arguments)
         log_crit_and_exit("failed to run tool with arguments, due to unsatisfied dependencies",ERR_TOOL_FAILURE) unless valid?
-        log_notice("running: #{path} #{arguments.join(' ')}")
-        do_script(path.to_s, arguments)
+        log_notice("running: #{tool_path} #{arguments.join(' ')}")
+        arguments.unshift(tool_path)
+        fork_exec_and_wait(*arguments)
       end
     end
   end

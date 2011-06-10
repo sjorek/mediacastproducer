@@ -18,6 +18,7 @@ module MediacastProducer
     end
     
     def self.tool_instances
+      load_tools if @@tool_classes.empty?
       @@tool_classes.map { |tool_class| tool_class.new }
     end
     
@@ -32,6 +33,6 @@ module MediacastProducer
 end
 
 def tool_with_name(tool_name)
-  tool_instances.find {|obj| obj.name == tool_name}
+  MediacastProducer::Tools.tool_instances.find {|obj| obj.name == tool_name}
 end
 

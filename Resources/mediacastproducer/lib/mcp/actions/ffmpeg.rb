@@ -7,21 +7,12 @@
 #  another platform without Apple's written consent.
 #
 
-require 'mcp/transcoder/base'
-require 'mcp/tools/ffmpeg'
+require 'mcp/actions/base'
 
-module MediacastProducer
-  module Transcoder
+module PodcastProducer
+  module Actions
     class FFMpeg < Base
-      include MediacastProducer::Transcoder::ToolWithArguments
-      def setup
-        @ffmpeg = MediacastProducer::Tools::FFMpeg.load if @ffmpeg.nil?
-      end
-
-      def command
-        @ffmpeg
-      end
+      include MediacastProducer::Actions::ToolWithArguments
     end
-
   end
 end

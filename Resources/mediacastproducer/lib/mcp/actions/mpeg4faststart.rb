@@ -11,15 +11,18 @@
 require 'actions/base'
 require 'mcp/qt/qt'
 
-MP4_FASTSTART = File.join(MCP_LIBEXEC,"mp4-faststart.py")
-
 module PodcastProducer
   module Actions
 
-    class Faststart < Base
+    class Mpeg4Faststart < Base
+      def command
+        return @command unless @command.nil?
+        c = tool_with_name(name)
+        @command = c.valid? unless c.nil?
+      end
       def usage
-        "faststart: optimize Quicktime or Mp4-alike for streaming\n\n" +
-        "usage: faststart --prb=PRB --input=INPUT\n"+
+        "#{name}: optimize Quicktime or Mp4-alike for streaming\n\n" +
+        "usage: #{name} --prb=PRB --input=INPUT\n"+
         "                [--output=OUTPUT]  write to OUTPUT, otherwise work in place on INPUT\n" +
         "                [--streamable]     test and exits accordingly with 0 or 1; e.g.:\n" +
         "                                   ... && echo true || echo false\n"
@@ -28,6 +31,8 @@ module PodcastProducer
         ["input*", "streamable", "output"]
       end
       def run(arguments)
+        log_crit_and_exit("Failed to setup tools: #{name}", -1) if command.nil?
+        
         require_plural_option(:inputs, 1, 1)
         
         input = $subcommand_options[:inputs][0]
@@ -58,9 +63,9 @@ module PodcastProducer
           end
         else
           log_notice('faststart optimization for streaming')
-          exec_args = [MP4_FASTSTART, input]
+          exec_args = [input]
           exec_args << output if output
-          return McastQT.fork_exec_and_wait(*exec_args)
+          command.run(*exec_args)
         end
         FileUtils.chmod_R(0644, output) if output
       end

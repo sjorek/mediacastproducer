@@ -8,18 +8,15 @@
 #  another platform without Apple's written consent.
 #
 
-require 'mcp/transcoder/base'
+require 'mcp/actions/base'
 require 'mcp/plist/preset'
 require 'mcp/common/template_string'
 require 'shellwords'
 
-module MediacastProducer
-  module Transcoder
-    class Script < Base
-      include MediacastProducer::Transcoder::ToolWithIOScript
-      def setup
-        true
-      end
+module PodcastProducer
+  module Actions
+    class ToolScript < Base
+      include MediacastProducer::Actions::ToolWithIOTemplate
 
       def initialize()
         @more_options = []

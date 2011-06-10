@@ -7,21 +7,12 @@
 #  another platform without Apple's written consent.
 #
 
-require 'mcp/transcoder/base'
-require 'mcp/tools/vlc'
+require 'mcp/actions/base'
 
-module MediacastProducer
-  module Transcoder
+module PodcastProducer
+  module Actions
     class VLC < Base
-      include MediacastProducer::Transcoder::ToolWithArguments
-      def setup
-        @vlc = MediacastProducer::Tools::VLC.load if @vlc.nil?
-      end
-
-      def command
-        @vlc
-      end
+      include MediacastProducer::Actions::ToolWithArguments
     end
-
   end
 end

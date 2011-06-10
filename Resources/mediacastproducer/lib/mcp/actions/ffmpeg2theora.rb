@@ -7,21 +7,12 @@
 #  another platform without Apple's written consent.
 #
 
-require 'mcp/transcoder/base'
-require 'mcp/tools/ffmpeg2theora'
+require 'mcp/actions/base'
 
-module MediacastProducer
-  module Transcoder
+module PodcastProducer
+  module Actions
     class FFMpeg2Theora < Base
-      include MediacastProducer::Transcoder::ToolWithArguments
-      def setup
-        @ffmpeg2theora = MediacastProducer::Tools::FFMpeg2Theora.load if @ffmpeg2theora.nil?
-      end
-
-      def command
-        @ffmpeg2theora
-      end
+      include MediacastProducer::Actions::ToolWithArguments
     end
-
   end
 end

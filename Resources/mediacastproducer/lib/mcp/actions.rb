@@ -39,3 +39,11 @@ def check_input_and_output_paths_are_not_equal(input, output)
   end
 end
 
+def fork_exec_and_wait(*args)
+  pid = fork { exec(*args) }
+  return false unless pid
+  Process.waitpid(pid)
+  return false unless $?.exited? && $?.exitstatus == 0
+  return true
+end
+

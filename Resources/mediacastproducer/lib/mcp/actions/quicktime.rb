@@ -8,16 +8,13 @@
 #  another platform without Apple's written consent.
 #
 
-require 'mcp/transcoder/base'
+require 'mcp/actions/base'
 require 'mcp/qt/qt'
 
-module MediacastProducer
-  module Transcoder
+module PodcastProducer
+  module Actions
     class Quicktime < Base
-      include MediacastProducer::Transcoder::ToolWithIOPreset
-      def setup
-        true
-      end
+      include MediacastProducer::Actions::ToolWithIOPreset
 
       def more_options
         []

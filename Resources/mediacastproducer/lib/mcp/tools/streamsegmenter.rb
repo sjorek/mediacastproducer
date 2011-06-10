@@ -24,12 +24,12 @@ module MediacastProducer
         #        log_notice(self.to_s + ": searching segmenter: " + STREAMSEGMENTER_PATH.to_s)
         path = Pathname.new(STREAMSEGMENTER_PATH).realpath.to_s
         return nil unless File.executable?(path)
-        log_notice(self.to_s + ": found segmenter: " + path)
+        log_notice(self.to_s + ": found #{name}: " + path)
         path
       end
 
       def lookup_version
-        `#{self.path} -v | head -n 1 | cut -f2 -d' '`.chop
+        `#{tool_path} -v | head -n 1 | cut -f2 -d' '`.chop
       end
     end
 

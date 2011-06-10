@@ -8,7 +8,6 @@
 #  another platform without Apple's written consent.
 #
 
-require 'mcp/actions'
 require 'mcp/common/mcast_exception'
 
 module MediacastProducer

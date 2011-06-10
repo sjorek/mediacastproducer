@@ -7,21 +7,12 @@
 #  another platform without Apple's written consent.
 #
 
-require 'mcp/transcoder/base'
-require 'mcp/tools/streamsegmenter'
+require 'mcp/actions/base'
 
-module MediacastProducer
-  module Transcoder
+module PodcastProducer
+  module Actions
     class StreamSegmenter < Base
-      include MediacastProducer::Transcoder::ToolWithArguments
-      def setup
-        @streamsegmenter = MediacastProducer::Tools::StreamSegmenter.load if @streamsegmenter.nil?
-      end
-
-      def command
-        @streamsegmenter
-      end
+      include MediacastProducer::Actions::ToolWithArguments
     end
-
   end
 end

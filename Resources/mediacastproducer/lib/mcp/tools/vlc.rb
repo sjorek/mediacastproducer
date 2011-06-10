@@ -39,12 +39,12 @@ module MediacastProducer
           end
         end
         return nil if path == "" || !File.executable?(path)
-        log_notice(self.to_s + ": found VLC.app: " + path.to_s)
+        log_notice(self.to_s + ": found #{name}: " + path.to_s)
         path
       end
 
       def lookup_version
-        `#{self.path} --intf dummy --version | head -n 1 | cut -f2 -d' '`.chop
+        `#{tool_path} --intf dummy --version | head -n 1 | cut -f2 -d' '`.chop
       end
     end
 
