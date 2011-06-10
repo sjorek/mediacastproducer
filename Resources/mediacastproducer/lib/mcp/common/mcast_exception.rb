@@ -19,6 +19,12 @@ class McastToolException < McastException
   end
 end
 
+class McastTemplateException < McastException
+  def initialize(return_code=ERR_TEMPLATE_FAILURE, message=nil)
+    super(return_code, message)
+  end
+end
+
 #require 'client'
 #
 #class PcastException < RuntimeError

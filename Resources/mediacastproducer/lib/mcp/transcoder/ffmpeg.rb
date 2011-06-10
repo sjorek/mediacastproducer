@@ -8,16 +8,16 @@
 #
 
 require 'mcp/transcoder/base'
-require 'mcp/commands/ffmpeg'
+require 'mcp/tools/ffmpeg'
 
 module MediacastProducer
   module Transcoder
 
     class FFMpeg < Base
-      include MediacastProducer::Transcoder::CommandWithArguments
+      include MediacastProducer::Transcoder::ToolWithArguments
       @@ffmpeg = nil
       def self.setup
-        @@ffmpeg = MediacastProducer::Commands::FFMpeg.load if @@ffmpeg.nil?
+        @@ffmpeg = MediacastProducer::Tools::FFMpeg.load if @@ffmpeg.nil?
       end
       def command
         @@ffmpeg

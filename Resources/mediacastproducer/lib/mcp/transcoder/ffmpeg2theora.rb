@@ -8,16 +8,16 @@
 #
 
 require 'mcp/transcoder/base'
-require 'mcp/commands/ffmpeg2theora'
+require 'mcp/tools/ffmpeg2theora'
 
 module MediacastProducer
   module Transcoder
 
     class FFMpeg2Theora < Base
-      include MediacastProducer::Transcoder::CommandWithArguments
+      include MediacastProducer::Transcoder::ToolWithArguments
       @@ffmpeg2theora = nil
       def self.setup
-        @@ffmpeg2theora = MediacastProducer::Commands::FFMpeg2Theora.load if @@ffmpeg2theora.nil?
+        @@ffmpeg2theora = MediacastProducer::Tools::FFMpeg2Theora.load if @@ffmpeg2theora.nil?
       end
       def command
         @@ffmpeg2theora

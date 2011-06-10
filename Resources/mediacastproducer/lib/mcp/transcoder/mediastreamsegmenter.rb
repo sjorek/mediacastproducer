@@ -8,16 +8,16 @@
 #
 
 require 'mcp/transcoder/base'
-require 'mcp/commands/mediastreamsegmenter'
+require 'mcp/tools/mediastreamsegmenter'
 
 module MediacastProducer
   module Transcoder
 
     class MediastreamSegmenter < Base
-      include MediacastProducer::Transcoder::CommandWithArguments
+      include MediacastProducer::Transcoder::ToolWithArguments
       @@mediastreamsegmenter = nil
       def self.setup
-        @@mediastreamsegmenter = MediacastProducer::Commands::MediastreamSegmenter.load if @@mediastreamsegmenter.nil?
+        @@mediastreamsegmenter = MediacastProducer::Tools::MediastreamSegmenter.load if @@mediastreamsegmenter.nil?
       end
       def command
         @@mediastreamsegmenter

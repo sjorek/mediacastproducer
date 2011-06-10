@@ -12,7 +12,7 @@
 #module MediacastProducer
 #  module Transcoder
 #    class VLC2Ogg < VLC
-#      include MediacastProducer::Transcoder::CommandWithIOPreset
+#      include MediacastProducer::Transcoder::ToolWithIOPreset
 #      def more_options
 #        super + 
 #        ["video_quality", "video_bitrate", "video_width", "video_height",

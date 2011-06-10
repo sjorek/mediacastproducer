@@ -7,7 +7,7 @@
 #  another platform without Apple's written consent.
 #
 
-require 'mcp/commands/base'
+require 'mcp/tools/base'
 
 VLC_SEARCH_PATH = "/Applications"
 VLC_BIN_NAME = "VLC"
@@ -19,7 +19,7 @@ VLC_MIN_VERSION = "1.1.9"
 VLC_MAX_VERSION = nil
 
 module MediacastProducer
-  module Commands
+  module Tools
 
     class VLC < Base
       @require_min_version = VLC_MIN_VERSION

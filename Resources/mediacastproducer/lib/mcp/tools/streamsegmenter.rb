@@ -7,14 +7,14 @@
 #  another platform without Apple's written consent.
 #
 
-require 'mcp/commands/base'
+require 'mcp/tools/base'
 
 STREAMSEGMENTER_PATH = File.join(MCP_BIN,"segmenter")
 STREAMSEGMENTER_MIN_VERSION = "1.0.1"
 STREAMSEGMENTER_MAX_VERSION = nil
 
 module MediacastProducer
-  module Commands
+  module Tools
 
     class StreamSegmenter < Base
       @require_min_version = STREAMSEGMENTER_MIN_VERSION

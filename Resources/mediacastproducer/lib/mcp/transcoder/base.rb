@@ -93,7 +93,7 @@ module MediacastProducer
       
     end
 
-    module CommandWithIOPreset
+    module ToolWithIOPreset
       def description
         "transcodes the input file to the output file with the specified preset"
       end
@@ -154,7 +154,7 @@ module MediacastProducer
       end
     end
     
-    module CommandWithIOScript
+    module ToolWithIOScript
       def description
         "transcodes the INPUT file to the OUTPUT file with the specified SCRIPT"
       end
@@ -196,7 +196,7 @@ module MediacastProducer
       end
     end
     
-    module CommandWithArguments
+    module ToolWithArguments
       def description
         "execute #{name} with passed arguments"
       end

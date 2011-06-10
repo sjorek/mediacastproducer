@@ -4,40 +4,48 @@
 <dict>
     <key>arguments</key>
     <array>
-        <string>#{vlc}</string>
+        <string>###vlc###</string>
         <string>-vvvv</string>
         <string>--intf</string>
         <string>dummy</string> 
         <string>--play-and-exit</string>
-        <string>#{input}</string>
+        <string>###input###</string>
         <string>--no-sout-transcode-hurry-up</string>
         <string>--no-ffmpeg-hurry-up</string>
         <string>--sout-transcode-high-priority</string>
-        <string>--sout-theora-quality=#{video_quality}</string>
-        <string>--sout-vorbis-quality=#{audio_quality}</string>
+        <string>--sout-theora-quality=###video_quality###</string>
+        <string>--sout-vorbis-quality=###audio_quality###</string>
         <string><![CDATA[--sout="#transcode{\
-            venc=theora,vcodec=theo,vb=#{video_bitrate},\
+            venc=theora,vcodec=theo,vb=###video_bitrate###,\
             scale=1,deinterlace=0,\
             croptop=0,cropbottom=0,cropleft=0,cropright=0,\
-            vfilter=canvas{width=#{video_width},height=#{video_height}},\
-            acodec=vorb,ab=#{audio_bitrate.to_i},\
-            channels=#{audio_channels},samplerate=#{audio_samplerate},\
+            vfilter=canvas{width=###video_width###,height=###video_height###},\
+            acodec=vorb,ab=###audio_bitrate###,\
+            channels=###audio_channels###,samplerate=###audio_samplerate###,\
             afilter=ugly_resampler}\
-            :standard{access=file,mux=ogg,dst='#{output}'}"]]></string>
+            :standard{access=file,mux=ogg,dst='###output###'}"]]></string>
     </array>
     <key>commands</key>
     <string>vlc</string>
     <key>options</key>
-    <array>
-        <string>video_quality</string>
-        <string>video_bitrate</string>
-        <string>video_width</string>
-        <string>video_height</string>
-        <string>audio_quality</string>
-        <string>audio_bitrate</string>
-        <string>audio_channels</string>
-        <string>audio_samplerate</string>
-    </array>
+    <dict>
+        <key>video_quality</key>
+        <string>integer</string>
+        <key>video_bitrate</key>
+        <string>integer</string>
+        <key>video_width</key>
+        <string>integer</string>
+        <key>video_height</key>
+        <string>integer</string>
+        <key>audio_quality</key>
+        <string>integer</string>
+        <key>audio_bitrate</key>
+        <string>integer</string>
+        <key>audio_channels</key>
+        <string>integer</string>
+        <key>audio_samplerate</key>
+        <string>integer</string>
+    </dict>
     <key>usage</key>
     <string>vlc2ogv ...</string>
 </dict>

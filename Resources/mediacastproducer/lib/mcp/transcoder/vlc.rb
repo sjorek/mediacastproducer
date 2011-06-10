@@ -8,16 +8,16 @@
 #
 
 require 'mcp/transcoder/base'
-require 'mcp/commands/vlc'
+require 'mcp/tools/vlc'
 
 module MediacastProducer
   module Transcoder
 
     class VLC < Base
-      include MediacastProducer::Transcoder::CommandWithArguments
+      include MediacastProducer::Transcoder::ToolWithArguments
       @@vlc = nil
       def self.setup
-        @@vlc = MediacastProducer::Commands::VLC.load if @@vlc.nil?
+        @@vlc = MediacastProducer::Tools::VLC.load if @@vlc.nil?
       end
       def command
         @@vlc

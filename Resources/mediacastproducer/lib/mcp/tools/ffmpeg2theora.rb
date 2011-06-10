@@ -7,7 +7,7 @@
 #  another platform without Apple's written consent.
 #
 
-require 'mcp/commands/base'
+require 'mcp/tools/base'
 
 FFMPEG2THEORA_BIN = "ffmpeg2theora"
 FFMPEG2THEORA_WHICH = "/usr/bin/which #{FFMPEG2THEORA_BIN}"
@@ -15,7 +15,7 @@ FFMPEG2THEORA_MIN_VERSION = "0.27"
 FFMPEG2THEORA_MAX_VERSION = nil
 
 module MediacastProducer
-  module Commands
+  module Tools
 
     class FFMpeg2Theora < Base
       @require_min_version = FFMPEG2THEORA_MIN_VERSION

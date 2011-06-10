@@ -12,7 +12,7 @@ require 'mcp/common/mcast_exception'
 require 'rubygems'
 
 module MediacastProducer
-  module Commands
+  module Tools
     class Base
       @binary = nil
       @version = nil

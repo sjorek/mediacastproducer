@@ -7,7 +7,7 @@
 #  another platform without Apple's written consent.
 #
 
-require 'mcp/commands/base'
+require 'mcp/tools/base'
 
 MEDIASTREAMSEGMENTER_BIN = "mediastreamsegmenter"
 MEDIASTREAMSEGMENTER_WHICH = "/usr/bin/which #{MEDIASTREAMSEGMENTER_BIN}"
@@ -15,7 +15,7 @@ MEDIASTREAMSEGMENTER_MIN_VERSION = "10.2.10"
 MEDIASTREAMSEGMENTER_MAX_VERSION = nil
 
 module MediacastProducer
-  module Commands
+  module Tools
 
     class MediastreamSegmenter < Base
       @require_min_version = MEDIASTREAMSEGMENTER_MIN_VERSION
