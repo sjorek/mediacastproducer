@@ -1,65 +1,90 @@
-#  
+#
 #  Copyright (c) 2011 Stephan Jorek.  All Rights Reserved.
 #  Copyright (c) 2006-2010 Apple Inc.  All Rights Reserved.
 #
-#  IMPORTANT NOTE:  This file is licensed only for use on Apple-labeled computers 
-#  and is subject to the terms and conditions of the Apple Software License Agreement 
-#  accompanying the package this file is a part of.  You may not port this file to 
+#  IMPORTANT NOTE:  This file is licensed only for use on Apple-labeled computers
+#  and is subject to the terms and conditions of the Apple Software License Agreement
+#  accompanying the package this file is a part of.  You may not port this file to
 #  another platform without Apple's written consent.
 #
 
 require 'mcp/common/mcast_exception'
 require 'rubygems'
+require 'shellwords'
 
 module MediacastProducer
   module Tools
     class Base
-      @binary = nil
-      @version = nil
-      @require_min_version = nil
-      @require_max_version = nil
-      def self.binary
-         return @binary unless @binary.nil?
-         @binary = lookup_binary
+      def self.inherited(subclass)
+        MediacastProducer::Tools.add_tool_class(subclass)
       end
-      def self.version
-         return @version unless @version.nil?
-         @version = lookup_version
+
+      def initialize(path_to_tool=nil, min_version=nil, max_version=nil)
+        @path = path_to_tool
+        @version = nil
+        @required_min_version = min_version
+        @required_max_version = max_version
       end
-      def self.lookup_binary
-        raise McastToolException.new, self.to_s + ": Missing 'lookup_binary' implementation."
+
+      def path
+        return @path unless @path.nil?
+        @path = lookup_path
+        raise McastToolException.new, self.class.to_s + ": could not lookup tool path: #{name}" if @path.nil?
+        @path
       end
-      def self.lookup_version
-        raise McastToolException.new, self.to_s + ": Missing 'lookup_version' implementation."
+
+      def version
+        return @version unless @version.nil?
+        @version = lookup_version
+        raise McastToolException.new, self.class.to_s + ": could not lookup tool version: #{name}" if @version.nil?
+        @version
       end
-      def self.check_version
-        return false if self.version.nil?
-        return true  if @require_min_version.nil? && @require_max_version.nil?
-        ver = Gem::Version.new(self.version)
-        unless @require_min_version.nil?
-          min = Gem::Version.new(@require_min_version)
+
+      def lookup_path
+        raise McastToolException.new, self.class.to_s + ": Missing 'lookup_path' implementation."
+      end
+
+      def lookup_version
+        raise McastToolException.new, self.class.to_s + ": Missing 'lookup_version' implementation."
+      end
+
+      def check_version
+        return false if version.nil?
+        return true  if @required_min_version.nil? && @required_max_version.nil?
+        ver = Gem::Version.new(version)
+        unless @required_min_version.nil?
+          min = Gem::Version.new(@required_min_version)
           unless min <= ver
-            log_error(self.to_s + ": minimum version #{@require_min_version} requirement failed for version #{self.version}")
+            log_error(self.class.to_s + ": minimum version #{@required_min_version} requirement failed for version #{version}")
             return false
           end
         end
-        unless @require_max_version.nil?
-          max = Gem::Version.new(@require_max_version)
-          log_crit_and_exit(self.to_s + ": invalid requirement version maximum #{@require_max_version} < minimum #{@require_min_version}", -1) unless @require_min_version.nil? || min <= max
+        unless @required_max_version.nil?
+          max = Gem::Version.new(@required_max_version)
+          log_crit_and_exit(self.class.to_s + ": invalid requirement version maximum #{@required_max_version} < minimum #{@required_min_version}", -1) unless @required_min_version.nil? || min <= max
           unless ver <= max
-            log_error(self.to_s + ": maximum version #{@require_max_version} requirement failed for version #{self.version}")
+            log_error(self.class.to_s + ": maximum version #{@required_max_version} requirement failed for version #{version}")
             return false
           end
         end
-        log_notice(self.to_s + ": passed version check")
+        log_notice(self.class.to_s + ": passed version check")
         return true
       end
-      def self.load
-        return (self.binary.nil? || !self.check_version) ? nil : self
+
+      def valid?
+        return (path.nil? || !check_version) ? nil : self
       end
-      def self.run(arguments)
-        log_notice("running: #{self.binary} #{arguments.join(' ')}")
-        return do_script(self.binary.to_s, arguments)
+
+      def path
+        log_crit_and_exit("failed to get command for tool, due to unsatisfied dependencies",ERR_TOOL_FAILURE) unless valid?
+        log_notice("running: #{path} #{arguments.join(' ')}")
+        path.to_s.shellescape
+      end
+
+      def run(arguments)
+        log_crit_and_exit("failed to run tool with arguments, due to unsatisfied dependencies",ERR_TOOL_FAILURE) unless valid?
+        log_notice("running: #{path} #{arguments.join(' ')}")
+        do_script(path.to_s, arguments)
       end
     end
   end

@@ -1,9 +1,9 @@
-#  
+#
 #  Copyright (c) 2011 Stephan Jorek.  All Rights Reserved.
 #
-#  IMPORTANT NOTE:  This file is licensed only for use on Apple-labeled computers 
-#  and is subject to the terms and conditions of the Apple Software License Agreement 
-#  accompanying the package this file is a part of.  You may not port this file to 
+#  IMPORTANT NOTE:  This file is licensed only for use on Apple-labeled computers
+#  and is subject to the terms and conditions of the Apple Software License Agreement
+#  accompanying the package this file is a part of.  You may not port this file to
 #  another platform without Apple's written consent.
 #
 
@@ -12,15 +12,14 @@ require 'mcp/tools/ffmpeg2theora'
 
 module MediacastProducer
   module Transcoder
-
     class FFMpeg2Theora < Base
       include MediacastProducer::Transcoder::ToolWithArguments
-      @@ffmpeg2theora = nil
-      def self.setup
-        @@ffmpeg2theora = MediacastProducer::Tools::FFMpeg2Theora.load if @@ffmpeg2theora.nil?
+      def setup
+        @ffmpeg2theora = MediacastProducer::Tools::FFMpeg2Theora.load if @ffmpeg2theora.nil?
       end
+
       def command
-        @@ffmpeg2theora
+        @ffmpeg2theora
       end
     end
 

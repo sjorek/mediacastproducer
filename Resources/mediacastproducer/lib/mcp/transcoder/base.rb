@@ -20,8 +20,8 @@ module MediacastProducer
         MediacastProducer::Transcoder.add_action_class(subclass)
       end
       
-      def self.setup
-        raise McastToolException.new, self.to_s + ": Missing 'self.setup' implementation."
+      def setup
+        raise McastToolException.new, self.to_s + ": Missing 'setup' implementation."
       end
       
       def command
@@ -109,20 +109,20 @@ module MediacastProducer
       end
       
       def more_options
-        ["binary", "version"]
+        ["path", "version"]
       end
       
       def more_options_usage
-        "           [--binary]   print path to executable binary and exit\n" +
-        "           [--version]  print executable binary version and exit\n"
+        "           [--path]   print path to executable path and exit\n" +
+        "           [--version]  print executable path version and exit\n"
       end
       
       def run(arguments)
         
-        log_crit_and_exit("Failed to setup tools for transcoder: #{name}", -1) unless self.class.setup()
+        log_crit_and_exit("Failed to setup tools for transcoder: #{name}", -1) unless setup
         
-        if options.include?("binary") && !$subcommand_options[:binary].nil?
-          puts command.binary
+        if options.include?("path") && !$subcommand_options[:path].nil?
+          puts command.path
           return
         end
         
@@ -171,7 +171,7 @@ module MediacastProducer
       
       def run(arguments)
         
-        log_crit_and_exit("Failed to setup tools for transcoder: #{name}", -1) unless self.class.setup()
+        log_crit_and_exit("Failed to setup tools for transcoder: #{name}", -1) unless setup
         
         require_plural_option(:inputs, 1, 1) if options.include?("input*")
         @input = $subcommand_options[:inputs][0]
@@ -202,20 +202,20 @@ module MediacastProducer
       end
       def options_usage
         "usage: #{name} --prb=PRB -- [--arguments passed to #{name}]\n" +
-        "         [--binary]   print path to executable binary and exit\n" +
-        "         [--version]  print executable binary version and exit\n" +
+        "         [--path]   print path to executable path and exit\n" +
+        "         [--version]  print executable path version and exit\n" +
         "#{more_options_usage}"# +
         # "the available presets are:\n#{available_presets(name)}\n"
       end
       def options
-        ["binary", "version"] + more_options
+        ["path", "version"] + more_options
       end
       def run(arguments)
         
-        log_crit_and_exit("Failed to setup tools for transcoder: #{name}", -1) unless self.class.setup()
+        log_crit_and_exit("Failed to setup tools for transcoder: #{name}", -1) unless setup
         
-        if options.include?("binary") && !$subcommand_options[:binary].nil?
-          puts command.binary
+        if options.include?("path") && !$subcommand_options[:path].nil?
+          puts command.path
           return
         end
         

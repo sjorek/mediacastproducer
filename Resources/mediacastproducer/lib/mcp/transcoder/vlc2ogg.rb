@@ -50,13 +50,13 @@
 #      end
 #      
 #      def validate_preset
-#        ![command.binary, @input, @output,
+#        ![command.path, @input, @output,
 #          @video_quality, @video_bitrate, @video_width, @video_height,
 #          @audio_quality, @audio_bitrate, @audio_channels, @audio_samplerate].include?(nil)
 #      end
 #      
 #      def compile_preset
-#        [command.binary,
+#        [command.path,
 #         #"-vvvv",
 #         "-I", "dummy", 
 #         "--play-and-exit", @input,
