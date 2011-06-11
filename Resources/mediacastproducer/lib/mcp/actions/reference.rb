@@ -9,7 +9,7 @@
 #
 
 require 'fileutils'
-require 'actions/base'
+require 'mcp/actions/base'
 require 'mcp/qt/qt'
 
 module PodcastProducer

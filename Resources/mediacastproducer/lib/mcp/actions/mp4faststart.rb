@@ -8,7 +8,7 @@
 #  another platform without Apple's written consent.
 #
 
-require 'actions/base'
+require 'mcp/actions/base'
 require 'mcp/qt/qt'
 
 module PodcastProducer

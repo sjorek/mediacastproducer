@@ -26,26 +26,27 @@ module MediacastProducer
       end
 
       def lookup_path
-        #        log_notice(self.to_s + ": searching VLC.app: #{VLC_LOCATE}")
+        #        log_notice("searching VLC.app: #{VLC_LOCATE}")
         path = `#{VLC_LOCATE} | head -n 1`.chop
         if path == ""
-          #          log_notice(self.to_s + ": searching VLC.app: #{VLC_MDFIND}")
+          #          log_notice("searching VLC.app: #{VLC_MDFIND}")
           path = `#{VLC_MDFIND} | head -n 1`.chop
           unless path == "" || !File.directory?(path)
             path = File.join(path, VLC_BIN_PATH)
           else
-            #            log_notice(self.to_s + ": searching VLC.app: #{VLC_FIND}")
+            #            log_notice("searching VLC.app: #{VLC_FIND}")
             path = `#{VLC_FIND} | head -n 1`.chop
           end
         end
         return nil if path == "" || !File.executable?(path)
-        log_notice(self.to_s + ": found #{name}: " + path.to_s)
+        log_notice("found #{name}: " + path.to_s)
         path
       end
 
       def lookup_version
         `#{tool_path} --intf dummy --version | head -n 1 | cut -f2 -d' '`.chop
       end
+
     end
 
   end

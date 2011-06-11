@@ -22,10 +22,10 @@ module MediacastProducer
       end
 
       def lookup_path
-        #        log_notice(self.to_s + ": searching mediastreamsegmenter: #{MEDIASTREAMSEGMENTER_WHICH}")
+        #        log_notice("searching mediastreamsegmenter: #{MEDIASTREAMSEGMENTER_WHICH}")
         path = `#{MEDIASTREAMSEGMENTER_WHICH}`.chop
         return nil if path == "" || !File.executable?(path)
-        log_notice(self.to_s + ": found #{name}: " + path.to_s)
+        log_notice("found #{name}: " + path.to_s)
         path
       end
 

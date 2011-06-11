@@ -8,8 +8,7 @@
 #  another platform without Apple's written consent.
 #
 
-require 'mcp/transcoder'
-require 'mcp/tools'
+require 'actions/base'
 require 'mcp/common/mcast_exception'
 
 module PodcastProducer
@@ -84,9 +83,9 @@ module MediacastProducer
 
         if options.include?("input*")
           check_input_and_output_paths_are_not_equal(@input, @output) if options.include?("output")
-          check_input_file(@input)
+          check_input_file_exclude_dir(@input)
         end
-        check_output_file(@output) if options.include?("output")
+        check_output_file_exclude_dir(@output) if options.include?("output")
 
         encode(arguments)
       end
@@ -125,9 +124,9 @@ module MediacastProducer
 
         if options.include?("input*")
           check_input_and_output_paths_are_not_equal(@input, @output) if options.include?("output")
-          check_input_file(@input)
+          check_input_file_exclude_dir(@input)
         end
-        check_output_file(@output) if options.include?("output")
+        check_output_file_exclude_dir(@output) if options.include?("output")
 
         template(arguments)
       end
@@ -163,7 +162,7 @@ module MediacastProducer
 
       def run(arguments)
 
-        log_crit_and_exit("Failed to setup tools: #{name}", -1) if command.nil?
+        log_crit_and_exit("Failed to setup tools: #{name}", ERR_TOOL_FAILURE) if command.nil?
 
         if options.include?("path") && !$subcommand_options[:path].nil?
           puts command.tool_path

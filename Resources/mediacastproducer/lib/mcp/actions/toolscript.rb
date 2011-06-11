@@ -75,21 +75,47 @@ module PodcastProducer
           data[option] = value.to_s.shellescape
         end
         tpl.commands.each do |c|
-          data[c] = c.to_s.shellescape
+          tool = tool_with_name(c)
+          log_crit_and_exit("tool #{c} not found",ERR_TOOL_FAILURE) if tool.nil?
+          log_crit_and_exit("Failed to setup tools: #{c}", ERR_TOOL_FAILURE) unless tool.valid?
+          data[c] = tool.tool_path.to_s.shellescape
         end
         data['input'] = @input.to_s.shellescape
         data['output'] = @output.to_s.shellescape
         begin
           tpl.arguments.each do |arg|
-            arguments << MediacastProducer::Common::TemplateString.substitute(arg, data)
+            arguments << MediacastProducer::Common::TemplateString.substitute(arg, data) unless arg.nil?
           end
         rescue McastTemplateException => e
           log_crit_and_exit(e.message,e.return_code.to_i)
         end
         log_notice(arguments.join(' '))
-        unless false
+        #fork_exec_and_wait(*arguments)
+#        retval=`#{arguments.join(' ')}`
+#        log_notice("retval #{retval}")
+        unless (pid = fork_exec_and_return_pid(*arguments))
           log_crit_and_exit("Failed to transcode '#{@input}' to '#{@output}' with template '#{@template}'", -1)
         end
+        puts "<xgrid>\n{control = statusUpdate; percentDone = 0.0; }\n</xgrid>"
+        if tpl.commands.include?('vlc')
+          sleep(1)
+          vlc_time=nil
+          vlc_length=nil
+          begin
+            vlc_time=`echo get_time | nc -i 1 localhost 4212 | grep -E "^> [0-9]+" | sed -e "s|^> ||g"`.chomp
+            vlc_length=`echo get_length | nc -i 1 localhost 4212 | grep -E "^> [0-9]+" | sed -e "s|^> ||g"`.chomp unless vlc_length
+            unless ( vlc_time == "" || vlc_length == "" )
+              log_notice("processed #{vlc_time} seconds of #{vlc_length} seconds")
+              puts "<xgrid>\n{control = statusUpdate; percentDone = #{vlc_time.to_f * 100.0 / vlc_length.to_f}; }\n</xgrid>"
+            end
+          end while ! ( vlc_time == "" || vlc_length == "" )
+          log_notice("processed #{vlc_length} seconds of #{vlc_length}") unless vlc_length == ""
+        end
+        puts "<xgrid>\n{control = statusUpdate; percentDone = 100.0; }\n</xgrid>"
+#        Process.kill('HUP', pid)
+        pid, status = Process.waitpid2(pid)
+        log_notice("pid: #{pid} exit status: #{status.exitstatus}")
+        log_crit_and_exit("Failed to transcode '#{@input}' to '#{@output}' with template '#{@template}'",status.exitstatus) unless status.exitstatus == 0
       end
     end
 

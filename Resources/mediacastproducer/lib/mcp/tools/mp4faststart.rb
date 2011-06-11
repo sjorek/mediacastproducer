@@ -21,7 +21,7 @@ module MediacastProducer
       def lookup_path
         path = MP4_FASTSTART
         return nil if path == "" || !File.executable?(path)
-        log_notice(self.to_s + ": found #{name}: " + path.to_s)
+        log_notice("found #{name}: " + path.to_s)
         path
       end
 

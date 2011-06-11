@@ -15,10 +15,10 @@ module PodcastProducer
   module Actions
   
     def self.load_actions
-      Dir["/usr/lib/podcastproducer/actions/*.rb"].each do |path|
-        name = File.join(File.dirname(path), File.basename(path, ".rb"))
-        require name
-      end
+#      Dir["/usr/lib/podcastproducer/actions/*.rb"].each do |path|
+#        name = File.join(File.dirname(path), File.basename(path, ".rb"))
+#        require name
+#      end
 #      puts MCP_LIB
       Dir[File.join(File.expand_path(MCP_LIB), "mcp/actions/*.rb")].each do |path|
 #        puts path
@@ -28,6 +28,30 @@ module PodcastProducer
       end
     end
     
+  end
+end
+
+def check_input_file_exclude_dir(input_path)
+  log_crit_and_exit("Input file was not specified.", -1) if input_path.nil?
+  log_crit_and_exit("Input file '#{input_path}' does not exist.", -1) unless File.exists?(input_path)
+  log_crit_and_exit("Input file '#{input_path}' is a directory.", -1) if File.directory?(input_path)
+  log_crit_and_exit("Input file '#{input_path}' is not readable.", -1) unless File.readable?(input_path)
+end
+
+def check_output_file_exclude_dir(output_path, remove_existing=false)
+  log_crit_and_exit("Output filepath was not specified.", -1) if output_path.nil?
+  log_crit_and_exit("Output folder '#{File.dirname(output_path)}' does not exist.", -1) unless File.exists?(File.dirname(output_path))
+  log_crit_and_exit("Output folder '#{File.dirname(output_path)}' is not a directory.", -1) unless File.directory?(File.dirname(output_path))
+  log_crit_and_exit("Output folder '#{File.dirname(output_path)}' is not writable.", -1) unless File.writable?(File.dirname(output_path))
+  
+  if File.exists?(output_path)
+    if remove_existing
+      log_warn("Removing file that already exists at the output file path '#{output_path}'.")
+      FileUtils.rm_f(output_path)
+    else
+      log_crit_and_exit("Output file '#{output_path}' already exists and is a directory.", -1) if File.directory?(output_path)
+      log_crit_and_exit("Output file '#{output_path}' already exists.", -1)
+    end
   end
 end
 
@@ -47,3 +71,9 @@ def fork_exec_and_wait(*args)
   return true
 end
 
+def fork_exec_and_return_pid(*args)
+  pid = fork { exec(*args) }
+  return false unless pid
+  # Process.detach(pid)
+  pid
+end
