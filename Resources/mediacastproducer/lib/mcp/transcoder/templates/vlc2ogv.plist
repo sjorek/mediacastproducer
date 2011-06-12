@@ -5,15 +5,6 @@
     <key>arguments</key>
     <array>
         <string>###vlc###</string>
-        <string>-vvvv</string>
-        <string>--ignore-config</string>
-        <string>--intf</string>
-        <string>dummy</string>
-        <string>--extraintf</string>
-        <string>rc</string>
-        <string>--lua-config</string>
-        <string>rc={host='localhost:4212'}</string>
-        <string>--play-and-exit</string>
         <string>###input###</string>
         <string>--no-sout-transcode-hurry-up</string>
         <string>--no-ffmpeg-hurry-up</string>

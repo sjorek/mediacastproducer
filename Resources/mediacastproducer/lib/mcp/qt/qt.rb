@@ -100,7 +100,7 @@ class McastQT < PcastQT
         if self.restore_chapters(non_chapterized_output_path, output_path, chapters, component_subtype, component_manufacturer) 
           return true
         else
-          log_error("Failed to restore chapters") 
+          log_error("failed to restore chapters") 
         end
       end
     end

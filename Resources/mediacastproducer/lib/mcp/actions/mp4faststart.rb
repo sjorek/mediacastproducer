@@ -61,7 +61,7 @@ module PodcastProducer
             return
           end
         else
-          log_crit_and_exit("Failed to setup tools: #{name}", -1) if command.nil?
+          log_crit_and_exit("failed to setup tools: #{name}", -1) if command.nil?
           log_notice('faststart optimization for streaming')
           exec_args = [input]
           exec_args << output if output

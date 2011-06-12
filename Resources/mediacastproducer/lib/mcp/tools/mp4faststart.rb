@@ -19,13 +19,11 @@ module MediacastProducer
       end
 
       def lookup_path
-        path = MP4_FASTSTART
-        return nil if path == "" || !File.executable?(path)
-        log_notice("found #{name}: " + path.to_s)
-        path
+        MP4_FASTSTART
       end
 
       def lookup_version
+        "0.0.0"
       end
     end
 

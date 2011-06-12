@@ -39,7 +39,7 @@ module MediacastProducer
       end
 
       def sanatize_options(required=true)
-        opts = {}
+        opts = {} unless block_given?
         options.each do |opt,type|
           require_option(opt.to_sym) if required
           begin

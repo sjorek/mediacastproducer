@@ -8,16 +8,15 @@
 #  another platform without Apple's written consent.
 #
 
+require 'shellwords'
 require 'mcp/actions/base'
 require 'mcp/plist/preset'
-require 'mcp/common/template_string'
-require 'shellwords'
+require 'mcp/common/templates'
 
 module PodcastProducer
   module Actions
     class ToolScript < Base
       include MediacastProducer::Actions::ToolWithIOTemplate
-
       def initialize()
         @more_options = []
         @more_options_usage = ""
@@ -40,9 +39,9 @@ module PodcastProducer
 
         tpl = MediacastProducer::Plist::Template.new(path)
         @more_options_usage = tpl.usage
-        
+
         print_subcommand_usage(name) if arguments.nil? || arguments.empty?
-        
+
         getopt_args = []
         plural_options = []
         tpl.options.each do |option,opttype|
@@ -70,52 +69,45 @@ module PodcastProducer
           end
         end
         data = {}
-        tpl.sanatize_options.each do |option, value|
+        tpl.sanatize_options { |option, value|
           log_notice("#{option}: #{value}")
           data[option] = value.to_s.shellescape
-        end
+        }
+        data['input'] = @input.to_s.shellescape
+        data['output'] = @output.to_s.shellescape
+        tools = []
         tpl.commands.each do |c|
           tool = tool_with_name(c)
           log_crit_and_exit("tool #{c} not found",ERR_TOOL_FAILURE) if tool.nil?
-          log_crit_and_exit("Failed to setup tools: #{c}", ERR_TOOL_FAILURE) unless tool.valid?
-          data[c] = tool.tool_path.to_s.shellescape
+          log_crit_and_exit("failed to setup tools: #{c}", ERR_TOOL_FAILURE) unless tool.valid?
+          data[c] = tool.command_line(!$subcommand_options[:verbose].nil?)
+          tools << tool
         end
-        data['input'] = @input.to_s.shellescape
-        data['output'] = @output.to_s.shellescape
         begin
-          tpl.arguments.each do |arg|
-            arguments << MediacastProducer::Common::TemplateString.substitute(arg, data) unless arg.nil?
-          end
+          arguments = MediacastProducer::Common::TemplateArray.substitute(tpl.arguments + arguments, data)
         rescue McastTemplateException => e
           log_crit_and_exit(e.message,e.return_code.to_i)
         end
         log_notice(arguments.join(' '))
-        #fork_exec_and_wait(*arguments)
-#        retval=`#{arguments.join(' ')}`
-#        log_notice("retval #{retval}")
         unless (pid = fork_exec_and_return_pid(*arguments))
-          log_crit_and_exit("Failed to transcode '#{@input}' to '#{@output}' with template '#{@template}'", -1)
+          log_crit_and_exit("failed to transcode '#{@input}' to '#{@output}' with template '#{@template}'", -1)
         end
-        puts "<xgrid>\n{control = statusUpdate; percentDone = 0.0; }\n</xgrid>"
-        if tpl.commands.include?('vlc')
-          sleep(1)
-          vlc_time=nil
-          vlc_length=nil
-          begin
-            vlc_time=`echo get_time | nc -i 1 localhost 4212 | grep -E "^> [0-9]+" | sed -e "s|^> ||g"`.chomp
-            vlc_length=`echo get_length | nc -i 1 localhost 4212 | grep -E "^> [0-9]+" | sed -e "s|^> ||g"`.chomp unless vlc_length
-            unless ( vlc_time == "" || vlc_length == "" )
-              log_notice("processed #{vlc_time} seconds of #{vlc_length} seconds")
-              puts "<xgrid>\n{control = statusUpdate; percentDone = #{vlc_time.to_f * 100.0 / vlc_length.to_f}; }\n</xgrid>"
-            end
-          end while ! ( vlc_time == "" || vlc_length == "" )
-          log_notice("processed #{vlc_length} seconds of #{vlc_length}") unless vlc_length == ""
+        begin
+          puts "<xgrid>\n{control = statusUpdate; percentDone = 0.0; }\n</xgrid>"
+          tools.each do |tool|
+            next unless tool.respond_to?(:update_status)
+            tool.update_status(pid) { |percent|
+              puts "<xgrid>\n{control = statusUpdate; percentDone = #{percent}; }\n</xgrid>"
+            }
+          end
+          pid, status = Process.waitpid2(pid)
+          puts "<xgrid>\n{control = statusUpdate; percentDone = 100.0; }\n</xgrid>"
+        rescue SystemExit, Interrupt
+          Process.kill('HUP', pid)
+          pid, status = Process.waitpid2(pid)
         end
-        puts "<xgrid>\n{control = statusUpdate; percentDone = 100.0; }\n</xgrid>"
-#        Process.kill('HUP', pid)
-        pid, status = Process.waitpid2(pid)
         log_notice("pid: #{pid} exit status: #{status.exitstatus}")
-        log_crit_and_exit("Failed to transcode '#{@input}' to '#{@output}' with template '#{@template}'",status.exitstatus) unless status.exitstatus == 0
+        log_crit_and_exit("failed to transcode '#{@input}' to '#{@output}' with template '#{@template}'",status.exitstatus) unless status.exitstatus == 0
       end
     end
 

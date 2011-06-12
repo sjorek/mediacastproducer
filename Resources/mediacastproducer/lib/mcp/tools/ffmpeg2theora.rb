@@ -22,15 +22,11 @@ module MediacastProducer
       end
 
       def lookup_path
-        #        log_notice("searching ffmpeg2theora: #{FFMPEG2THEORA_WHICH}")
-        path = `#{FFMPEG2THEORA_WHICH}`.chop
-        return nil if path == "" || !File.executable?(path)
-        log_notice("found #{name}: " + path.to_s)
-        path
+        `#{FFMPEG2THEORA_WHICH}`
       end
 
       def lookup_version
-        `#{tool_path} | head -n 1 | cut -f2 -d' '`.chop
+        `#{tool_path} | head -n 1 | cut -f2 -d' '`
       end
     end
 

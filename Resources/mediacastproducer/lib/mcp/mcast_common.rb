@@ -7,6 +7,6 @@
 #  another platform without Apple's written consent.
 #
 
-require 'common'
+require 'pcast_common'
 require 'mcp/common/constants'
 require 'mcp/common/mcast_exception'

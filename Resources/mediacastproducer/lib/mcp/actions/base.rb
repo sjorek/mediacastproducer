@@ -9,11 +9,12 @@
 #
 
 require 'actions/base'
+require 'mcp/actions'
 require 'mcp/common/mcast_exception'
 
-module PodcastProducer
+module MediacastProducer
   module Actions
-    class Base
+    module Base
       def description
         "..."
       end
@@ -38,15 +39,10 @@ module PodcastProducer
       def more_options_usage
         ""
       end
-
     end
-  end
-end
 
-module MediacastProducer
-  module Actions
     module ToolWithIOPreset
-
+      include MediacastProducer::Actions::Base
       def description
         "transcodes the input file to the output file with the specified preset"
       end
@@ -96,17 +92,18 @@ module MediacastProducer
     end
 
     module ToolWithIOTemplate
-
+      include MediacastProducer::Actions::Base
       def description
         "transcodes the INPUT file to the OUTPUT file with the specified tool TEMPLATE"
       end
 
       def options
-        ["input*", "output", "template"] + more_options
+        ["input*", "output", "template", "verbose"] + more_options
       end
 
       def options_usage
         "usage:  #{name} --prb=PRB --input=INPUT --output=OUTPUT --template=TEMPLATE\n" +
+        "       [--verbose]  run with verbose output"
         "#{more_options_usage}\n" +
         "the available templates are:\n#{available_templates}\n"
       end
@@ -137,11 +134,10 @@ module MediacastProducer
     end
 
     module ToolWithArguments
-
+      include MediacastProducer::Actions::Base
       def command
         return @command unless @command.nil?
-        c = tool_with_name(name)
-        @command = c.valid? unless c.nil?
+        @command = tool_with_name(name)
       end
 
       def description
@@ -162,17 +158,20 @@ module MediacastProducer
 
       def run(arguments)
 
-        log_crit_and_exit("Failed to setup tools: #{name}", ERR_TOOL_FAILURE) if command.nil?
-
-        if options.include?("path") && !$subcommand_options[:path].nil?
-          puts command.tool_path
-          return
+        begin
+          if options.include?("path") && !$subcommand_options[:path].nil?
+            puts command.tool_path
+            return
+          end
+          if options.include?("version") && !$subcommand_options[:version].nil?
+            puts command.tool_version
+            return
+          end
+        rescue McastToolException => e
+          log_crit_and_exit(e.message, e.return_code.to_i)
         end
 
-        if options.include?("version") && !$subcommand_options[:version].nil?
-          puts command.tool_version
-          return
-        end
+        log_crit_and_exit("failed to setup tools: #{name}", ERR_TOOL_FAILURE) unless command.valid?
 
         if arguments.nil? || arguments.empty?
           log_error "No command or arguments were specified."

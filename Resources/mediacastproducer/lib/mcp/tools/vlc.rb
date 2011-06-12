@@ -26,27 +26,50 @@ module MediacastProducer
       end
 
       def lookup_path
-        #        log_notice("searching VLC.app: #{VLC_LOCATE}")
-        path = `#{VLC_LOCATE} | head -n 1`.chop
+        path = `#{VLC_LOCATE} | head -n 1`
         if path == ""
-          #          log_notice("searching VLC.app: #{VLC_MDFIND}")
-          path = `#{VLC_MDFIND} | head -n 1`.chop
+          path = `#{VLC_MDFIND} | head -n 1`.chomp!
           unless path == "" || !File.directory?(path)
             path = File.join(path, VLC_BIN_PATH)
           else
-            #            log_notice("searching VLC.app: #{VLC_FIND}")
-            path = `#{VLC_FIND} | head -n 1`.chop
+            path = `#{VLC_FIND} | head -n 1`
           end
         end
-        return nil if path == "" || !File.executable?(path)
-        log_notice("found #{name}: " + path.to_s)
         path
       end
 
       def lookup_version
-        `#{tool_path} --intf dummy --version | head -n 1 | cut -f2 -d' '`.chop
+        `#{tool_path} --intf dummy --version | head -n 1 | cut -f2 -d' '`
       end
 
+      def command_line(verbose=false)
+        [tool_path, verbose ? "-vvvv" : "-q", "--ignore-config",
+         "--intf", "dummy", "--extraintf", "rc",
+         "--lua-config", "rc={host='localhost:4212'}", "--play-and-exit"]
+      end
+
+      def update_status(pid, loop = true)
+        position = nil
+        duration = nil
+        tries = 3
+        sleep(1) if loop
+        begin
+          position=`echo get_time | nc -i 1 localhost 4212 | grep -E "^> [0-9]+" | sed -e "s|^> ||g"`.chomp
+          duration=`echo get_length | nc -i 1 localhost 4212 | grep -E "^> [0-9]+" | sed -e "s|^> ||g"`.chomp unless duration
+          unless ( position == "" || duration == "" )
+            percent = position.to_f * 100.0 / duration.to_f
+            log_notice("processed #{position} seconds of #{duration} seconds => #{percent} %")
+            yield percent if block_given?
+          else
+            yield 0.0 if block_given? && !loop
+          end
+          if tries>0 && loop
+            sleep(1) if position == "" || duration == ""
+            tries -= 1
+          end
+        end while loop && ( tries>0 || ! ( position == "" || duration == "" ) )
+        log_notice("processed #{duration} seconds of #{duration} seconds => 100.0 %") unless duration == "" && !loop
+      end
     end
 
   end

@@ -33,7 +33,7 @@ module PodcastProducer
         log_notice('settings: ' + settings.to_s)
 
         unless McastQT.encode(@input, @output, settings)
-          log_crit_and_exit("Failed to transcode '#{@input}' to '#{@output}' with preset '#{@preset}'", -1)
+          log_crit_and_exit("failed to transcode '#{@input}' to '#{@output}' with preset '#{@preset}'", -1)
         end
       end
     end

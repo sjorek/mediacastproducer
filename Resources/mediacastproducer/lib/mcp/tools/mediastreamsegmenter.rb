@@ -22,15 +22,11 @@ module MediacastProducer
       end
 
       def lookup_path
-        #        log_notice("searching mediastreamsegmenter: #{MEDIASTREAMSEGMENTER_WHICH}")
-        path = `#{MEDIASTREAMSEGMENTER_WHICH}`.chop
-        return nil if path == "" || !File.executable?(path)
-        log_notice("found #{name}: " + path.to_s)
-        path
+        `#{MEDIASTREAMSEGMENTER_WHICH}`
       end
 
       def lookup_version
-        v = `#{tool_path} -v 2>&1 | cut -f2- -d' '`.chop
+        v = `#{tool_path} -v 2>&1 | cut -f2- -d' '`.chomp!
         v =~ %r{\(([0-9]{2})([0-9]{2})([0-9]{2})\)}
         "#{$1.to_i}.#{$2.to_i}.#{$3.to_i}"
       end

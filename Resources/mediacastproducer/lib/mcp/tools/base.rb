@@ -34,16 +34,19 @@ module MediacastProducer
 
       def tool_path
         return @tool_path unless @tool_path.nil?
-        @tool_path = lookup_path
-        raise McastToolException.new, self.class.to_s + ": could not lookup tool path: #{name}" if @tool_path.nil?
-        @tool_path
+        path = lookup_path.chomp!
+        raise McastToolException.new, self.class.to_s + ": could not lookup tool path: #{name}" if path.nil? || path == "" || !File.executable?(path)
+        path = Pathname.new(path).realpath.to_s
+        log_notice("path to #{name}: #{path}")
+        @tool_path = path
       end
 
       def tool_version
         return @tool_version unless @tool_version.nil?
-        @tool_version = lookup_version
-        raise McastToolException.new, self.class.to_s + ": could not lookup tool version: #{name}" if @tool_version.nil?
-        @tool_version
+        ver = lookup_version.chomp!
+        raise McastToolException.new, self.class.to_s + ": could not lookup tool version: #{name}" if ver.nil? || ver == ""
+        log_notice("#{name} version: #{ver}")
+        @tool_version = ver
       end
 
       def lookup_path
@@ -76,6 +79,10 @@ module MediacastProducer
         end
         log_notice(self.class.to_s + ": passed version check")
         return (@version_checked = true)
+      end
+
+      def command_line(verbose=false)
+        [tool_path]
       end
 
       def valid?
