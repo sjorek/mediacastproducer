@@ -65,19 +65,19 @@ module MediacastProducer
         unless @required_min_version.nil?
           min = Gem::Version.new(@required_min_version)
           unless min <= ver
-            log_error(self.class.to_s + ": minimum version #{@required_min_version} requirement failed for version #{tool_version}")
+            log_error("minimum version #{@required_min_version} requirement failed for version #{tool_version}")
             return (@version_checked = false)
           end
         end
         unless @required_max_version.nil?
           max = Gem::Version.new(@required_max_version)
-          log_crit_and_exit(self.class.to_s + ": invalid requirement version maximum #{@required_max_version} < minimum #{@required_min_version}", -1) unless @required_min_version.nil? || min <= max
+          log_crit_and_exit("invalid requirement version maximum #{@required_max_version} < minimum #{@required_min_version}", -1) unless @required_min_version.nil? || min <= max
           unless ver <= max
-            log_error(self.class.to_s + ": maximum version #{@required_max_version} requirement failed for version #{tool_version}")
+            log_error("maximum version #{@required_max_version} requirement failed for version #{tool_version}")
             return (@version_checked = false)
           end
         end
-        log_notice(self.class.to_s + ": passed version check")
+        log_notice("passed version check")
         return (@version_checked = true)
       end
 
