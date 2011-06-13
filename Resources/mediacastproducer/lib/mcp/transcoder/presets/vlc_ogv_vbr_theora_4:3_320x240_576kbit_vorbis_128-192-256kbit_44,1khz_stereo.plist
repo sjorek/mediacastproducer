@@ -15,9 +15,11 @@
         <key>audio_quality</key>
         <integer>1</integer>
         <key>audio_bitrate_min</key>
-        <integer>64</integer>
-        <key>audio_bitrate_max</key>
+        <integer>128</integer>
+        <key>audio_bitrate_avg</key>
         <integer>192</integer>
+        <key>audio_bitrate_max</key>
+        <integer>265</integer>
         <key>audio_channels</key>
         <integer>2</integer>
         <key>audio_samplerate</key>

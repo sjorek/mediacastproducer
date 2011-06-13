@@ -14,23 +14,21 @@
         <string>--sout-vorbis-min-bitrate=###audio_bitrate_min###</string>
         <string>--sout-vorbis-max-bitrate=###audio_bitrate_max###</string>
         <string>--sout-transcode-high-priority</string>
-        <string>--sout=#transcode{venc=theora,vcodec=theo,vb=###video_bitrate###,scale=1,deinterlace=0,vfilter=canvas{width=###video_width###,height=###video_height###},acodec=vorb,channels=###audio_channels###,samplerate=###audio_samplerate###,afilter=ugly_resampler}:standard{access=file,mux=ogg,dst='###output###'}</string>
+        <string>--sout=#transcode{venc=theora,vcodec=theo,vb=###video_bitrate###,scale=1,deinterlace=0,vfilter=canvas{width=###video_width###,height=###video_height###},acodec=vorb,ab=###audio_bitrate_avg###,channels=###audio_channels###,samplerate=###audio_samplerate###,afilter=ugly_resampler}:standard{access=file,mux=ogg,dst='###output###'}</string>
     </array>
     <key>commands</key>
     <string>vlc</string>
     <key>options</key>
     <dict>
-        <key>video_quality</key>
-        <string>integer</string>
         <key>video_bitrate</key>
         <string>integer</string>
         <key>video_width</key>
         <string>integer</string>
         <key>video_height</key>
         <string>integer</string>
-        <key>audio_quality</key>
-        <string>integer</string>
         <key>audio_bitrate_min</key>
+        <string>integer</string>
+        <key>audio_bitrate_avg</key>
         <string>integer</string>
         <key>audio_bitrate_max</key>
         <string>integer</string>
@@ -52,6 +50,7 @@ encoded audio-track, using a variable bitrate for both tracks
          --video_width        video width in pixel
          --video_height       video height in pixel
 
+         --audio_bitrate_avg  average audio bitrate in kBit per second
          --audio_bitrate_min  minimal audio bitrate in kBit per second
          --audio_bitrate_max  maximal audio bitrate in kBit per second
          --audio_samplerate   audio samplerate in hz as integer
