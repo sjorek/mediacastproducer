@@ -5,7 +5,7 @@ require 'mcp/plist/propertylist'
 
 module MediacastProducer
   module Plist
-    class Template < PropertyList
+    class ScriptTemplate < PropertyList
       def arguments
         return @arguments unless @arguments.nil?
         @arguments = data['arguments'].collect

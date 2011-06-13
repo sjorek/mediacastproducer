@@ -34,20 +34,20 @@ module MediacastProducer
       options_hash.keys
     end
     
-    def self.load_actions
-      Dir[MCP_LIB + '/mcp/transcoder/*.rb'].each do |path|
-        name = File.join(File.dirname(path), File.basename(path, ".rb"))
+    def self.load_scripts
+      Dir[MCP_LIB + '/mcp/transcoder/scripts/*.plist'].each do |path|
+        name = File.join(File.dirname(path), File.basename(path, ".plist"))
         require name
       end
       if $properties["Global Resource Path"]
-        Dir["#{$properties["Global Resource Path"]}/Resources/Transcoder/*.rb"].each do |path|
-          name = File.join(File.dirname(path), File.basename(path, ".rb"))
+        Dir["#{$properties["Global Resource Path"]}/Resources/Transcoder/Scripts/*.plist"].each do |path|
+          name = File.join(File.dirname(path), File.basename(path, ".plist"))
           require name
         end
       end
       if $properties["Workflow Resource Path"]
-        Dir["#{$properties["Workflow Resource Path"]}/Resources/Transcoder/*.rb"].each do |path|
-          name = File.join(File.dirname(path), File.basename(path, ".rb"))
+        Dir["#{$properties["Workflow Resource Path"]}/Resources/Transcoder/Scripts/*.plist"].each do |path|
+          name = File.join(File.dirname(path), File.basename(path, ".plist"))
           require name
         end
       end
@@ -59,29 +59,28 @@ end
 
 def preset_list
   presets = []
-  Dir[MCP_LIB + '/mcp/transcoder/presets/*/*.plist'].each do |path|
-    path =~ %r{mcp/transcoder/presets/(.*/.*)\.plist}
+  Dir[MCP_LIB + '/mcp/transcoder/presets/*.plist'].each do |path|
+    path =~ %r{mcp/transcoder/presets/(.*)\.plist}
     presets << $1
   end
   if $properties["Global Resource Path"]
-    Dir["#{$properties["Global Resource Path"]}/Resources/Transcoder/Presets/*/*.plist"].each do |path|
-      path =~ %r{.*/Resources/Transcoder/Presets/(.*/.*)\.plist}
+    Dir["#{$properties["Global Resource Path"]}/Resources/Transcoder/Presets/*.plist"].each do |path|
+      path =~ %r{.*/Resources/Transcoder/Presets/(.*)\.plist}
       presets << $1 unless presets.include?($1)
     end
   end
   if $properties["Workflow Resource Path"]
-    Dir["#{$properties["Workflow Resource Path"]}/Resources/Transcoder/Presets/*/*.plist"].each do |path|
-      path =~ %r{.*/Resources/Transcoder/Presets/(.*/.*)\.plist}
+    Dir["#{$properties["Workflow Resource Path"]}/Resources/Transcoder/Presets/*.plist"].each do |path|
+      path =~ %r{.*/Resources/Transcoder/Presets/(.*)\.plist}
       presets << $1 unless presets.include?($1)
     end
   end
   presets.sort
 end
 
-def available_presets(engine)
-  return available_encoders if engine == "quicktime"
+def available_presets
   preset_list.collect do |preset|
-    "  #{$1}\n" if preset =~ /^#{engine}\/(.*)/
+    "  #{preset}\n"
   end
 end
 
@@ -101,71 +100,71 @@ def preset_for_transcoder(engine, preset)
     else
       require_preset(engine, preset)
       if $properties["Workflow Resource Path"]
-        path = "#{$properties["Workflow Resource Path"]}/Resources/Transcoder/Presets/#{engine}/#{preset}.plist"
+        path = "#{$properties["Workflow Resource Path"]}/Resources/Transcoder/#{engine}/#{preset}.plist"
       end
       unless path && File.exist?(path)
         if $properties["Global Resource Path"]
-          path = "#{$properties["Global Resource Path"]}/Resources/Transcoder/Presets/#{engine}/#{preset}.plist"
+          path = "#{$properties["Global Resource Path"]}/Resources/Transcoder/#{engine}/#{preset}.plist"
         end
       end
       unless path && File.exist?(path)
-        path = MCP_LIB + "/mcp/transcoder/presets/#{engine}/#{preset}.plist"
+        path = MCP_LIB + "/mcp/transcoder/#{engine}/#{preset}.plist"
       end
     end
   end
   path
 end
 
-### template helper methods
+### script helper methods
 
-def template_list
-  templates = []
-  Dir[MCP_LIB + '/mcp/transcoder/templates/*.plist'].each do |path|
-    path =~ %r{mcp/transcoder/templates/(.*)\.plist}
-    templates << $1
+def script_list
+  scripts = []
+  Dir[MCP_LIB + '/mcp/transcoder/scripts/*.plist'].each do |path|
+    path =~ %r{mcp/transcoder/scripts/(.*)\.plist}
+    scripts << $1
   end
   if $properties["Global Resource Path"]
     Dir["#{$properties["Global Resource Path"]}/Resources/Transcoder/Scripts/*.plist"].each do |path|
       path =~ %r{.*/Resources/Transcoder/Scripts/(.*)\.plist}
-      templates << $1 unless templates.include?($1)
+      scripts << $1 unless scripts.include?($1)
     end
   end
   if $properties["Workflow Resource Path"]
     Dir["#{$properties["Workflow Resource Path"]}/Resources/Transcoder/Scripts/*.plist"].each do |path|
       path =~ %r{.*/Resources/Transcoder/Scripts/(.*)\.plist}
-      templates << $1 unless templates.include?($1)
+      scripts << $1 unless scripts.include?($1)
     end
   end
-  templates.sort
+  scripts.sort
 end
 
-def available_templates
-  template_list.collect do |template|
-    "  #{template}\n"
+def available_scripts
+  script_list.collect do |script|
+    "  #{script}\n"
   end
 end
 
-def require_template(template)
-  unless template_list.include? template
-    log_crit_and_exit("specified template '#{template}' not found",-1)
+def require_script(script)
+  unless script_list.include? script
+    log_crit_and_exit("specified script '#{script}' not found",-1)
   end
 end
 
-def template_for_transcoder(template)
-  if template =~ /.*\.plist$/ && File.exist?(template) && !File.directory?(template)
-    path = template
+def script_for_transcoder(script)
+  if script =~ /.*\.plist$/ && File.exist?(script) && !File.directory?(script)
+    path = script
   else
-    require_template(template)
+    require_script(script)
     if $properties["Workflow Resource Path"]
-      path = "#{$properties["Workflow Resource Path"]}/Resources/Transcoder/Scripts/#{template}.plist"
+      path = "#{$properties["Workflow Resource Path"]}/Resources/Transcoder/Scripts/#{script}.plist"
     end
     unless path && File.exist?(path)
       if $properties["Global Resource Path"]
-        path = "#{$properties["Global Resource Path"]}/Resources/Transcoder/Scripts/#{template}.plist"
+        path = "#{$properties["Global Resource Path"]}/Resources/Transcoder/Scripts/#{script}.plist"
       end
     end
     unless path && File.exist?(path)
-      path = MCP_LIB + "/mcp/transcoder/templates/#{template}.plist"
+      path = MCP_LIB + "/mcp/transcoder/scripts/#{script}.plist"
     end
   end
   path

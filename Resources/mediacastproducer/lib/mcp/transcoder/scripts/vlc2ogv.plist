@@ -37,6 +37,19 @@
         <string>integer</string>
     </dict>
     <key>usage</key>
-    <string>vlc2ogv ...</string>
+    <string><![CDATA[
+         --video_bitrate     video bitrate in kBit per second
+         --video_width       video width in pixel
+         --video_height      video height in pixel
+        [--video_quality]    alternative to specify video-quality instead of
+                             -bitrate, value ranges from 0 to 10
+
+         --audio_bitrate     audio bitrate in kBit per second
+         --audio_samplerate  audio samplerate in hz as integer
+         --audio_channels    number of audio channels,
+                             possible values: 1 (mono) or 2 (stereo)
+        [--audio_quality]    alternative to specify audio-quality instead of
+                             -bitrate, value ranges from 0 to 10
+]]></string>
 </dict>
 </plist>

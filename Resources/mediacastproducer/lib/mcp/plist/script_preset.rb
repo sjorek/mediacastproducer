@@ -5,7 +5,7 @@ require 'mcp/plist/template'
 
 module MediacastProducer
   module Plist
-    class Preset < PropertyList
+    class ScriptPreset < PropertyList
       def defaults
         return @defaults unless @defaults.nil?
         @defaults = data['defaults'].collect
