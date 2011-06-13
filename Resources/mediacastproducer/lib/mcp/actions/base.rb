@@ -146,8 +146,8 @@ module MediacastProducer
 
       def options_usage
         "usage: #{name} --prb=PRB -- [--arguments passed to #{name}]\n" +
-        "         [--path]     print path to executable path and exit\n" +
-        "         [--version]  print executable path version and exit\n" +
+        "         [--path]     print #{name} executable path and exit\n" +
+        "         [--version]  print #{name} executable version and exit\n" +
         "#{more_options_usage}"# +
         # "the available presets are:\n#{available_presets(name)}\n"
       end

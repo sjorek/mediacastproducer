@@ -33,7 +33,7 @@ $productinfo ={ :name => 'Mediacast Producer',
 
 require 'mcp/main'
 require 'mcp/actions'
-require 'mcp/transcoder'
+#require 'mcp/transcoder'
 require 'mcp/tools'
 require 'mcp/producer'
 

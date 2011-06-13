@@ -81,14 +81,14 @@ module PodcastProducer
         if key
           log_crit_and_exit("invalid key", ERR_INVALID_KEY) unless
             ["movie_width", "movie_height", "movie_ratio",
-              "track_width", "track_height", "track_ratio",
-              "clean_width", "clean_height", "clean_ratio",
-              "prod_width", "prod_height", "prod_ratio"].include?(key.to_s)
+             "track_width", "track_height", "track_ratio",
+             "clean_width", "clean_height", "clean_ratio",
+             "prod_width",  "prod_height",  "prod_ratio"].include?(key.to_s)
         end
         if output
           force = {:force => key,:dims => video_dimensions} if key
           log_notice('clean encoder: ' + MCP_VIDEOSIZE_CLEANER.to_s)
-          if File.exist?(MCP_VIDEOSIZE_CLEANER)
+          if File.exist?(MCP_VIDEOSIZE_CLEANER) && !File.directory?(MCP_VIDEOSIZE_CLEANER)
             settings = MCP_VIDEOSIZE_CLEANER
           else
             require_encoder(MCP_VIDEOSIZE_CLEANER)
