@@ -21,7 +21,7 @@ module PodcastProducer
       def usage
         "videosize: get Quicktime or Mp4-alike movie and render dimensions\n\n" +
         "usage: videosize --prb=PRB --input=INPUT\n" +
-        "                [--output=OUTPUT]    re-encode INPUT to OUTPUT if dimension differ\n" +
+        "                [--output=OUTPUT]    re-encode INPUT to OUTPUT if dimensions differ\n" +
         "                [--key=KEY]          KEY to lookup, forces the dimension if OUTPUT is given\n" +
         "                [--human]            display human readable values\n"
       end
@@ -103,8 +103,8 @@ module PodcastProducer
 #          rescue Exception => e
 #            log_crit_and_exit(e.message, 1)
           end
-        else
-          puts video_dimensions[key.to_sym].to_s if key
+        elsif key
+          puts video_dimensions[key.to_sym].to_s
         end
       end
     end
