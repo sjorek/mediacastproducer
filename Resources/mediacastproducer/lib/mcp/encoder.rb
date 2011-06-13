@@ -8,9 +8,9 @@
 #  another platform without Apple's written consent.
 #
 
-MediacastProducer::Transcoder.load_actions
+MediacastProducer::Transcoder.load_presets
 
-$subcommands = MediacastProducer::Transcoder.action_instances
+$subcommands = MediacastProducer::Transcoder.preset_instances
 
 ### Encoder
 

@@ -41,11 +41,13 @@
     <string>ogv,ogg</string>
     <key>mimetype</key>
     <string>video/ogv</string>
-    <key>usage</key>
+    <key>description</key>
     <string><![CDATA[
 transcode INPUT to an OGG container with Theora encoded video-track and Vorbis
 encoded audio-track, using a variable bitrate for both tracks
-
+]]></string>
+    <key>usage</key>
+    <string><![CDATA[
          --video_bitrate      video bitrate in kBit per second
          --video_width        video width in pixel
          --video_height       video height in pixel

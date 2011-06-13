@@ -18,7 +18,11 @@ module MediacastProducer
 
       def options
         return @options unless @options.nil?
-        @options = data['options'].collect
+        @options = {}
+        data['options'].collect do |opt,type|
+          @options[opt.to_s] = type.to_s
+        end
+        @options
       end
 
       def extensions
@@ -28,12 +32,17 @@ module MediacastProducer
 
       def mimetype
         return @mimetype unless @mimetype.nil?
-        @mimetype = data['mimetype']
+        @mimetype = data['mimetype'].chomp!
+      end
+
+      def description
+        return @description unless @description.nil?
+        @description = data['description'].chomp!
       end
 
       def usage
         return @usage unless @usage.nil?
-        @usage = data['usage']
+        @usage = data['usage'].chomp!
       end
 
       def sanatize_option(value, type)

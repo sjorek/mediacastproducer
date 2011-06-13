@@ -21,7 +21,7 @@ module PodcastProducer
         @command = c.valid? unless c.nil?
       end
       def usage
-        "#{name}: optimize Mp4-alike (inkl. Quicktime) or for streaming\n\n" +
+        "#{name}: optimize Mp4-alike (incl. Quicktime) or for streaming\n\n" +
         "usage: #{name} --prb=PRB --input=INPUT\n"+
         "                [--output=OUTPUT]  write to OUTPUT, otherwise work in place on INPUT\n" +
         "                [--streamable]     test and exits accordingly with 0 or 1; e.g.:\n" +

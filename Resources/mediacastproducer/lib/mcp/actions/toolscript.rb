@@ -35,9 +35,7 @@ module PodcastProducer
         "usage:  #{name} --prb=PRB --input=INPUT --output=OUTPUT --script=SCRIPT\n" +
         "        [--verbose]  run with verbose output\n" +
         "        [-- [...]]   additional options depending on the script choosen,\n" +
-        "                     leave empty to get help\n" +
-        "#{more_options_usage}\n" +
-        "the available scripts are:\n#{available_scripts}\n"
+        "                     leave empty to get help\n"
       end
 
       def more_options
@@ -45,7 +43,8 @@ module PodcastProducer
       end
 
       def more_options_usage
-        @more_options_usage
+        "#{@more_options_usage}\n" +
+        "the available scripts are:\n#{available_scripts}\n"
       end
 
       def run(arguments)
@@ -59,9 +58,8 @@ module PodcastProducer
         log_notice('script path: ' + @script_path.to_s)
 
         @script = MediacastProducer::Plist::ScriptTemplate.new(@script_path)
-        @more_options_usage = "\nscript: #{@script_name}\n" + @script.usage
+        @more_options_usage = "\nscript: #{@script_name}\n#{@script.description}\n#{@script.usage}\n"
 
-        
         print_subcommand_usage(name) if arguments.nil? || arguments.empty?
 
         if options.include?("input*")

@@ -21,7 +21,7 @@ module MediacastProducer
 
       def usage
         "#{name}: #{description}\n\n" +
-        "#{options_usage}"
+        "#{options_usage}#{more_options_usage}"
       end
 
       def options
@@ -55,8 +55,7 @@ module MediacastProducer
       def options_usage
         "usage: #{name} --prb=PRB -- [--arguments passed to #{name}]\n" +
         "         [--path]     print #{name} executable path and exit\n" +
-        "         [--version]  print #{name} executable version and exit\n" +
-        "#{more_options_usage}"
+        "         [--version]  print #{name} executable version and exit\n"
       end
 
       def options

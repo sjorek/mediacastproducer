@@ -8,7 +8,11 @@ module MediacastProducer
     class ScriptPreset < PropertyList
       def defaults
         return @defaults unless @defaults.nil?
-        @defaults = data['defaults'].collect
+        @defaults = {}
+        data['defaults'].collect do |opt,val|
+          @defaults[opt.to_s] = val.to_s
+        end
+        @defaults
       end
 
       def script
@@ -16,19 +20,12 @@ module MediacastProducer
         @script = ScriptTemplate.new(script_for_transcoder(data['script']))
       end
 
-      def apply_defaults(input=nil)
-        opts = {} unless block_given?
-        script.options.each do |opt, type|
-          value = (input.nil? || input[opt.to_sym].nil?) ? defaults[opt] : input[opt.to_sym]
-          begin
-            val = script.sanatize_option(value, type)
-          rescue ArgumentError => e
-            log_crit_and_exit("argument '--#{opt}' got an #{e.message}", ERR_INVALID_ARG_TYPE)
-          end
-          yield opt, val if block_given?
-          opts[opt] = val unless block_given?
+      def apply_defaults
+        defaults.each do |opt,val|
+          log_notice("applying #{opt}'s default value: #{val}")
+          next if script.options[opt].nil? || !$subcommand_options[opt.to_sym].nil?
+          $subcommand_options[opt.to_sym] = val
         end
-        opts unless block_given?
       end
     end
   end
