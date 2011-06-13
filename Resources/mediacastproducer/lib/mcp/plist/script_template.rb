@@ -21,6 +21,16 @@ module MediacastProducer
         @options = data['options'].collect
       end
 
+      def extensions
+        return @extensions unless @extensions.nil?
+        @extensions = data['extensions'].split(',')
+      end
+
+      def mimetype
+        return @mimetype unless @mimetype.nil?
+        @mimetype = data['mimetype']
+      end
+
       def usage
         return @usage unless @usage.nil?
         @usage = data['usage']
@@ -47,14 +57,11 @@ module MediacastProducer
           rescue ArgumentError => e
             log_crit_and_exit("argument '--#{opt}' got an #{e.message}", ERR_INVALID_ARG_TYPE)
           end
-          # log_notice("yield '#{val}' for option #{opt}") if block_given?
           yield opt, val if block_given?
           opts[opt] = val unless block_given?
         end
         opts unless block_given?
       end
-
     end
-
   end
 end

@@ -1,7 +1,7 @@
 #
 #  Copyright (c) 2011 Stephan Jorek.  All Rights Reserved.
 #
-require 'mcp/plist/template'
+require 'mcp/plist/script_template'
 
 module MediacastProducer
   module Plist
@@ -11,31 +11,24 @@ module MediacastProducer
         @defaults = data['defaults'].collect
       end
 
-      def extensions
-        return @extensions unless @extensions.nil?
-        @extensions = data['extensions'].split(',')
-      end
-
-      def mimetype
-        return @mimetype unless @mimetype.nil?
-        @mimetype = data['mimetype']
-      end
-
-      def template
-        return @template unless @template.nil?
-        @template = Template.new(template_for_transcoder(data['template']))
+      def script
+        return @script unless @script.nil?
+        @script = ScriptTemplate.new(script_for_transcoder(data['script']))
       end
 
       def apply_defaults(input=nil)
-        template.options.each do |opt, type|
+        opts = {} unless block_given?
+        script.options.each do |opt, type|
           value = (input.nil? || input[opt.to_sym].nil?) ? defaults[opt] : input[opt.to_sym]
           begin
-            val = template.sanatize_option(value, type)
+            val = script.sanatize_option(value, type)
           rescue ArgumentError => e
             log_crit_and_exit("argument '--#{opt}' got an #{e.message}", ERR_INVALID_ARG_TYPE)
           end
           yield opt, val if block_given?
+          opts[opt] = val unless block_given?
         end
+        opts unless block_given?
       end
     end
   end

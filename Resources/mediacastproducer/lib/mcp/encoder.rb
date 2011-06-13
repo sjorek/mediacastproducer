@@ -1,10 +1,10 @@
-#  
+#
 #  Copyright (c) 2011 Stephan Jorek.  All Rights Reserved.
 #  Copyright (c) 2006-2010 Apple Inc.  All Rights Reserved.
 #
-#  IMPORTANT NOTE:  This file is licensed only for use on Apple-labeled computers 
-#  and is subject to the terms and conditions of the Apple Software License Agreement 
-#  accompanying the package this file is a part of.  You may not port this file to 
+#  IMPORTANT NOTE:  This file is licensed only for use on Apple-labeled computers
+#  and is subject to the terms and conditions of the Apple Software License Agreement
+#  accompanying the package this file is a part of.  You may not port this file to
 #  another platform without Apple's written consent.
 #
 
@@ -46,37 +46,40 @@ class Encoder
         exit(-1)
       end
     end
-    
-    # if ARGV.length == 0 
+
+    # if ARGV.length == 0
     #   print_subcommand_usage(subcommand_name)
     #   exit
     # end
-    
+
     getopt_args = [["--basedir", GetoptLong::OPTIONAL_ARGUMENT], ["--prb", GetoptLong::OPTIONAL_ARGUMENT], ["--no_fail", GetoptLong::OPTIONAL_ARGUMENT],  ["--subcommand", GetoptLong::OPTIONAL_ARGUMENT],  ["--password_property", GetoptLong::OPTIONAL_ARGUMENT]]
     plural_options = []
-    
+
     options_list.each do |option|
       if option[-1..-1] == "*"
-        option = option[0..-2] 
+        option = option[0..-2]
         plural_option = option + "s"
         plural_options << plural_option
       end
       getopt_args << ["--#{option}", GetoptLong::OPTIONAL_ARGUMENT]
     end
-    
+
     passed_args = ARGV.join(" ")
-    
-    if subcommand_name.nil?
-      subcommand_getopt = get_plist_opts_from_stdin
-      ASLLogger.crit_and_exit("An error occurred while reading the property list from standard input") unless subcommand_getopt
-      validation_error = plist_opts_validation_error(subcommand_getopt, getopt_args)
-      ASLLogger.crit_and_exit(validation_error) if validation_error
-    else
-      subcommand_getopt = GetoptLong.new(*getopt_args)
-    end
-    
-    subcommand_getopt.each do |option, value|
-      case option
+
+    begin
+
+      if subcommand_name.nil?
+        subcommand_getopt = get_plist_opts_from_stdin
+        ASLLogger.crit_and_exit("An error occurred while reading the property list from standard input") unless subcommand_getopt
+        validation_error = plist_opts_validation_error(subcommand_getopt, getopt_args)
+        ASLLogger.crit_and_exit(validation_error) if validation_error
+      else
+        subcommand_getopt = GetoptLong.new(*getopt_args)
+        subcommand_getopt.quiet = true
+      end
+
+      subcommand_getopt.each do |option, value|
+        case option
         when /--subcommand/
           subcommand_name = value
           subcommand = subcommand_with_name(subcommand_name)
@@ -93,7 +96,12 @@ class Encoder
           else
             $subcommand_options[name.to_sym] = value
           end
+        end
       end
+
+    rescue GetoptLong::Error => e
+      print_usage
+      log_crit_and_exit(e.message,-1)
     end
 
     if subcommand_name.nil?
@@ -117,26 +125,26 @@ class Encoder
       if not File.exists?($working_directory)
         FileUtils.mkdir_p($working_directory)
       end
-    else 
+    else
       log_crit_and_exit("Neither --basedir nor --prb were specified. Please specify one and only one of these parameters.", -1)
     end
-    
+
     $no_fail = !$subcommand_options[:no_fail].nil?
-    
+
     log_crit_and_exit("Working directory ('#{$working_directory}') does not exist.") unless File.exists?($working_directory)
     log_crit_and_exit("Working directory ('#{$working_directory}') is not a directory.") unless File.directory?($working_directory)
     log_crit_and_exit("Working directory ('#{$working_directory}') is not readable.") unless File.readable?($working_directory)
     log_crit_and_exit("Working directory ('#{$working_directory}') is not writable.") unless File.writable?($working_directory)
 
     Dir.chdir $working_directory
-    
+
     $properties = read_properties
-    
+
     unless $subcommand_options[:password]
       password_property = $subcommand_options[:password_property]
       $subcommand_options[:password] = $properties[password_property] if password_property
     end
-    
+
     sanitized_arguments = passed_args.gsub(/--(master_)?pass(word)?(=|\s)(\".*\"|\S*)/, '--\1pass\2=*****')
     subcommand.log_notice("START: [Working directory: #{$working_directory}] {Arguments: #{sanitized_arguments}} v.#{$productinfo[:version]}")
     begin
@@ -145,6 +153,6 @@ class Encoder
       log_crit_and_exit(e.message,e.return_code.to_i)
     end
     subcommand.log_notice("FINISH")
-    
+
   end
 end

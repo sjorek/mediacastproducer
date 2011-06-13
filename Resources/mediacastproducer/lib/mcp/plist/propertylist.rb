@@ -12,20 +12,20 @@ module MediacastProducer
   module Plist
     class PropertyList
       def initialize(path=nil)
-        @path = nil
+        @file = nil
         @plist = nil
         @data = nil
         load(path) unless path.nil?
       end
 
       def load(path)
-        @path = Pathname.new(path).realpath
-        @plist = CFPropertyList::List.new.load(path)
+        @file = Pathname.new(path).realpath
+        @plist = CFPropertyList::List.new.load(file)
         @data = CFPropertyList.native_types(plist)
       end
 
-      def path
-        @path
+      def file
+        @file
       end
 
       def plist
