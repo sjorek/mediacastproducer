@@ -22,7 +22,12 @@ ERR_TOOL_FAILURE = -10
 ERR_TEMPLATE_FAILURE = -11
 ERR_INVALID_ARG_TYPE = -12
 
-DEFAULT_ASPTECT_RATIOS = ["3:2", "4:3", "5:4", "16:9", "16:10"]
+DEFAULT_ASPTECT_RATIOS = ["3:2",   # 480x320  (iPhone)
+                          "4:3",   # 640x480, 768x576, 800x600, 1024x768 (iPad?)
+                          "5:4",   # 720x576  (SD)
+                          "16:9",  # 1024x576 (DVD)
+                          "16:10"] # 1280x800 (Macbook)
+                                   # HD ?
 
 #DEFAULT_CMD_TIMEOUT = 60
 #
