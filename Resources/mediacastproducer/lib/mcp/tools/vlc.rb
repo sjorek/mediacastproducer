@@ -15,12 +15,12 @@ VLC_BIN_PATH = "Contents/MacOS/#{VLC_BIN_NAME}"
 VLC_LOCATE = "locate \"#{VLC_BIN_PATH}\" | grep -E \"^#{VLC_SEARCH_PATH}.*#{VLC_BIN_PATH}$\""
 VLC_MDFIND = "mdfind -onlyin \"#{VLC_SEARCH_PATH}\" \"#{VLC_BIN_NAME}.app\""
 VLC_FIND = "find \"#{VLC_SEARCH_PATH}\" -type f -name \"#{VLC_BIN_NAME}\" | grep -E \"#{VLC_BIN_PATH}$\""
-VLC_MIN_VERSION = "1.1.9"
+VLC_MIN_VERSION = "1.1.10"
 VLC_MAX_VERSION = nil
 
 module MediacastProducer
   module Tools
-    class VLC < Base
+    class VLC < CommandBase
       def initialize(path_to_tool=nil)
         super(path_to_tool, VLC_MIN_VERSION, VLC_MAX_VERSION)
       end
@@ -45,10 +45,11 @@ module MediacastProducer
       def command_line(verbose=false)
         [tool_path, verbose ? "-vvvv" : "-q", "--ignore-config",
          "--intf", "dummy", "--extraintf", "rc",
-         "--lua-config", "rc={host='localhost:4212'}", "--play-and-exit"]
+         "--lua-config", "rc={host='localhost:4212'}", "--play-and-exit",
+         verbose ? "--no-sout-x264-quiet" : "--sout-x264-quiet"]
       end
 
-      def update_status(pid, loop = true)
+      def update_status(loop = true)
         position = nil
         duration = nil
         tries = 3

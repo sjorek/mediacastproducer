@@ -13,7 +13,7 @@ MP4_FASTSTART = File.join(MCP_LIBEXEC,"mp4-faststart.py")
 
 module MediacastProducer
   module Tools
-    class MP4Faststart < Base
+    class MP4Faststart < CommandBase
       def initialize(path_to_tool=nil)
         super(path_to_tool)
       end

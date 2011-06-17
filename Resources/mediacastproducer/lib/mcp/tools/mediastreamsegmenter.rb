@@ -16,7 +16,7 @@ MEDIASTREAMSEGMENTER_MAX_VERSION = nil
 
 module MediacastProducer
   module Tools
-    class MediastreamSegmenter < Base
+    class MediastreamSegmenter < CommandBase
       def initialize(path_to_tool=nil)
         super(path_to_tool, MEDIASTREAMSEGMENTER_MIN_VERSION, MEDIASTREAMSEGMENTER_MAX_VERSION)
       end
@@ -29,6 +29,10 @@ module MediacastProducer
         v = `#{tool_path} -v 2>&1 | cut -f2- -d' '`.chomp!
         v =~ %r{\(([0-9]{2})([0-9]{2})([0-9]{2})\)}
         "#{$1.to_i}.#{$2.to_i}.#{$3.to_i}"
+      end
+      def command_line(verbose=false)
+        return [tool_path] if verbose
+        [tool_path, "-q"]
       end
     end
 

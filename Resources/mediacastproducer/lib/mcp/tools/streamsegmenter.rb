@@ -15,7 +15,7 @@ STREAMSEGMENTER_MAX_VERSION = nil
 
 module MediacastProducer
   module Tools
-    class StreamSegmenter < Base
+    class StreamSegmenter < CommandBase
       def initialize(path_to_tool=nil)
         super(path_to_tool, STREAMSEGMENTER_MIN_VERSION, STREAMSEGMENTER_MAX_VERSION)
       end

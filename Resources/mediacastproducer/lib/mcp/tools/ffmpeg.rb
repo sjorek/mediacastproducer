@@ -16,7 +16,7 @@ FFMPEG_MAX_VERSION = nil
 
 module MediacastProducer
   module Tools
-    class FFMpeg < Base
+    class FFMpeg < CommandBase
       def initialize(path_to_tool=nil)
         super(path_to_tool, FFMPEG_MIN_VERSION, FFMPEG_MAX_VERSION)
       end

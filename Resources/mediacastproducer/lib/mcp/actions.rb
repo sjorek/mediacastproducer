@@ -67,17 +67,65 @@ def check_input_and_output_paths_are_not_equal(input, output)
   end
 end
 
-def fork_exec_and_wait(*args)
+def fork_exec_and_return_pid(*args)
   pid = fork { exec(*args) }
+  return false unless pid
+  # Process.detach(pid)
+  pid
+end
+
+def fork_exec_and_wait(*args)
+  pid = fork_exec_and_return_pid(*args)
   return false unless pid
   Process.waitpid(pid)
   return false unless $?.exited? && $?.exitstatus == 0
   return true
 end
 
-def fork_exec_and_return_pid(*args)
-  pid = fork { exec(*args) }
-  return false unless pid
-  # Process.detach(pid)
-  pid
+def fork_chain_and_return_pids(*chain)
+  r = 0
+  w = 1
+  pipes = []
+#  errs = []
+  pids = []
+  (1..chain.length).each {pipes << IO.pipe}
+#  (1..chain.length).each {errs << IO.pipe}
+  i = 0
+  l = chain.length - 1
+  chain.each do |args|
+    log_notice("test #{i} of #{l}")
+    pid = fork do
+#      pipes[i-1][w].close if i > 0
+      pipes[i][r].close # if i < l
+#      errs[i][r].close
+      STDIN.reopen(pipes[i-1][r]) if i > 0
+      STDOUT.reopen(pipes[i][w]) if i < l
+#      STDERR.reopen(errs[i][w])
+      exec(*args)
+    end
+    pipes[i-1][r].close if i > 0
+    pipes[i][w].close # if i < l
+    pipes[i][r].close if i == l
+#    errs[i][w].close
+    break unless pid
+    pids << pid
+    i = pids.length
+  end
+  return pids if pids.length==chain.length
+  pids.each do |pid|
+    Process.kill('HUP', pid)
+    Process.waitpid(pid)
+  end
+  return false
+end
+
+def fork_chain_and_wait(*chain)
+  pids = fork_chain_and_return_pids(*chain)
+  return false unless pids
+  result = true
+  pids.each do |pid|
+    Process.waitpid(pid)
+    result = false unless $?.exited? && $?.exitstatus == 0
+  end
+  return result
 end

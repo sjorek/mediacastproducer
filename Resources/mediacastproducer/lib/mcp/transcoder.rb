@@ -13,6 +13,7 @@ require 'mcp/common/mcast_exception'
 require 'mcp/actions/base'
 require 'mcp/plist/script_preset'
 require 'mcp/common/templates'
+require 'mcp/common/asl_class_logging'
 
 module MediacastProducer
   module Transcoder
@@ -97,65 +98,46 @@ module MediacastProducer
           tools << tool
         end
         begin
-          arguments = MediacastProducer::Common::TemplateArray.substitute(preset.script.arguments + arguments, data)
+          pipeline = []
+          preset.script.commands.each do |cmd|
+            pipeline << MediacastProducer::Common::TemplateArray.substitute(preset.script.arguments[cmd], data)
+          end
+          pipeline << arguments unless arguments.empty?
         rescue McastTemplateException => e
           log_crit_and_exit(e.message,e.return_code.to_i)
         end
-        log_notice(arguments.join(' '))
-        unless (pid = fork_exec_and_return_pid(*arguments))
+        cmds = []
+        pipeline.each { |args|  cmds << args.join(' ') }
+        log_notice(cmds.join(' | '))
+#        exit
+        unless (pids = fork_chain_and_return_pids(*pipeline))
           log_crit_and_exit("failed to transcode '#{@input}' to '#{@output}'", -1)
         end
         begin
           puts "<xgrid>\n{control = statusUpdate; percentDone = 0.0; }\n</xgrid>"
           tools.each do |tool|
             next unless tool.respond_to?(:update_status)
-            tool.update_status(pid) { |percent|
+            tool.update_status { |percent|
               puts "<xgrid>\n{control = statusUpdate; percentDone = #{percent}; }\n</xgrid>"
             }
           end
-          pid, status = Process.waitpid2(pid)
-          puts "<xgrid>\n{control = statusUpdate; percentDone = 100.0; }\n</xgrid>"
+          force_quit = false
         rescue SystemExit, Interrupt
-          Process.kill('HUP', pid)
+          force_quit = true
+        end
+        result = true
+        pids.each do |pid|
+          Process.kill('HUP', pid) if force_quit
           pid, status = Process.waitpid2(pid)
+          log_notice("pid: #{pid} exit status: #{status.exitstatus}")
+          result = false unless status.exited? && status.exitstatus == 0
         end
-        log_notice("pid: #{pid} exit status: #{status.exitstatus}")
-        log_crit_and_exit("failed to transcode '#{@input}' to '#{@output}'",status.exitstatus) unless status.exitstatus == 0
+        puts "<xgrid>\n{control = statusUpdate; percentDone = 100.0; }\n</xgrid>" if result && !force_quit
+        log_crit_and_exit("failed to transcode '#{@input}' to '#{@output}'", -1) unless result
       end
 
-      def log_crit(msg)
-        ASLLogger.crit(self.class.to_s + ": " + msg)
-      end
+      include MediacastProducer::ASLClassLogging
 
-      def log_error(msg)
-        ASLLogger.error(self.class.to_s + ": " + msg)
-      end
-
-      def log_warn(msg)
-        ASLLogger.warn(self.class.to_s + ": " + msg)
-      end
-
-      def log_notice(msg)
-        ASLLogger.notice(self.class.to_s + ": " + msg)
-      end
-
-      def log_info(msg)
-        ASLLogger.info(self.class.to_s + ": " + msg)
-      end
-
-      def log_debug(msg)
-        ASLLogger.debug(self.class.to_s + ": " + msg)
-      end
-
-      def log_crit_and_exit(msg, status_code = -1)
-        ASLLogger.crit(self.class.to_s + ": " + msg)
-        if $no_fail
-          ASLLogger.notice(self.class.to_s + ": " + "No fail flag was set. Exiting with exit code '0'.")
-          exit(0)
-        else
-          exit(status_code)
-        end
-      end
     end
 
     @@preset_classes = []

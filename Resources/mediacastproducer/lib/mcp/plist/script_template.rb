@@ -8,7 +8,7 @@ module MediacastProducer
     class ScriptTemplate < PropertyList
       def arguments
         return @arguments unless @arguments.nil?
-        @arguments = data['arguments'].collect
+        @arguments = data['arguments']
       end
 
       def commands

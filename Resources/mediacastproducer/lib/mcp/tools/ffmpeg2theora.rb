@@ -16,7 +16,7 @@ FFMPEG2THEORA_MAX_VERSION = nil
 
 module MediacastProducer
   module Tools
-    class FFMpeg2Theora < Base
+    class FFMpeg2Theora < CommandBase
       def initialize(path_to_tool=nil)
         super(path_to_tool, FFMPEG2THEORA_MIN_VERSION, FFMPEG2THEORA_MAX_VERSION)
       end

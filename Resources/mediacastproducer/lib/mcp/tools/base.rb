@@ -11,11 +11,12 @@
 require 'rubygems'
 require 'shellwords'
 require 'mcp/common/mcast_exception'
+require 'mcp/common/asl_class_logging'
 require 'mcp/tools'
 
 module MediacastProducer
   module Tools
-    class Base
+    class CommandBase
       def self.inherited(subclass)
         MediacastProducer::Tools.add_tool_class(subclass)
       end
@@ -34,7 +35,7 @@ module MediacastProducer
 
       def tool_path
         return @tool_path unless @tool_path.nil?
-        path = lookup_path.chomp!
+        path = lookup_path.chomp
         raise McastToolException.new, self.class.to_s + ": could not lookup tool path: #{name}" if path.nil? || path == "" || !File.executable?(path)
         path = Pathname.new(path).realpath.to_s
         log_notice("path to #{name}: #{path}")
@@ -43,7 +44,7 @@ module MediacastProducer
 
       def tool_version
         return @tool_version unless @tool_version.nil?
-        ver = lookup_version.chomp!
+        ver = lookup_version.chomp
         raise McastToolException.new, self.class.to_s + ": could not lookup tool version: #{name}" if ver.nil? || ver == ""
         log_notice("#{name} version: #{ver}")
         @tool_version = ver
@@ -96,39 +97,9 @@ module MediacastProducer
         fork_exec_and_wait(*arguments)
       end
 
-      def log_crit(msg)
-        ASLLogger.crit(self.class.to_s + ": " + msg)
-      end
+      include MediacastProducer::ASLClassLogging
 
-      def log_error(msg)
-        ASLLogger.error(self.class.to_s + ": " + msg)
-      end
-
-      def log_warn(msg)
-        ASLLogger.warn(self.class.to_s + ": " + msg)
-      end
-
-      def log_notice(msg)
-        ASLLogger.notice(self.class.to_s + ": " + msg)
-      end
-
-      def log_info(msg)
-        ASLLogger.info(self.class.to_s + ": " + msg)
-      end
-
-      def log_debug(msg)
-        ASLLogger.debug(self.class.to_s + ": " + msg)
-      end
-
-      def log_crit_and_exit(msg, status_code = -1)
-        ASLLogger.crit(self.class.to_s + ": " + msg)
-        if $no_fail
-          ASLLogger.notice(self.class.to_s + ": " + "No fail flag was set. Exiting with exit code '0'.")
-          exit(0)
-        else
-          exit(status_code)
-        end
-      end
     end
+
   end
 end

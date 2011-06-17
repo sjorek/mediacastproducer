@@ -2,22 +2,26 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>arguments</key>
-    <array>
-        <string>###vlc###</string>
-        <string>###input###</string>
-        <string>--no-sout-transcode-hurry-up</string>
-        <string>--no-ffmpeg-hurry-up</string>
-        <string>--no-drop-late-frames</string>
-        <string>--no-skip-frames</string>
-        <string>--no-sout-vorbis-cbr</string>
-        <string>--sout-transcode-high-priority</string>
-        <string>--sout-theora-quality=###video_quality###</string>
-        <string>--sout-vorbis-quality=###audio_quality###</string>
-        <string>--sout=#transcode{venc=theora,vcodec=theo,scale=1,deinterlace=0,vfilter=canvas{width=###video_width###,height=###video_height###},acodec=vorb,channels=###audio_channels###,samplerate=###audio_samplerate###,afilter=ugly_resampler}:standard{access=file,mux=ogg,dst='###output###'}</string>
-    </array>
     <key>commands</key>
     <string>vlc</string>
+    <key>arguments</key>
+    <dict>
+        <key>vlc</key>
+        <array>
+            <string>###vlc###</string>
+            <string>###input###</string>
+            <string>--no-sout-transcode-hurry-up</string>
+            <string>--no-ffmpeg-hurry-up</string>
+            <string>--no-drop-late-frames</string>
+            <string>--no-skip-frames</string>
+            <string>--no-sout-vorbis-cbr</string>
+            <string>--sout-transcode-high-priority</string>
+            <string>--sout-transcode-audio-sync</string>
+            <string>--sout-theora-quality=###video_quality###</string>
+            <string>--sout-vorbis-quality=###audio_quality###</string>
+            <string>--sout=#transcode{venc=theora,vcodec=theo,scale=1,deinterlace=0,vfilter=canvas{width=###video_width###,height=###video_height###},acodec=vorb,channels=###audio_channels###,samplerate=###audio_samplerate###,afilter=ugly_resampler}:standard{access=file,mux=ogg,dst='###output###'}</string>
+        </array>
+    </dict>
     <key>options</key>
     <dict>
         <key>video_quality</key>
