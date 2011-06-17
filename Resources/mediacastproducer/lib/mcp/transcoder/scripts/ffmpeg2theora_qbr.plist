@@ -3,12 +3,12 @@
 <plist version="1.0">
 <dict>
     <key>commands</key>
-    <string>vlc</string>
+    <string>ffmpeg2theora</string>
     <key>arguments</key>
     <dict>
-        <key>vlc</key>
+        <key>ffmpeg2theora</key>
         <array>
-            <string>###vlc###</string>
+            <string>###ffmpeg2theora###</string>
             <string>###input###</string>
             <string>--no-sout-transcode-hurry-up</string>
             <string>--no-ffmpeg-hurry-up</string>
@@ -48,11 +48,11 @@ encoded audio-track, using a quality based variable bitrate for both tracks
 ]]></string>
     <key>usage</key>
     <string><![CDATA[
-         --video_quality     video-quality, value-range from 0 to 10
+         --video_quality     video-quality, value range from 0 to 10
          --video_width       video width in pixel
          --video_height      video height in pixel
 
-         --audio_quality     audio-quality, value-range from 0 to 10
+         --audio_quality     audio-quality, value range from 0 to 10
          --audio_samplerate  audio samplerate in hz as integer
          --audio_channels    number of audio channels,
                              possible values: 1 (mono) or 2 (stereo)

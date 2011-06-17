@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>commands</key>
+    <string>ffmpeg2theora</string>
+    <key>arguments</key>
+    <dict>
+        <key>ffmpeg2theora</key>
+        <array>
+            <string>###ffmpeg2theora###</string>
+            <string>--videobitrate</string>
+            <string>###video_bitrate###</string>
+            <string>--videoquality</string>
+            <string>###video_quality###</string>
+            <string>--max_size</string>
+            <string>###video_width###x###video_height###</string>
+            <string>--audiobitrate</string>
+            <string>###audio_bitrate###</string>
+            <string>--channels</string>
+            <string>###audio_channels###</string>
+            <string>--samplerate</string>
+            <string>###audio_samplerate###</string>
+            <string>--soft-target</string>
+            <string>--no-oshash</string>
+            <string>--no-upscaling</string>
+            <string>--optimize</string>
+            <string>--two-pass</string>
+            <string>--frontend</string>
+            <string>--output</string>
+            <string>###output###</string>
+            <string>###input###</string>
+        </array>
+    </dict>
+    <key>options</key>
+    <dict>
+        <key>video_bitrate</key>
+        <string>integer</string>
+        <key>video_width</key>
+        <string>integer</string>
+        <key>video_height</key>
+        <string>integer</string>
+        <key>audio_bitrate</key>
+        <string>integer</string>
+        <key>audio_channels</key>
+        <string>integer</string>
+        <key>audio_samplerate</key>
+        <string>integer</string>
+    </dict>
+    <key>extensions</key>
+    <string>ogv,ogg</string>
+    <key>mimetype</key>
+    <string>video/ogv</string>
+    <key>description</key>
+    <string><![CDATA[
+transcode INPUT to an OGG container with Theora encoded video-track and Vorbis
+encoded audio-track, using a variable bitrate for both tracks
+]]></string>
+    <key>usage</key>
+    <string><![CDATA[
+         --video_bitrate     video bitrate in kBit per second
+         --video_quality     minimum allowed video quality,
+                             value-range from 0 to 10
+         --video_width       video width in pixel
+         --video_height      video height in pixel
+
+         --audio_bitrate     audio bitrate in kBit per second
+         --audio_samplerate  audio samplerate in hz as integer
+         --audio_channels    number of audio channels,
+                             possible values: 1 (mono) or 2 (stereo)
+]]></string>
+</dict>
+</plist>
