@@ -17,8 +17,78 @@ require 'mcp/common/asl_class_logging'
 
 module MediacastProducer
   module Transcoder
-    class TranscoderBase
+    module Script
+      def run_script(arguments)
+        data_values = {}
+        raw_values = {}
+        script.sanatize_options { |option, value, raw|
+          data_values[option] = value
+          raw_values[option] = raw
+        }
+        data_values['input'] = input
+        data_values['output'] = output
+        raw_values.update(MediacastProducer::Transcoder.file_values(input,'input_'))
+        raw_values.update(MediacastProducer::Transcoder.file_values(output,'output_'))
+        tools = []
+        script.commands.each do |c|
+          tool = tool_with_name(c)
+          log_crit_and_exit("tool #{c} not found",ERR_TOOL_FAILURE) if tool.nil?
+          log_crit_and_exit("failed to setup tools: #{c}", ERR_TOOL_FAILURE) unless tool.valid?
+          data_values[c] = tool.command_line(!$subcommand_options[:verbose].nil?)
+          raw_values[c] = tool.tool_path
+          tools << tool
+        end
+#        data_values.each do |k,v|
+#          v = v.join(" ") if v.is_a?(Array)
+#          log_notice("data key #{k} value #{v}")
+#        end
+#        raw_values.each do |k,v|
+#          v = v.join(" ") if v.is_a?(Array)
+#          log_notice("raw key #{k} value #{v}")
+#        end
+#        exit
+        begin
+          pipeline = []
+          script.commands.each do |cmd|
+            args = MediacastProducer::Common::TemplateArray.substitute(script.arguments[cmd], data_values, '###')
+            pipeline << MediacastProducer::Common::TemplateArray.substitute(args, raw_values, '%%%')
+          end
+          pipeline << arguments unless arguments.empty?
+        rescue McastTemplateException => e
+          log_crit_and_exit(e.message,e.return_code.to_i)
+        end
+        cmds = []
+        pipeline.each { |args|  cmds << args.join(' ') }
+        log_notice(cmds.join(' | '))
+#        exit
+        return false unless (pids = fork_chain_and_return_pids(*pipeline))
+        begin
+          puts "<xgrid>\n{control = statusUpdate; percentDone = 0.0; }\n</xgrid>"
+          tools.each do |tool|
+            next unless tool.respond_to?(:update_status)
+            tool.update_status { |percent|
+              puts "<xgrid>\n{control = statusUpdate; percentDone = #{percent}; }\n</xgrid>"
+            }
+          end
+          force_quit = false
+        rescue SystemExit, Interrupt
+          force_quit = true
+        end
+        result = true
+        pids.each do |pid|
+          Process.kill('HUP', pid) if force_quit
+          pid, status = Process.waitpid2(pid)
+          log_notice("pid: #{pid} exit status: #{status.exitstatus}")
+          result = false unless status.exited? && status.exitstatus == 0
+        end
+        puts "<xgrid>\n{control = statusUpdate; percentDone = 100.0; }\n</xgrid>" if result && !force_quit
+        return result
+      end
+    end
+
+    class Preset
       include MediacastProducer::Actions::Base
+      include MediacastProducer::Transcoder::Script
       def self.inherited(subclass)
         MediacastProducer::Transcoder.add_preset_class(subclass)
       end
@@ -37,8 +107,21 @@ module MediacastProducer
         @preset = MediacastProducer::Plist::ScriptPreset.new(path)
       end
 
+      def script
+        return @script unless @script.nil?
+        @script = preset.script
+      end
+
+      def input
+        @input
+      end
+
+      def output
+        @output
+      end
+
       def description
-        preset.script.description
+        script.description
       end
 
       def options_usage
@@ -53,14 +136,14 @@ module MediacastProducer
       def more_options
         return @more_options unless @more_options.nil?
         @more_options = []
-        preset.script.options.each do |opt,type|
+        script.options.each do |opt,type|
           @more_options << opt
         end
         @more_options
       end
 
       def more_options_usage
-        "#{preset.script.usage}\n"
+        "#{script.usage}\n"
       end
 
       def run(arguments)
@@ -83,57 +166,7 @@ module MediacastProducer
         check_output_file_exclude_dir(@output) if options.include?("output")
 
         preset.apply_defaults
-        data = {}
-        preset.script.sanatize_options { |option, value|
-          data[option] = value.to_s.shellescape
-        }
-        data['input'] = @input.to_s.shellescape
-        data['output'] = @output.to_s.shellescape
-        tools = []
-        preset.script.commands.each do |c|
-          tool = tool_with_name(c)
-          log_crit_and_exit("tool #{c} not found",ERR_TOOL_FAILURE) if tool.nil?
-          log_crit_and_exit("failed to setup tools: #{c}", ERR_TOOL_FAILURE) unless tool.valid?
-          data[c] = tool.command_line(!$subcommand_options[:verbose].nil?)
-          tools << tool
-        end
-        begin
-          pipeline = []
-          preset.script.commands.each do |cmd|
-            pipeline << MediacastProducer::Common::TemplateArray.substitute(preset.script.arguments[cmd], data)
-          end
-          pipeline << arguments unless arguments.empty?
-        rescue McastTemplateException => e
-          log_crit_and_exit(e.message,e.return_code.to_i)
-        end
-        cmds = []
-        pipeline.each { |args|  cmds << args.join(' ') }
-        log_notice(cmds.join(' | '))
-#        exit
-        unless (pids = fork_chain_and_return_pids(*pipeline))
-          log_crit_and_exit("failed to transcode '#{@input}' to '#{@output}'", -1)
-        end
-        begin
-          puts "<xgrid>\n{control = statusUpdate; percentDone = 0.0; }\n</xgrid>"
-          tools.each do |tool|
-            next unless tool.respond_to?(:update_status)
-            tool.update_status { |percent|
-              puts "<xgrid>\n{control = statusUpdate; percentDone = #{percent}; }\n</xgrid>"
-            }
-          end
-          force_quit = false
-        rescue SystemExit, Interrupt
-          force_quit = true
-        end
-        result = true
-        pids.each do |pid|
-          Process.kill('HUP', pid) if force_quit
-          pid, status = Process.waitpid2(pid)
-          log_notice("pid: #{pid} exit status: #{status.exitstatus}")
-          result = false unless status.exited? && status.exitstatus == 0
-        end
-        puts "<xgrid>\n{control = statusUpdate; percentDone = 100.0; }\n</xgrid>" if result && !force_quit
-        log_crit_and_exit("failed to transcode '#{@input}' to '#{@output}'", -1) unless result
+        log_crit_and_exit("failed to transcode '#{@input}' to '#{@output}'", -1) unless run_script(arguments)
       end
 
       include MediacastProducer::ASLClassLogging
@@ -166,13 +199,27 @@ module MediacastProducer
         name = preset.gsub(/[^a-zA-Z0-9_]/,'_').to_s
         class_name = "Transcoder_#{name}"
         Object.const_set(class_name,
-        Class::new(TranscoderBase) {
+        Class::new(Preset) {
           @preset = preset
           def self.preset_name
             @preset
           end
         })
       end
+    end
+
+    def self.file_values(f,prefix="")
+      values = {}
+      values["#{prefix}dirname"] = File.dirname(f)
+      values["#{prefix}basename"] = File.basename(f)
+      if f =~ /(\.[^\\\/.]+)$/
+        values["#{prefix}filename"] = File.basename(f,$1)
+        values["#{prefix}extension"] = $1
+      else
+        values["#{prefix}filename"] = values["#{prefix}basename"]
+        values["#{prefix}extension"] = ""
+      end
+      return values
     end
 
   end

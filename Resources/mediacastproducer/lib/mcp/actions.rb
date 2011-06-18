@@ -93,20 +93,24 @@ def fork_chain_and_return_pids(*chain)
   i = 0
   l = chain.length - 1
   chain.each do |args|
-    log_notice("test #{i} of #{l}")
     pid = fork do
-#      pipes[i-1][w].close if i > 0
-      pipes[i][r].close # if i < l
-#      errs[i][r].close
-      STDIN.reopen(pipes[i-1][r]) if i > 0
-      STDOUT.reopen(pipes[i][w]) if i < l
-#      STDERR.reopen(errs[i][w])
+      if l > 0
+        log_notice("test #{i} of #{l}")
+#        pipes[i-1][w].close if i > 0
+        pipes[i][r].close # if i < l
+#        errs[i][r].close
+        STDIN.reopen(pipes[i-1][r]) if i > 0
+        STDOUT.reopen(pipes[i][w]) if i < l
+#        STDERR.reopen(errs[i][w])
+      end
       exec(*args)
     end
-    pipes[i-1][r].close if i > 0
-    pipes[i][w].close # if i < l
-    pipes[i][r].close if i == l
-#    errs[i][w].close
+    if l > 0
+      pipes[i-1][r].close if i > 0
+      pipes[i][w].close # if i < l
+      pipes[i][r].close if l > 0 && i == l
+#      errs[i][w].close
+    end
     break unless pid
     pids << pid
     i = pids.length

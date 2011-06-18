@@ -8,6 +8,7 @@
 #  another platform without Apple's written consent.
 #
 
+require 'fileutils'
 require 'shellwords'
 require 'mcp/transcoder'
 require 'mcp/actions/base'
@@ -18,6 +19,7 @@ module PodcastProducer
   module Actions
     class ToolScript < Base
       include MediacastProducer::Actions::Base
+      include MediacastProducer::Transcoder::Script
       def initialize()
         @more_options = []
         @more_options_usage = ""
@@ -45,6 +47,18 @@ module PodcastProducer
       def more_options_usage
         "#{@more_options_usage}\n" +
         "the available scripts are:\n#{available_scripts}\n"
+      end
+
+      def script
+        @script
+      end
+
+      def input
+        @input
+      end
+
+      def output
+        @output
       end
 
       def run(arguments)
@@ -111,57 +125,7 @@ module PodcastProducer
           print_subcommand_usage(name) unless !arguments.nil? && !arguments.empty?
           log_crit_and_exit(e.message,-1)
         end
-        data = {}
-        @script.sanatize_options { |option, value|
-          data[option] = value.to_s.shellescape
-        }
-        data['input'] = @input.to_s.shellescape
-        data['output'] = @output.to_s.shellescape
-        tools = []
-        @script.commands.each do |c|
-          tool = tool_with_name(c)
-          log_crit_and_exit("tool #{c} not found",ERR_TOOL_FAILURE) if tool.nil?
-          log_crit_and_exit("failed to setup tools: #{c}", ERR_TOOL_FAILURE) unless tool.valid?
-          data[c] = tool.command_line(!$subcommand_options[:verbose].nil?)
-          tools << tool
-        end
-        begin
-          pipeline = []
-          preset.script.commands.each do |cmd|
-            pipeline << MediacastProducer::Common::TemplateArray.substitute(preset.script.arguments[cmd], data)
-          end
-          pipeline << arguments unless arguments.empty?
-        rescue McastTemplateException => e
-          log_crit_and_exit(e.message,e.return_code.to_i)
-        end
-        cmds = []
-        pipeline.each { |args|  cmds << args.join(' ') }
-        log_notice(cmds.join(' | '))
-        exit
-        unless (pids = fork_chain_and_return_pids(*pipeline))
-          log_crit_and_exit("failed to transcode '#{@input}' to '#{@output}' with script '#{@script_name}'", -1)
-        end
-        begin
-          puts "<xgrid>\n{control = statusUpdate; percentDone = 0.0; }\n</xgrid>"
-          tools.each do |tool|
-            next unless tool.respond_to?(:update_status)
-            tool.update_status { |percent|
-              puts "<xgrid>\n{control = statusUpdate; percentDone = #{percent}; }\n</xgrid>"
-            }
-          end
-          force_quit = false
-        rescue SystemExit, Interrupt
-          force_quit = true
-        end
-        result = true
-        pids.each do |pid|
-          Process.kill('HUP', pid) if force_quit
-          pid, status = Process.waitpid2(pid)
-          log_notice("pid: #{pid} exit status: #{status.exitstatus}")
-          result = false unless status.exited? && status.exitstatus == 0
-        end
-        puts "<xgrid>\n{control = statusUpdate; percentDone = 100.0; }\n</xgrid>" if result && !force_quit
-        log_crit_and_exit("failed to transcode '#{@input}' to '#{@output}' with script '#{@script_name}'", -1) unless result
+        log_crit_and_exit("failed to transcode '#{@input}' to '#{@output}' with script '#{@script_name}'", -1) unless run_script(arguments)
       end
     end
 

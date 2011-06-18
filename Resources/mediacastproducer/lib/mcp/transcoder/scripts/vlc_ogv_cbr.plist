@@ -17,25 +17,112 @@
             <string>--sout-vorbis-cbr</string>
             <string>--sout-transcode-high-priority</string>
             <string>--sout-transcode-audio-sync</string>
-            <string>--sout-vorbis-min-bitrate=###audio_bitrate###</string>
-            <string>--sout-vorbis-max-bitrate=###audio_bitrate###</string>
-            <string>--sout=#transcode{venc=theora,vcodec=theo,vb=###video_bitrate###,scale=1,deinterlace=0,vfilter=canvas{width=###video_width###,height=###video_height###},acodec=vorb,ab=###audio_bitrate###,channels=###audio_channels###,samplerate=###audio_samplerate###,afilter=ugly_resampler}:standard{access=file,mux=ogg,dst='###output###'}</string>
+            <string>--sout-vorbis-min-bitrate=%%%audio_bitrate%%%</string>
+            <string>--sout-vorbis-max-bitrate=%%%audio_bitrate%%%</string>
+            <string>--sout=#transcode{###video_bitrate######video_fps###venc=theora,vcodec=theo,scale=1,deinterlace=0,vfilter=canvas{###video_width######video_height###padd=0,no-padd},###audio_bitrate######audio_channels######audio_samplerate###acodec=vorb}:standard{access=file,mux=ogg,dst='###output###'}</string>
         </array>
     </dict>
     <key>options</key>
     <dict>
         <key>video_bitrate</key>
-        <string>integer</string>
+        <dict>
+            <key>template</key>
+            <string>vb=%%%video_bitrate%%%,</string>
+            <key>type</key>
+            <string>integer</string>
+            <key>minimum</key>
+            <integer>32</integer>
+            <key>maximum</key>
+            <integer>51200</integer>
+            <key>required</key>
+            <true/>
+        </dict>
         <key>video_width</key>
-        <string>integer</string>
+        <dict>
+            <key>template</key>
+            <string>width=%%%video_width%%%,</string>
+            <key>type</key>
+            <string>integer</string>
+            <key>minimum</key>
+            <integer>16</integer>
+            <key>maximum</key>
+            <integer>4096</integer>
+            <key>required</key>
+            <true/>
+        </dict>
         <key>video_height</key>
-        <string>integer</string>
+        <dict>
+            <key>template</key>
+            <string>height=%%%video_height%%%,</string>
+            <key>type</key>
+            <string>integer</string>
+            <key>minimum</key>
+            <integer>16</integer>
+            <key>maximum</key>
+            <integer>4096</integer>
+            <key>required</key>
+            <true/>
+        </dict>
+        <key>video_fps</key>
+        <dict>
+            <key>template</key>
+            <string>fps=%%%video_fps%%%,</string>
+            <key>type</key>
+            <string>real</string>
+            <key>minimum</key>
+            <real>1.0</real>
+            <key>maximum</key>
+            <real>60.0</real>
+            <key>required</key>
+            <false/>
+        </dict>
         <key>audio_bitrate</key>
-        <string>integer</string>
+        <dict>
+            <key>template</key>
+            <string>ab=%%%audio_bitrate%%%,</string>
+            <key>type</key>
+            <string>integer</string>
+            <key>minimum</key>
+            <integer>32</integer>
+            <key>maximum</key>
+            <integer>500</integer>
+            <key>required</key>
+            <true/>
+        </dict>
         <key>audio_channels</key>
-        <string>integer</string>
+        <dict>
+            <key>template</key>
+            <string>channels=%%%audio_channels%%%,</string>
+            <key>type</key>
+            <string>integer</string>
+            <key>minimum</key>
+            <integer>1</integer>
+            <key>maximum</key>
+            <integer>2</integer>
+            <key>required</key>
+            <false/>
+        </dict>
         <key>audio_samplerate</key>
-        <string>integer</string>
+        <dict>
+            <key>template</key>
+            <string>samplerate=%%%audio_samplerate%%%,afilter=ugly_resampler,</string>
+            <key>type</key>
+            <string>integer</string>
+            <key>values</key>
+            <array>
+                <integer>8000</integer>
+                <integer>11025</integer>
+                <integer>12000</integer>
+                <integer>16000</integer>
+                <integer>22500</integer>
+                <integer>24000</integer>
+                <integer>32000</integer>
+                <integer>44100</integer>
+                <integer>48000</integer>
+            </array>
+            <key>required</key>
+            <false/>
+        </dict>
     </dict>
     <key>extensions</key>
     <string>ogv,ogg</string>
@@ -48,14 +135,17 @@ encoded audio-track, using a constant bitrate for both tracks
 ]]></string>
     <key>usage</key>
     <string><![CDATA[
-         --video_bitrate     video bitrate in kBit per second
-         --video_width       video width in pixel
-         --video_height      video height in pixel
+         --video_bitrate      video bitrate in kBit per second
+         --video_width        video width in pixel
+         --video_height       video height in pixel
+        [--video_fps]         optional: video frames per second
 
-         --audio_bitrate     audio bitrate in kBit per second
-         --audio_samplerate  audio samplerate in hz as integer
-         --audio_channels    number of audio channels,
-                             possible values: 1 (mono) or 2 (stereo)
+         --audio_bitrate      audio bitrate in kBit per second
+        [--audio_channels]    optional: number of audio channels,
+                              possible values: 1 (mono) or 2 (stereo)
+        [--audio_samplerate]  optional: audio samplerate in hz, possible values:
+                              8000, 11025, 12000, 16000, 22500, 24000, 32000,
+                              44100 or 48000
 ]]></string>
 </dict>
 </plist>

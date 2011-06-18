@@ -18,11 +18,7 @@ module MediacastProducer
 
       def options
         return @options unless @options.nil?
-        @options = {}
-        data['options'].collect do |opt,type|
-          @options[opt.to_s] = type.to_s
-        end
-        @options
+        @options = data['options']
       end
 
       def extensions
@@ -45,31 +41,54 @@ module MediacastProducer
         @usage = data['usage'].chomp!
       end
 
-      def sanatize_option(value, type)
-        # log_notice("sanatizing '#{value}' for type #{type}")
-        if value == nil
-          raise ArgumentError.new, 'invalid or missing value'
-        elsif type.downcase == "integer"
-          return Integer(value)
-        elsif type.downcase == "real"
-          return Float(value)
+      def sanatize_option(value, cfg)
+        if value.nil?
+          raise ArgumentError.new, "missing value" if cfg['required']
+          return "", ""
         end
-        value
+        raw = nil
+        case cfg['type']
+        when "integer"
+          raw = Integer(value)
+          min = cfg['minimum'] unless cfg['minimum'].nil?
+          max = cfg['maximum'] unless cfg['maximum'].nil?
+        when "real"
+          raw = Float(value)
+          min = cfg['minimum'] unless cfg['minimum'].nil?
+          max = cfg['maximum'] unless cfg['maximum'].nil?
+        when "string"
+          raw = String(value)
+        else
+          raise ArgumentError.new, "unknown type '#{cfg['type']}'"
+        end
+        raise ArgumentError.new, "value below minimum '#{min}'" unless min.nil? || min <= raw
+        raise ArgumentError.new, "value above maximum '#{max}'" unless max.nil? || max >= raw
+        raise ArgumentError.new, "invalid value" unless cfg['values'].nil? || cfg['values'].include?(raw)
+        raise ArgumentError.new, "invalid format" unless cfg['match'].nil? || raw.to_s =~ /#{cfg['match']}/
+        return cfg['template'], raw
       end
 
-      def sanatize_options(required=true)
-        opts = {} unless block_given?
-        options.each do |opt,type|
-          require_option(opt.to_sym) if required
-          begin
-            val = sanatize_option($subcommand_options[opt.to_sym], type)
-          rescue ArgumentError => e
-            log_crit_and_exit("argument '--#{opt}' got an #{e.message}", ERR_INVALID_ARG_TYPE)
-          end
-          yield opt, val if block_given?
-          opts[opt] = val unless block_given?
+      def sanatize_options
+        unless block_given?
+          data = {}
+          values = {}
         end
-        opts unless block_given?
+        options.each do |opt,cfg|
+#          log_notice("opt #{opt} required #{cfg['required']}")
+          require_option(opt.to_sym) if cfg['required']
+          begin
+            tpl, raw = sanatize_option($subcommand_options[opt.to_sym], cfg)
+          rescue ArgumentError => e
+            log_crit_and_exit("#{e.message} for argument '--#{opt}'", ERR_INVALID_ARG_TYPE)
+          end
+          yield opt, tpl, raw if block_given?
+          unless block_given?
+            data[opt] = tpl
+            values[opt] = raw
+          end
+        end
+        return if block_given?
+        return data, values
       end
     end
   end

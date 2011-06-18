@@ -28,6 +28,11 @@ module MediacastProducer
       def lookup_version
         `#{tool_path} | head -n 1 | cut -f2 -d' '`
       end
+
+      def command_line(verbose=false)
+        [tool_path, "--frontend"]
+      end
+
     end
 
   end

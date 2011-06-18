@@ -139,7 +139,7 @@ module MediacastProducer
 
       # A class method for direct calls
       # returns in_arr with values substituted
-      def self.substitute(in_arr, values, replace_str='###')
+      def self.substitute(in_arr, values, replace_str) #='###')
         self.new(in_arr, values, replace_str).run
       end
     end

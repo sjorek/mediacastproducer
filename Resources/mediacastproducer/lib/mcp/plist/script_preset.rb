@@ -8,11 +8,7 @@ module MediacastProducer
     class ScriptPreset < PropertyList
       def defaults
         return @defaults unless @defaults.nil?
-        @defaults = {}
-        data['defaults'].collect do |opt,val|
-          @defaults[opt.to_s] = val.to_s
-        end
-        @defaults
+        @defaults = data['defaults']
       end
 
       def script
