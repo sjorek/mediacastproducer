@@ -88,29 +88,24 @@ def fork_chain_and_return_pids(*chain)
   pipes = []
 #  errs = []
   pids = []
-  (1..chain.length).each {pipes << IO.pipe}
-#  (1..chain.length).each {errs << IO.pipe}
   i = 0
   l = chain.length - 1
+  (0..l).each {pipes << IO.pipe} if l > 0
+#  (0..l).each {errs << IO.pipe} if l > 0
   chain.each do |args|
     pid = fork do
-      if l > 0
-        log_notice("test #{i} of #{l}")
-#        pipes[i-1][w].close if i > 0
-        pipes[i][r].close # if i < l
-#        errs[i][r].close
-        STDIN.reopen(pipes[i-1][r]) if i > 0
-        STDOUT.reopen(pipes[i][w]) if i < l
-#        STDERR.reopen(errs[i][w])
-      end
+#      pipes[i-1][w].close if i > 0
+      pipes[i][r].close # if i > 0
+#      errs[i][r].close
+      STDIN.reopen(pipes[i-1][r]) if i > 0
+      STDOUT.reopen(pipes[i][w]) if i < l
+#      STDERR.reopen(errs[i][w])
       exec(*args)
     end
-    if l > 0
-      pipes[i-1][r].close if i > 0
-      pipes[i][w].close # if i < l
-      pipes[i][r].close if l > 0 && i == l
-#      errs[i][w].close
-    end
+    pipes[i-1][r].close if i > 0
+    pipes[i][w].close # if i < l
+    pipes[i][r].close if i == l
+#    errs[i][w].close if i > 0
     break unless pid
     pids << pid
     i = pids.length
@@ -121,6 +116,42 @@ def fork_chain_and_return_pids(*chain)
     Process.waitpid(pid)
   end
   return false
+end
+
+def fork_chain_and_return_pids_and_stdout(*chain)
+  r = 0
+  w = 1
+  pipes = []
+#  errs = []
+  pids = []
+  i = 0
+  l = chain.length - 1
+  (0..l).each {pipes << IO.pipe} # if l > 0
+#  (0..l).each {errs << IO.pipe} if l > 0
+  chain.each do |args|
+    pid = fork do
+#      pipes[i-1][w].close if i > 0
+      pipes[i][r].close # if i > 0
+#      errs[i][r].close
+      STDIN.reopen(pipes[i-1][r]) if i > 0
+      STDOUT.reopen(pipes[i][w]) # if i < l
+#      STDERR.reopen(errs[i][w])
+      exec(*args)
+    end
+    pipes[i-1][r].close if i > 0
+    pipes[i][w].close # if i < l
+#    pipes[i][r].close if i == l
+#    errs[i][w].close if i > 0
+    break unless pid
+    pids << pid
+    i = pids.length
+  end
+  return pids, pipes.last[r] if pids.length==chain.length
+  pids.each do |pid|
+    Process.kill('HUP', pid)
+    Process.waitpid(pid)
+  end
+  return false, nil
 end
 
 def fork_chain_and_wait(*chain)

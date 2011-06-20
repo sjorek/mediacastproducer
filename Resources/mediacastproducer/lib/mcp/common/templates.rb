@@ -122,10 +122,11 @@ module MediacastProducer
                 val.to_s
               end
             }
-            out_arr << out_str
+            out_arr << out_str unless out_str == ""
             if val.is_a?(Array)
               val.each do |out_str|
-                out_arr << TemplateString.substitute(out_str, @replace_strs[ replace_str ], replace_str)
+                out_str = TemplateString.substitute(out_str, @replace_strs[ replace_str ], replace_str)
+                out_arr << out_str unless out_str == ""
               end
             end
           end

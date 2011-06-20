@@ -32,7 +32,41 @@ module MediacastProducer
       def command_line(verbose=false)
         [tool_path, "--frontend"]
       end
-
+      
+      def stdout_status(stdout)
+        out = []
+        last_status = nil
+        while line = stdout.gets
+          if !out.empty? && line[0] == 123# {
+            status = json_to_status(out.join)
+            return if status.nil?
+            yield status unless last_status == status || [0.0, 100.0].include?(status)
+            last_status = status
+            out = []
+          end
+          out << line.chomp
+        end
+        return if out.empty?
+        status = json_to_status(out.join)
+        yield status unless status.nil? || last_status == status || [0.0, 100.0].include?(status)
+        return
+      end
+      
+      def json_to_status(line)
+        if line =~ /^\{"result":\s*"ok"\}$/
+          return 100.0
+        elsif line =~ /^\{\s*"duration":\s*(\S+)\s*,\s*"position":\s*(\S+)\s*,.*}$/
+          d = Float($1).to_i
+          p = Float($2).to_i
+          if line =~ /audio_kbps|video_kbps/
+            p += d
+          end
+          d *= 2
+          return p * 100.0 / d
+        end
+        log_error(line)
+        return nil
+      end
     end
 
   end

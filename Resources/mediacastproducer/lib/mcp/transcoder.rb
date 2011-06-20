@@ -61,14 +61,23 @@ module MediacastProducer
         pipeline.each { |args|  cmds << args.join(' ') }
         log_notice(cmds.join(' | '))
 #        exit
-        return false unless (pids = fork_chain_and_return_pids(*pipeline))
+        pids, stdout = fork_chain_and_return_pids_and_stdout(*pipeline)
+        return false unless pids
         begin
           puts "<xgrid>\n{control = statusUpdate; percentDone = 0.0; }\n</xgrid>"
-          tools.each do |tool|
-            next unless tool.respond_to?(:update_status)
-            tool.update_status { |percent|
+          if tools.last.respond_to?(:stdout_status)
+            tools.last.stdout_status(stdout) { |percent|
               puts "<xgrid>\n{control = statusUpdate; percentDone = #{percent}; }\n</xgrid>"
             }
+            stdout.close
+          else
+            stdout.close
+            tools.each do |tool|
+              next unless tool.respond_to?(:update_status)
+              tool.update_status { |percent|
+                puts "<xgrid>\n{control = statusUpdate; percentDone = #{percent}; }\n</xgrid>"
+              }
+            end
           end
           force_quit = false
         rescue SystemExit, Interrupt
