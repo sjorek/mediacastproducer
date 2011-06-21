@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
     <key>script</key>
-    <string>vlc_ogv_vbr</string>
+    <string>vlc_webm_vbr</string>
     <key>defaults</key>
     <dict>
         <key>video_bitrate</key>

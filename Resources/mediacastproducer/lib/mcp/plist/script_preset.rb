@@ -20,7 +20,7 @@ module MediacastProducer
         defaults.each do |opt,val|
           log_notice("applying #{opt}'s default value: #{val}")
           next if script.options[opt].nil? || !$subcommand_options[opt.to_sym].nil?
-          $subcommand_options[opt.to_sym] = val
+          $subcommand_options[opt.to_sym] = val.to_s
         end
       end
     end

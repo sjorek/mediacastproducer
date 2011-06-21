@@ -3,23 +3,17 @@
 <plist version="1.0">
 <dict>
     <key>script</key>
-    <string>vlc_ogv_vbr</string>
+    <string>ffmpeg2theora_qbr</string>
     <key>defaults</key>
     <dict>
-        <key>video_bitrate</key>
-        <integer>576</integer>
+        <key>video_quality</key>
+        <integer>6</integer>
         <key>video_width</key>
         <integer>320</integer>
         <key>video_height</key>
         <integer>240</integer>
         <key>audio_quality</key>
-        <integer>1</integer>
-        <key>audio_bitrate_min</key>
-        <integer>128</integer>
-        <key>audio_bitrate</key>
-        <integer>192</integer>
-        <key>audio_bitrate_max</key>
-        <integer>265</integer>
+        <integer>6</integer>
         <key>audio_channels</key>
         <integer>2</integer>
         <key>audio_samplerate</key>
