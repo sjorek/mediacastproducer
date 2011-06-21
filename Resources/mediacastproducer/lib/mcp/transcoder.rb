@@ -38,15 +38,15 @@ module MediacastProducer
           raw_values[c] = tool.tool_path
           tools << tool
         end
-#        data_values.each do |k,v|
-#          v = v.join(" ") if v.is_a?(Array)
-#          log_notice("data key #{k} value #{v}")
-#        end
-#        raw_values.each do |k,v|
-#          v = v.join(" ") if v.is_a?(Array)
-#          log_notice("raw key #{k} value #{v}")
-#        end
-#        exit
+        #        data_values.each do |k,v|
+        #          v = v.join(" ") if v.is_a?(Array)
+        #          log_notice("data key #{k} value #{v}")
+        #        end
+        #        raw_values.each do |k,v|
+        #          v = v.join(" ") if v.is_a?(Array)
+        #          log_notice("raw key #{k} value #{v}")
+        #        end
+        #        exit
         begin
           pipeline = []
           script.commands.each do |cmd|
@@ -60,7 +60,7 @@ module MediacastProducer
         cmds = []
         pipeline.each { |args|  cmds << args.join(' ') }
         log_notice(cmds.join(' | '))
-#        exit
+        #        exit
         pids, stdout = fork_chain_and_return_pids_and_stdout(*pipeline)
         return false unless pids
         begin
@@ -157,6 +157,9 @@ module MediacastProducer
 
       def run(arguments)
 
+        @input = nil
+        @output = nil
+
         if options.include?("input*")
           require_plural_option(:inputs, 1, 1)
           @input = $subcommand_options[:inputs][0]
@@ -165,14 +168,17 @@ module MediacastProducer
           @input = $subcommand_options[:input]
         end
 
-        require_option(:output) if options.include?("output")
-        @output = $subcommand_options[:output]
+        if options.include?("output")
+          require_option(:output)
+          @output = $subcommand_options[:output]
+          check_output_file_exclude_dir(@output)
+          require_extension(@output,script.extensions)
+        end
 
-        if options.include?("input*") || options.include?("input")
-          check_input_and_output_paths_are_not_equal(@input, @output) if options.include?("output")
+        unless @input.nil?
+          check_input_and_output_paths_are_not_equal(@input, @output) unless @output.nil?
           check_input_file_exclude_dir(@input)
         end
-        check_output_file_exclude_dir(@output) if options.include?("output")
 
         preset.apply_defaults
         log_crit_and_exit("failed to transcode '#{@input}' to '#{@output}'", -1) unless run_script(arguments)

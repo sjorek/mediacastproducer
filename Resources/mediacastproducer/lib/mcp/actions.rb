@@ -67,6 +67,10 @@ def check_input_and_output_paths_are_not_equal(input, output)
   end
 end
 
+def require_extension(filename, extensions)
+  log_crit_and_exit("Invalid file extension given. Valid extension(s): #{extensions.join(',')}",-1) unless filename =~ /\.(#{extensions.join('|')})$/
+end
+
 def fork_exec_and_return_pid(*args)
   pid = fork { exec(*args) }
   return false unless pid

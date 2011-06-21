@@ -57,7 +57,7 @@ module MediacastProducer
         log_notice(line) if verbose
         if line =~ /^\{"result":\s*"ok"\}$/
           return 100.0
-        elsif line =~ /^\{\s*"duration":\s*(\S+)\s*,\s*"position":\s*(\S+)\s*,.*}$/
+        elsif line =~ /^\{\s*"duration":\s*(\S+)\s*,\s*"position":\s*(\S+)\s*,.*\}$/
           d = Float($1).to_i
           p = Float($2).to_i
           if line =~ /audio_kbps|video_kbps/
