@@ -76,6 +76,9 @@ module PodcastProducer
 
         print_subcommand_usage(name) if arguments.nil? || arguments.empty?
 
+        @input = nil
+        @output = nil
+
         if options.include?("input*")
           require_plural_option(:inputs, 1, 1)
           @input = $subcommand_options[:inputs][0]
@@ -84,18 +87,21 @@ module PodcastProducer
           @input = $subcommand_options[:input]
         end
 
-        require_option(:output) if options.include?("output")
-        @output = $subcommand_options[:output]
+        if options.include?("output")
+          require_option(:output)
+          @output = $subcommand_options[:output]
+          check_output_file_exclude_dir(@output)
+          require_extension(@output,script.extensions)
+        end
 
-        if options.include?("input*") || options.include?("input")
-          check_input_and_output_paths_are_not_equal(@input, @output) if options.include?("output")
+        unless @input.nil?
+          check_input_and_output_paths_are_not_equal(@input, @output) unless @output.nil?
           check_input_file_exclude_dir(@input)
         end
-        check_output_file_exclude_dir(@output) if options.include?("output")
 
         getopt_args = []
         plural_options = []
-        @script.options.each do |option,opttype|
+        script.options.each do |option,opttype|
           #          log_notice("#{option}: #{opttype}")
           if option[-1..-1] == "*"
             option = option[0..-2]
