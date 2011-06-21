@@ -15,11 +15,9 @@
             <string>###audio_quality###</string>
             <string>###audio_channels###</string>
             <string>###audio_samplerate###</string>
-            <string>--soft-target</string>
             <string>--no-oshash</string>
             <string>--no-upscaling</string>
             <string>--optimize</string>
-            <string>--two-pass</string>
             <string>--output</string>
             <string>###output###</string>
             <string>###input###</string>

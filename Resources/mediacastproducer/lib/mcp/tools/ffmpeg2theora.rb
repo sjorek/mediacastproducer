@@ -33,12 +33,13 @@ module MediacastProducer
         [tool_path, "--frontend"]
       end
       
-      def stdout_status(stdout)
+      def stdout_status(stdout, verbose=false)
+        @running_twopass = nil
         out = []
         last_status = nil
         while line = stdout.gets
           if !out.empty? && line[0] == 123# {
-            status = json_to_status(out.join)
+            status = json_to_status(out.join, verbose)
             return if status.nil?
             yield status unless last_status == status || [0.0, 100.0].include?(status)
             last_status = status
@@ -47,21 +48,24 @@ module MediacastProducer
           out << line.chomp
         end
         return if out.empty?
-        status = json_to_status(out.join)
+        status = json_to_status(out.join, verbose)
         yield status unless status.nil? || last_status == status || [0.0, 100.0].include?(status)
         return
       end
       
-      def json_to_status(line)
+      def json_to_status(line, verbose=false)
+        log_notice(line) if verbose
         if line =~ /^\{"result":\s*"ok"\}$/
           return 100.0
         elsif line =~ /^\{\s*"duration":\s*(\S+)\s*,\s*"position":\s*(\S+)\s*,.*}$/
           d = Float($1).to_i
           p = Float($2).to_i
           if line =~ /audio_kbps|video_kbps/
-            p += d
+            p += d if @running_twopass
+          elsif @running_twopass.nil?
+            @running_twopass = true
           end
-          d *= 2
+          d *= 2 if @running_twopass
           return p * 100.0 / d
         end
         log_error(line)

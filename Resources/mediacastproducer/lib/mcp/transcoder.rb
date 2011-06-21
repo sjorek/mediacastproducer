@@ -66,7 +66,7 @@ module MediacastProducer
         begin
           puts "<xgrid>\n{control = statusUpdate; percentDone = 0.0; }\n</xgrid>"
           if tools.last.respond_to?(:stdout_status)
-            tools.last.stdout_status(stdout) { |percent|
+            tools.last.stdout_status(stdout, !$subcommand_options[:verbose].nil?) { |percent|
               puts "<xgrid>\n{control = statusUpdate; percentDone = #{percent}; }\n</xgrid>"
             }
             stdout.close
