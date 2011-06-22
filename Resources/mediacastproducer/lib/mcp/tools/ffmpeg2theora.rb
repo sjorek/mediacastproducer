@@ -9,20 +9,20 @@
 
 require 'mcp/tools/base'
 
-FFMPEG2THEORA_BIN = "ffmpeg2theora"
-FFMPEG2THEORA_WHICH = "/usr/bin/which #{FFMPEG2THEORA_BIN}"
-FFMPEG2THEORA_MIN_VERSION = "0.27"
-FFMPEG2THEORA_MAX_VERSION = nil
+MCP_FFMPEG2THEORA_BIN = "ffmpeg2theora"
+MCP_FFMPEG2THEORA_WHICH = "/usr/bin/which #{MCP_FFMPEG2THEORA_BIN}"
+MCP_FFMPEG2THEORA_MIN_VERSION = "0.27"
+MCP_FFMPEG2THEORA_MAX_VERSION = nil
 
 module MediacastProducer
   module Tools
     class FFMpeg2Theora < CommandBase
       def initialize(path_to_tool=nil)
-        super(path_to_tool, FFMPEG2THEORA_MIN_VERSION, FFMPEG2THEORA_MAX_VERSION)
+        super(path_to_tool, MCP_FFMPEG2THEORA_MIN_VERSION, MCP_FFMPEG2THEORA_MAX_VERSION)
       end
 
       def lookup_path
-        `#{FFMPEG2THEORA_WHICH}`
+        `#{MCP_FFMPEG2THEORA_WHICH}`
       end
 
       def lookup_version

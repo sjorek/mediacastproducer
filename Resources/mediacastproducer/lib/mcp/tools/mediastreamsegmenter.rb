@@ -9,20 +9,20 @@
 
 require 'mcp/tools/base'
 
-MEDIASTREAMSEGMENTER_BIN = "mediastreamsegmenter"
-MEDIASTREAMSEGMENTER_WHICH = "/usr/bin/which #{MEDIASTREAMSEGMENTER_BIN}"
-MEDIASTREAMSEGMENTER_MIN_VERSION = "10.2.10"
-MEDIASTREAMSEGMENTER_MAX_VERSION = nil
+MCP_MEDIASTREAMSEGMENTER_BIN = "mediastreamsegmenter"
+MCP_MEDIASTREAMSEGMENTER_WHICH = "/usr/bin/which #{MCP_MEDIASTREAMSEGMENTER_BIN}"
+MCP_MEDIASTREAMSEGMENTER_MIN_VERSION = "10.2.10"
+MCP_MEDIASTREAMSEGMENTER_MAX_VERSION = nil
 
 module MediacastProducer
   module Tools
     class MediastreamSegmenter < CommandBase
       def initialize(path_to_tool=nil)
-        super(path_to_tool, MEDIASTREAMSEGMENTER_MIN_VERSION, MEDIASTREAMSEGMENTER_MAX_VERSION)
+        super(path_to_tool, MCP_MEDIASTREAMSEGMENTER_MIN_VERSION, MCP_MEDIASTREAMSEGMENTER_MAX_VERSION)
       end
 
       def lookup_path
-        `#{MEDIASTREAMSEGMENTER_WHICH}`
+        `#{MCP_MEDIASTREAMSEGMENTER_WHICH}`
       end
 
       def lookup_version

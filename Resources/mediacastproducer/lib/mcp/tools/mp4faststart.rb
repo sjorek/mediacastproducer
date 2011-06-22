@@ -9,7 +9,7 @@
 
 require 'mcp/tools/base'
 
-MP4_FASTSTART = File.join(MCP_LIBEXEC,"mp4-faststart.py")
+MCP_MP4_FASTSTART = File.join(MCP_LIBEXEC,"mp4-faststart.py")
 
 module MediacastProducer
   module Tools
@@ -19,7 +19,7 @@ module MediacastProducer
       end
 
       def lookup_path
-        MP4_FASTSTART
+        MCP_MP4_FASTSTART
       end
 
       def lookup_version

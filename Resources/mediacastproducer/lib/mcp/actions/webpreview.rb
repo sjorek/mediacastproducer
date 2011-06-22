@@ -9,8 +9,9 @@
 
 require 'mcp/actions/base'
 
-TWISTED_DAEMON = '/usr/bin/twistd'
-TWISTED_SERVER = File.join(MCP_LIBEXEC,"mp4-faststart.py")
+MCP_TWISTED_DAEMON = '/usr/bin/twistd'
+MCP_TWISTED_SERVER = File.join(MCP_RES,"httpserver/twistedweb.py")
+MCP_REWRITE_PROXY  = File.join(MCP_RES,"httpserver/rewriteproxy.py")
 
 module PodcastProducer
   module Actions
@@ -21,8 +22,8 @@ module PodcastProducer
         "                 [--verbose]    run with verbose output\n"
         "                 [--web]        web-server adress to serve\n" +
         "                 [--proxy]      proxy-server adress to serve\n" +
-        "                 [--bandwidth]  proxy-server bandwidth limit\n" +
-        "                 [--rewrite]    proxy-server rewrite rules\n\n"
+        "                 [--rewrite]    proxy-server rewrite rules\n" +
+        "                 [--bandwidth]  proxy-server download bandwidth limit\n\n"
       end
 
       def options
@@ -30,7 +31,8 @@ module PodcastProducer
       end
 
       def run(arguments)
-        
+        # export PYTHONDONTWRITEBYTECODE=0
+        # twistd --no_save --nodaemon --rundir=. --python=Resources/httpserver/twistedweb.py
       end
     end
   end

@@ -3,6 +3,8 @@
 /.pydev*
 /.settings*
 /Resources/cfpropertylist*
+/Resources/httpserver*
+/Resources/throxy*
 /Resources/mediacastproducer/bin/mediacastencoder
 /Resources/mediacastproducer/bin/mediacastproducer
 /Resources/mediacastproducer/bin/segmenter

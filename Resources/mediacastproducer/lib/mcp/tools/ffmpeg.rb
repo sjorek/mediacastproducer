@@ -9,20 +9,20 @@
 
 require 'mcp/tools/base'
 
-FFMPEG_BIN = "ffmpeg"
-FFMPEG_WHICH = "/usr/bin/which #{FFMPEG_BIN}"
-FFMPEG_MIN_VERSION = "0.6.3"
-FFMPEG_MAX_VERSION = nil
+MCP_FFMPEG_BIN = "ffmpeg"
+MCP_FFMPEG_WHICH = "/usr/bin/which #{MCP_FFMPEG_BIN}"
+MCP_FFMPEG_MIN_VERSION = "0.6.3"
+MCP_FFMPEG_MAX_VERSION = nil
 
 module MediacastProducer
   module Tools
     class FFMpeg < CommandBase
       def initialize(path_to_tool=nil)
-        super(path_to_tool, FFMPEG_MIN_VERSION, FFMPEG_MAX_VERSION)
+        super(path_to_tool, MCP_FFMPEG_MIN_VERSION, MCP_FFMPEG_MAX_VERSION)
       end
 
       def lookup_path
-        `#{FFMPEG_WHICH}`
+        `#{MCP_FFMPEG_WHICH}`
       end
 
       def lookup_version

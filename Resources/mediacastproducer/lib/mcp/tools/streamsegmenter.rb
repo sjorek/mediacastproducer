@@ -9,19 +9,19 @@
 
 require 'mcp/tools/base'
 
-STREAMSEGMENTER_PATH = File.join(MCP_BIN,"segmenter")
-STREAMSEGMENTER_MIN_VERSION = "1.0.1"
-STREAMSEGMENTER_MAX_VERSION = nil
+MCP_STREAMSEGMENTER_PATH = File.join(MCP_BIN,"segmenter")
+MCP_STREAMSEGMENTER_MIN_VERSION = "1.0.1"
+MCP_STREAMSEGMENTER_MAX_VERSION = nil
 
 module MediacastProducer
   module Tools
     class StreamSegmenter < CommandBase
       def initialize(path_to_tool=nil)
-        super(path_to_tool, STREAMSEGMENTER_MIN_VERSION, STREAMSEGMENTER_MAX_VERSION)
+        super(path_to_tool, MCP_STREAMSEGMENTER_MIN_VERSION, MCP_STREAMSEGMENTER_MAX_VERSION)
       end
 
       def lookup_path
-        STREAMSEGMENTER_PATH
+        MCP_STREAMSEGMENTER_PATH
       end
 
       def lookup_version

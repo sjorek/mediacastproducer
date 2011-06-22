@@ -9,30 +9,30 @@
 
 require 'mcp/tools/base'
 
-VLC_SEARCH_PATH = "/Applications"
-VLC_BIN_NAME = "VLC"
-VLC_BIN_PATH = "Contents/MacOS/#{VLC_BIN_NAME}"
-VLC_LOCATE = "locate \"#{VLC_BIN_PATH}\" | grep -E \"^#{VLC_SEARCH_PATH}.*#{VLC_BIN_PATH}$\""
-VLC_MDFIND = "mdfind -onlyin \"#{VLC_SEARCH_PATH}\" \"#{VLC_BIN_NAME}.app\""
-VLC_FIND = "find \"#{VLC_SEARCH_PATH}\" -type f -name \"#{VLC_BIN_NAME}\" | grep -E \"#{VLC_BIN_PATH}$\""
-VLC_MIN_VERSION = "1.1.10"
-VLC_MAX_VERSION = nil
+MCP_VLC_SEARCH_PATH = "/Applications"
+MCP_VLC_BIN_NAME = "VLC"
+MCP_VLC_BIN_PATH = "Contents/MacOS/#{MCP_VLC_BIN_NAME}"
+MCP_VLC_LOCATE = "locate \"#{MCP_VLC_BIN_PATH}\" | grep -E \"^#{MCP_VLC_SEARCH_PATH}.*#{MCP_VLC_BIN_PATH}$\""
+MCP_VLC_MDFIND = "mdfind -onlyin \"#{MCP_VLC_SEARCH_PATH}\" \"#{MCP_VLC_BIN_NAME}.app\""
+MCP_VLC_FIND = "find \"#{MCP_VLC_SEARCH_PATH}\" -type f -name \"#{MCP_VLC_BIN_NAME}\" | grep -E \"#{MCP_VLC_BIN_PATH}$\""
+MCP_VLC_MIN_VERSION = "1.1.10"
+MCP_VLC_MAX_VERSION = nil
 
 module MediacastProducer
   module Tools
     class VLC < CommandBase
       def initialize(path_to_tool=nil)
-        super(path_to_tool, VLC_MIN_VERSION, VLC_MAX_VERSION)
+        super(path_to_tool, MCP_VLC_MIN_VERSION, MCP_VLC_MAX_VERSION)
       end
 
       def lookup_path
-        path = `#{VLC_LOCATE} | head -n 1`
+        path = `#{MCP_VLC_LOCATE} | head -n 1`
         if path == ""
-          path = `#{VLC_MDFIND} | head -n 1`.chomp!
+          path = `#{MCP_VLC_MDFIND} | head -n 1`.chomp!
           unless path == "" || !File.directory?(path)
-            path = File.join(path, VLC_BIN_PATH)
+            path = File.join(path, MCP_VLC_BIN_PATH)
           else
-            path = `#{VLC_FIND} | head -n 1`
+            path = `#{MCP_VLC_FIND} | head -n 1`
           end
         end
         path
