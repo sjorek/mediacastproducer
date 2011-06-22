@@ -5,9 +5,10 @@
 /Resources/cfpropertylist*
 /Resources/throxy*
 /Resources/mp4seek*
+/Resources/segmenter*
 /Resources/mediacastproducer/bin/mediacastencoder
 /Resources/mediacastproducer/bin/mediacastproducer
 /Resources/mediacastproducer/bin/segmenter
-/Resources/mediacastproducer/libexec/mp4-faststart.py
+/Resources/mediacastproducer/bin/mp4-faststart
 /Resources/mediacastproducer/libexec/mediacastproxy.py
 
