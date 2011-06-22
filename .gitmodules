@@ -4,3 +4,6 @@
 [submodule "Resources/throxy"]
 	path = Resources/throxy
 	url = https://github.com/jcrocholl/throxy.git
+[submodule "Resources/mp4seek"]
+	path = Resources/mp4seek
+	url = https://github.com/arkadini/mp4seek.git
