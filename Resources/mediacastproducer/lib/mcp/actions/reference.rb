@@ -14,7 +14,6 @@ require 'mcp/qt/qt'
 
 module PodcastProducer
   module Actions
-
     class Reference < Base
       def usage
         "reference: copies a reference movie linking the input movies to\n" +
@@ -26,12 +25,14 @@ module PodcastProducer
         "                 [--ipad_edge_movie=EDGE] [--ipad_wifi_movie=WIFI]\n" +
         "                 [--type=MIME_TYPE] [--outfile[=OUTFILE]] [--create_poster_image]\n\n"
       end
+
       def options
         ["web_root", "web_url", "title", "type", "outfile", "create_poster_image",
           "edge_movie", "wifi_movie", "desktop_movie",
           "iphone_edge_movie", "iphone_wifi_movie",
           "ipad_edge_movie", "ipad_wifi_movie"]
       end
+
       def run(arguments)
         $subcommand_options[:web_root] ||= $properties["Web Document Root"]
         $subcommand_options[:web_url] ||= $properties["Web URL"]
@@ -80,9 +81,9 @@ module PodcastProducer
         movie_paths_by_tier[:iphone_wifi] = $subcommand_options[:iphone_wifi_movie] # if $subcommand_options[:iphone_wifi_movie]
         movie_paths_by_tier[:ipad_edge] = $subcommand_options[:ipad_edge_movie] # if $subcommand_options[:ipad_edge_movie]
         movie_paths_by_tier[:ipad_wifi] = $subcommand_options[:ipad_wifi_movie] # if $subcommand_options[:ipad_wifi_movie]
-#        movie_paths_by_tier.each do |tier, movie_path|
-#          print tier, " ", movie_path, "\n"
-#        end
+        #        movie_paths_by_tier.each do |tier, movie_path|
+        #          print tier, " ", movie_path, "\n"
+        #        end
         movie_tiers_by_path = {}
         [:edge, :wifi, :desktop, :iphone_edge, :iphone_wifi, :ipad_edge, :ipad_wifi].each do |tier|
           movie_path = movie_paths_by_tier[tier]
@@ -98,7 +99,7 @@ module PodcastProducer
           multi_publish_filename = get_publish_filename(urlified_title, multi_publish_format, movie_path, multi_publish_folder)
           multi_publish_filepath = multi_publish_folder + multi_publish_filename
           multi_publish_url = multi_publish_base_url + ERB::Util.url_encode(multi_publish_filename)
-          
+
           check_input_file(movie_path)
           check_output_file(multi_publish_filepath)
           FileUtils.cp(movie_path, multi_publish_filepath)
@@ -132,7 +133,7 @@ module PodcastProducer
         unless $subcommand_options[:outfile].nil?
           if $subcommand_options[:outfile].empty?
             outfile = "publish_description_file.txt"
-          else 
+          else
             outfile = $subcommand_options[:outfile]
           end
           publish_description = {
@@ -160,6 +161,6 @@ module PodcastProducer
         end
       end
     end
-    
+
   end
 end
