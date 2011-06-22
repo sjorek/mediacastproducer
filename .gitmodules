@@ -1,3 +1,6 @@
 [submodule "Resources/cfpropertylist"]
 	path = Resources/cfpropertylist
 	url = https://github.com/ckruse/CFPropertyList.git
+[submodule "Resources/throxy"]
+	path = Resources/throxy
+	url = https://github.com/jcrocholl/throxy.git
