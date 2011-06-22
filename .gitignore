@@ -6,6 +6,7 @@
 /Resources/throxy*
 /Resources/mp4seek*
 /Resources/segmenter*
+/Resources/mediacastserver*
 /Resources/mediacastproducer/bin/mediacastencoder
 /Resources/mediacastproducer/bin/mediacastproducer
 /Resources/mediacastproducer/bin/segmenter
