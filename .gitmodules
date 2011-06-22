@@ -7,3 +7,6 @@
 [submodule "Resources/mp4seek"]
 	path = Resources/mp4seek
 	url = https://github.com/arkadini/mp4seek.git
+[submodule "Resources/segmenter"]
+	path = Resources/segmenter
+	url = /Users/sjorek/Documents/Projects/Tonfabrik/Workspace/segmenter/.git
