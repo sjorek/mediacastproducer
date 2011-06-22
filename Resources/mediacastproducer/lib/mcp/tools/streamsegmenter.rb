@@ -10,7 +10,7 @@
 require 'mcp/tools/base'
 
 MCP_STREAMSEGMENTER_PATH = File.join(MCP_BIN,"segmenter")
-MCP_STREAMSEGMENTER_MIN_VERSION = "1.0.1"
+MCP_STREAMSEGMENTER_MIN_VERSION = "1.0.2"
 MCP_STREAMSEGMENTER_MAX_VERSION = nil
 
 module MediacastProducer
