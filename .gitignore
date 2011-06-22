@@ -4,6 +4,7 @@
 /.settings*
 /Resources/cfpropertylist*
 /Resources/throxy*
+/Resources/mp4seek*
 /Resources/mediacastproducer/bin/mediacastencoder
 /Resources/mediacastproducer/bin/mediacastproducer
 /Resources/mediacastproducer/bin/segmenter
