@@ -7,7 +7,7 @@ import socket
 import asyncore
 
 d = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-sys.path.insert(0, os.path.abspath(os.path.join(d, os.path.pardir, 'throxy')))
+sys.path.insert(0, os.path.abspath(os.path.join(d, 'throxy')))
 sys.path.insert(0, os.path.abspath(d))
 del d
 
