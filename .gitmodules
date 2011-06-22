@@ -10,3 +10,6 @@
 [submodule "Resources/segmenter"]
 	path = Resources/segmenter
 	url = /Users/sjorek/Documents/Projects/Tonfabrik/Workspace/segmenter/.git
+[submodule "Resources/mediacastserver"]
+	path = Resources/mediacastserver
+	url = /Users/sjorek/Documents/Projects/Tonfabrik/Workspace/mediacastserver/.git
