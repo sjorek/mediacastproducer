@@ -1,3 +1,3 @@
-[submodule "Resources/mediacastproducer/lib/cfpropertylist"]
-	path = Resources/mediacastproducer/lib/cfpropertylist
+[submodule "Resources/cfpropertylist"]
+	path = Resources/cfpropertylist
 	url = https://github.com/ckruse/CFPropertyList.git
