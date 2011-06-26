@@ -2,8 +2,7 @@
 #  Copyright (c) 2011 Stephan Jorek.  All Rights Reserved.
 #
 
-# MCP_CONTRIB_CF_PROPERTY_LIST_LIB = File.join(MCP_RES,'cfpropertylist','lib')
-MCP_CONTRIB_CF_PROPERTY_LIST_LIB = File.join(MCP_LIB,'cfpropertylist','lib')
+MCP_CONTRIB_CF_PROPERTY_LIST_LIB = File.join(MCP_RES,'cfpropertylist','lib')
 $LOAD_PATH.push(File.expand_path(MCP_CONTRIB_CF_PROPERTY_LIST_LIB)) unless
 $LOAD_PATH.include?(MCP_CONTRIB_CF_PROPERTY_LIST_LIB) || $LOAD_PATH.include?(File.expand_path(MCP_CONTRIB_CF_PROPERTY_LIST_LIB))
 require 'cfpropertylist'
