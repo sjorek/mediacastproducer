@@ -7,6 +7,7 @@
 #  another platform without Apple's written consent.
 #
 
+require 'dnssd'
 require 'etc'
 require 'fileutils'
 require 'mcp/actions/base'
@@ -22,18 +23,38 @@ module PodcastProducer
       def usage
         "#{name}: starts a web- and optionally a proxy-server for preview purposes.\n\n" +
         "usage: #{name} --basedir=BASEDIR\n"+
-        "                 [--verbose]    run with verbose output\n" +
-        "                 [--web]        web-server adress to serve\n" +
-        "                 [--proxy]      proxy-server adress to serve\n" +
-        "                 [--rewrite]    proxy-server rewrite rules\n" +
-        "                 [--bandwidth]  proxy-server download bandwidth limit\n\n"
+        "                 [--verbose]    run with verbose output\n\n" +
+        "web-server configuration:\n" +
+        "                 [--web_vhost]  virtual hostname (FQDN) to serve\n" +
+        "                 [--web_alias]  path alias rule(s)\n\n" +
+        "web-proxy configuration:\n" +
+        "                 [--proxy_rw]   hostname rewrite rule(s)\n" +
+        "                 [--proxy_dl]   download bandwidth limit\n" +
+        "                 [--proxy_ul]   upload bandwidth limit\n" +
+        "                 [--proxy_ip]   IP adress to serve, default:\n" +
+        "                                  all (locally) available IPs\n" +
+        "                 [--proxy_if]   Network interface to serve, default:\n" +
+        "                                  all (locally) available interfaces\n" +
+        "                                IP adress and network interface\n" + 
+        "                                are mutually exclusive.\n"
       end
 
       def options
-        ["web", "proxy", "bandwidth", "rewrite"]
+        ["web_vhost", "web_alias",
+         "proxy_ip", "proxy_if", "proxy_rw", "proxy_dl", "proxy_ul"]
       end
 
       def run(arguments)
+        
+#        DNSSD.register 'block', '_http._tcp', nil, 8081 do |r|
+#          puts "registered #{r.fullname}" if r.flags.add?
+#        end
+#
+#        while true:
+#          sleep 1
+#        end
+#        exit
+
         ENV["PYTHONPATH"] = MCP_MEDIACASTSERVER
         ENV["PYTHONDONTWRITEBYTECODE"] = "0"
         ENV["PYTHONIOENCODING"] = "utf8"
