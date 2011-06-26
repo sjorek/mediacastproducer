@@ -13,3 +13,6 @@
 [submodule "Resources/mediacastserver"]
 	path = Resources/mediacastserver
 	url = /Users/sjorek/Documents/Projects/Tonfabrik/Workspace/mediacastserver/.git
+[submodule "Resources/pybonjour"]
+	path = Resources/pybonjour
+	url = /Users/sjorek/Documents/Projects/Tonfabrik/Workspace/pybonjour/.git

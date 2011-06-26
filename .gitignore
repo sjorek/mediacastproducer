@@ -7,6 +7,7 @@
 /Resources/mp4seek*
 /Resources/segmenter*
 /Resources/mediacastserver*
+/Resources/pybonjour*
 /Resources/mediacastproducer/bin/mediacastencoder
 /Resources/mediacastproducer/bin/mediacastproducer
 /Resources/mediacastproducer/bin/segmenter
