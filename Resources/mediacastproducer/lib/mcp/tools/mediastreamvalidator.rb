@@ -9,24 +9,24 @@
 
 require 'mcp/tools/base'
 
-MCP_MEDIASTREAMSEGMENTER_BIN = "mediastreamsegmenter"
-MCP_MEDIASTREAMSEGMENTER_WHICH = "/usr/bin/which #{MCP_MEDIASTREAMSEGMENTER_BIN}"
-MCP_MEDIASTREAMSEGMENTER_MIN_VERSION = "11.6.22"
-MCP_MEDIASTREAMSEGMENTER_MAX_VERSION = nil
+MCP_MEDIASTREAMVALIDATOR_BIN = "mediastreamvalidator"
+MCP_MEDIASTREAMVALIDATOR_WHICH = "/usr/bin/which #{MCP_MEDIASTREAMVALIDATOR_BIN}"
+MCP_MEDIASTREAMVALIDATOR_MIN_VERSION = "11.6.22"
+MCP_MEDIASTREAMVALIDATOR_MAX_VERSION = nil
 
 module MediacastProducer
   module Tools
-    class MediastreamSegmenter < CommandBase
+    class MediastreamValidator < CommandBase
       def initialize(path_to_tool=nil)
-        super(path_to_tool, MCP_MEDIASTREAMSEGMENTER_MIN_VERSION, MCP_MEDIASTREAMSEGMENTER_MAX_VERSION)
+        super(path_to_tool, MCP_MEDIASTREAMVALIDATOR_MIN_VERSION, MCP_MEDIASTREAMVALIDATOR_MAX_VERSION)
       end
 
       def lookup_path
-        `#{MCP_MEDIASTREAMSEGMENTER_WHICH}`
+        `#{MCP_MEDIASTREAMVALIDATOR_WHICH}`
       end
 
       def lookup_version
-        v = `#{tool_path} --version 2>&1 | cut -f2- -d' '`.chomp!
+        v = `#{tool_path} --version 2>&1 | head -n 1 | cut -f2- -d' '`.chomp!
         v =~ %r{\(([0-9]{2})([0-9]{2})([0-9]{2})\)}
         "#{$1.to_i}.#{$2.to_i}.#{$3.to_i}"
       end

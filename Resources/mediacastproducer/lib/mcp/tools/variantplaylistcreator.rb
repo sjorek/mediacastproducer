@@ -9,20 +9,20 @@
 
 require 'mcp/tools/base'
 
-MCP_MEDIASTREAMSEGMENTER_BIN = "mediastreamsegmenter"
-MCP_MEDIASTREAMSEGMENTER_WHICH = "/usr/bin/which #{MCP_MEDIASTREAMSEGMENTER_BIN}"
-MCP_MEDIASTREAMSEGMENTER_MIN_VERSION = "11.6.22"
-MCP_MEDIASTREAMSEGMENTER_MAX_VERSION = nil
+MCP_VARIANTPLAYLISTGENERATOR_BIN = "variantplaylistcreator"
+MCP_VARIANTPLAYLISTGENERATOR_WHICH = "/usr/bin/which #{MCP_VARIANTPLAYLISTGENERATOR_BIN}"
+MCP_VARIANTPLAYLISTGENERATOR_MIN_VERSION = "11.6.22"
+MCP_VARIANTPLAYLISTGENERATOR_MAX_VERSION = nil
 
 module MediacastProducer
   module Tools
-    class MediastreamSegmenter < CommandBase
+    class VariantPlaylistCreator < CommandBase
       def initialize(path_to_tool=nil)
-        super(path_to_tool, MCP_MEDIASTREAMSEGMENTER_MIN_VERSION, MCP_MEDIASTREAMSEGMENTER_MAX_VERSION)
+        super(path_to_tool, MCP_VARIANTPLAYLISTGENERATOR_MIN_VERSION, MCP_VARIANTPLAYLISTGENERATOR_MAX_VERSION)
       end
 
       def lookup_path
-        `#{MCP_MEDIASTREAMSEGMENTER_WHICH}`
+        `#{MCP_VARIANTPLAYLISTGENERATOR_WHICH}`
       end
 
       def lookup_version
