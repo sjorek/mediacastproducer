@@ -1,0 +1,189 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+{\fonttbl\f0\fnil\fcharset0 LucidaGrande;\f1\fswiss\fcharset0 Helvetica;\f2\fmodern\fcharset0 Courier;
+}
+{\colortbl;\red255\green255\blue255;}
+{\*\listtable{\list\listtemplateid1\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker }{\leveltext\leveltemplateid1\'00;}{\levelnumbers;}\fi-360\li720\lin720 }{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker }{\leveltext\leveltemplateid2\'00;}{\levelnumbers;}\fi-360\li1440\lin1440 }{\listname ;}\listid1}
+{\list\listtemplateid2\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker }{\leveltext\leveltemplateid101\'00;}{\levelnumbers;}\fi-360\li720\lin720 }{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid102\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li1440\lin1440 }{\listname ;}\listid2}}
+{\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}{\listoverride\listid2\listoverridecount0\ls2}}
+\margl1440\margr1440\margb1800\margt1800\vieww10180\viewh15160\viewkind0
+\deftab720
+\pard\tx540\tx1440\pardeftab720\ql\qnatural\pardirnatural
+
+\f0\b\fs46 \cf0 \expnd0\expndtw0\kerning0
+\uc0\u63743 \
+\pard\tx540\tx1440\pardeftab720\sa360\ql\qnatural\pardirnatural
+\cf0 \expnd0\expndtw0\kerning0
+\
+\pard\tx540\tx1440\pardeftab720\sa240\ql\qnatural\pardirnatural
+
+\f1\fs36 \cf0 \expnd0\expndtw0\kerning0
+HTTP Live Streaming Tools - Readme
+\fs28 \expnd0\expndtw0\kerning0
+\
+\pard\tx540\tx1440\pardeftab720\sa120\ql\qnatural\pardirnatural
+\cf0 \expnd0\expndtw0\kerning0
+Contents\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\li360\ql\qnatural\pardirnatural
+
+\b0\fs24 \cf0 \expnd0\expndtw0\kerning0
+Introduction\
+System Requirements\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\li360\sa240\ql\qnatural\pardirnatural
+\cf0 \expnd0\expndtw0\kerning0
+Installation Instructions\
+\pard\tx540\tx1440\pardeftab720\sa120\ql\qnatural\pardirnatural
+
+\b\fs28 \cf0 \expnd0\expndtw0\kerning0
+Introduction
+\b0\fs24 \expnd0\expndtw0\kerning0
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\ql\qnatural\pardirnatural
+\cf0 \expnd0\expndtw0\kerning0
+The HTTP Live Streaming Tools package installs four prerelease command-line tools that are used for deployment and validation of HTTP Live Streaming solutions.  The tools are:\
+\
+\pard\tx360\tx540\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\li540\fi-540\ql\qnatural\pardirnatural
+\ls1\ilvl1\cf0 {\listtext	\'95	}Media Stream Segmenter\
+{\listtext	\'95	}Media File Segmenter\
+{\listtext	\'95	}Media Stream Validator\
+\pard\tx360\tx540\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\li540\fi-540\ql\qnatural\pardirnatural
+\ls2\ilvl1\cf0 \expnd0\expndtw0\kerning0
+{\listtext	\'95	}Variant Playlist Creator\
+\pard\tx360\tx540\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\li540\fi-540\ql\qnatural\pardirnatural
+\ls2\ilvl1\cf0 \kerning1\expnd0\expndtw0 {\listtext	\'95	}ID3 Tag generator\expnd0\expndtw0\kerning0
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\ql\qnatural\pardirnatural
+\cf0 \expnd0\expndtw0\kerning0
+\
+The 
+\b \expnd0\expndtw0\kerning0
+Media Stream Segmenter
+\b0 \expnd0\expndtw0\kerning0
+ (
+\i \expnd0\expndtw0\kerning0
+mediastreamsegmenter
+\i0 \expnd0\expndtw0\kerning0
+) receives an MPEG-2 transport stream over an UDP network connection or from 
+\f2 \expnd0\expndtw0\kerning0
+stdin
+\f1 \expnd0\expndtw0\kerning0
+ and divides it into a series of small media segments of equal duration. It then creates an index file containing references to the individual media segments.  The index file and media segments can be deployed using almost any web server infrastructure for streaming to iPhone and Mac OS X 10.6 Snow Leopard. The Media Stream Segmenter produces either live or Video-on-Demand (VOD) streams.\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\ql\qnatural\pardirnatural
+\cf0 \expnd0\expndtw0\kerning0
+The 
+\b \expnd0\expndtw0\kerning0
+Media File Segmenter
+\b0 \expnd0\expndtw0\kerning0
+ (
+\i \expnd0\expndtw0\kerning0
+mediafilesegmenter
+\i0 \expnd0\expndtw0\kerning0
+) divides a .mov, .mp4, .m4v, .m4a, or .mp3 file into small media segments and creates an index file. The index file and media segments can be deployed using almost any web server infrastructure for streaming to iPhone and Mac OS X 10.6 Snow Leopard. The Media File Segmenter only produces VOD streams.\
+\
+The 
+\b \expnd0\expndtw0\kerning0
+Variant Playlist Creator
+\b0 \expnd0\expndtw0\kerning0
+ (
+\i \expnd0\expndtw0\kerning0
+variantplaylistcreator
+\i0 \expnd0\expndtw0\kerning0
+) works with 
+\b \expnd0\expndtw0\kerning0
+Media File Segmenter
+\b0 \expnd0\expndtw0\kerning0
+ to create a variant playlist from multiple VOD streams.  A 
+\i \expnd0\expndtw0\kerning0
+--generate-variant-plist
+\i0 \expnd0\expndtw0\kerning0
+ argument must be passed to 
+\b \expnd0\expndtw0\kerning0
+Media File Segmenter
+\b0 \expnd0\expndtw0\kerning0
+, then the resultant plists are passed to 
+\b \expnd0\expndtw0\kerning0
+Variant Playlist Creator
+\b0 \expnd0\expndtw0\kerning0
+.\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\sa240\ql\qnatural\pardirnatural
+\cf0 \expnd0\expndtw0\kerning0
+The 
+\b \expnd0\expndtw0\kerning0
+Media Stream Validator
+\b0 \expnd0\expndtw0\kerning0
+ (
+\i \expnd0\expndtw0\kerning0
+mediastreamvalidator
+\i0 \expnd0\expndtw0\kerning0
+) simulates an HTTP Live Streaming session and verifies that the index file and media segments conform to the HTTP Live Streaming specification.  It checks for several \'93best practices\'94 to ensure reliable streaming.  If any errors or problems are found, a detailed diagnostic report is displayed.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\ql\qnatural\pardirnatural
+\cf0 \expnd0\expndtw0\kerning0
+The 
+\b \kerning1\expnd0\expndtw0 ID3 Tag Generator (
+\i\b0 id3taggenerator
+\i0 ) will create an ID3 tag to be used as metadata for\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\ql\qnatural\pardirnatural
+
+\b \cf0 Media File Segmenter 
+\b0 and will create the ID3 tag and send it over the network to 
+\b Media Stream Segmenter
+\b0 .\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\ql\qnatural\pardirnatural
+\cf0 \expnd0\expndtw0\kerning0
+\
+\pard\tx540\tx1440\pardeftab720\sa120\ql\qnatural\pardirnatural
+
+\b\fs28 \cf0 \expnd0\expndtw0\kerning0
+System Requirements
+\b0\fs24 \expnd0\expndtw0\kerning0
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\sa240\ql\qnatural\pardirnatural
+\cf0 \expnd0\expndtw0\kerning0
+The HTTP Live Streaming Tools package requires an Intel-based Mac running Mac OS X 10.6 or later.\
+\pard\tx540\tx1440\pardeftab720\sa120\ql\qnatural\pardirnatural
+
+\b\fs28 \cf0 \expnd0\expndtw0\kerning0
+Installation Instructions
+\b0\fs24 \expnd0\expndtw0\kerning0
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\ql\qnatural\pardirnatural
+\cf0 \expnd0\expndtw0\kerning0
+To install the HTTP Live Streaming Tools, double-click the 
+\i \expnd0\expndtw0\kerning0
+StreamingTools.pkg
+\i0 \expnd0\expndtw0\kerning0
+ and follow the instructions.  The installer will install the three tools into:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\ql\qnatural\pardirnatural
+
+\i \cf0 \expnd0\expndtw0\kerning0
+	/usr/bin/mediastreamsegmenter\
+	/usr/bin/mediafilesegmenter\
+	/usr/bin/variantplaylistcreator\
+	/usr/bin/mediastreamvalidator\
+	/usr/bin/id3taggenerator\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\ql\qnatural\pardirnatural
+
+\i0 \cf0 \expnd0\expndtw0\kerning0
+\
+Please refer to the man-pages for detailed instructions for how to use the tools.  The man-pages are invoked from the command-line as follows:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\ql\qnatural\pardirnatural
+
+\i \cf0 \expnd0\expndtw0\kerning0
+	man mediastreamsegmenter\
+	man mediafilesegmenter\
+	man variantplaylistcreator\
+	man mediastreamvalidator\
+	man id3taggenerator\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\ql\qnatural\pardirnatural
+
+\i0 \cf0 \expnd0\expndtw0\kerning0
+\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\ql\qnatural\pardirnatural
+
+\fs18 \cf0 \expnd0\expndtw0\kerning0
+\'a9 2011 Apple Inc. All rights reserved. \'a0Apple, the Apple logo, iPhone, Mac, the Mac logo, Mac OS, Macintosh, and\'a0Snow Leopard\'a0are trademarks of Apple Inc., registered in the U.S. and other countries.}
