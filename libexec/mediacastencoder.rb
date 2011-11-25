@@ -16,11 +16,11 @@ MCP_DIR = File.dirname(File.dirname(Pathname.new(__FILE__).realpath))
 MCP_BIN = File.join(MCP_DIR,'bin')
 MCP_LIB = File.join(MCP_DIR,'lib')
 MCP_LIBEXEC = File.join(MCP_DIR,'libexec')
-MCP_RES = File.dirname(MCP_DIR)
+MCP_RES = File.join(MCP_DIR,'Resources')
 MCP = File.join(MCP_BIN, 'mediacastproducer')
 MCE = File.join(MCP_BIN, 'mediacastencoder')
 
-$LOAD_PATH.push(File.expand_path(MCP_LIB)) unless 
+$LOAD_PATH.push(File.expand_path(MCP_LIB)) unless
   $LOAD_PATH.include?(MCP_LIB) || $LOAD_PATH.include?(File.expand_path(MCP_LIB))
 #$LOAD_PATH.each do |path|
 #  puts path

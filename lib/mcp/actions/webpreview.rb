@@ -12,7 +12,7 @@ require 'etc'
 require 'fileutils'
 require 'mcp/actions/base'
 
-MCP_MEDIACASTSERVER = File.join(MCP_RES,"mediacastserver")
+MCP_MEDIACASTSERVER = File.join(MCP_LIB,"mcs")
 MCS_TWISTED_DAEMON = '/usr/bin/twistd'
 MCS_TWISTED_SERVER = File.join(MCP_MEDIACASTSERVER,"mcs/server.py")
 MCS_REWRITE_PROXY  = File.join(MCP_MEDIACASTSERVER,"mcs/proxy.py")
@@ -35,7 +35,7 @@ module PodcastProducer
         "                                  all (locally) available IPs\n" +
         "                 [--proxy_if]   Network interface to serve, default:\n" +
         "                                  all (locally) available interfaces\n" +
-        "                                IP adress and network interface\n" + 
+        "                                IP adress and network interface\n" +
         "                                are mutually exclusive.\n"
       end
 
@@ -45,7 +45,7 @@ module PodcastProducer
       end
 
       def run(arguments)
-        
+
 #        DNSSD.register 'block', '_http._tcp', nil, 8081 do |r|
 #          puts "registered #{r.fullname}" if r.flags.add?
 #        end

@@ -25,7 +25,7 @@ module PodcastProducer
 
       def options_usage
         "usage:  #{name} --prb=PRB --input=INPUT --output=OUTPUT --preset=PRESET\n\n" +
-        "the available presets are:\n#{available_encoders}\n"
+        "the available presets are:\n#{available_mediaencoders}\n"
       end
 
       def run(arguments)

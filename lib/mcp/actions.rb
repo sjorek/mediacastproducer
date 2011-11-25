@@ -35,6 +35,61 @@ module PodcastProducer
   end
 end
 
+def mediaencoder_list
+  encoders = []
+  Dir['/System/Library/PodcastProducer/Resources/Encodings/*.plist'].each do |path|
+    path =~ %r{/System/Library/PodcastProducer/Resources/Encodings/(.*)\.plist};
+    encoders << $1
+  end
+  Dir[File.join(File.expand_path(MCP_LIB), "mcp/transcoder/encodings/*.plist")].each do |path|
+    path =~ %r{.*/mcp/transcoder/encodings/(.*)\.plist};
+    encoders << $1 unless encoders.include?($1)
+  end
+  if $properties["Global Resource Path"]
+    Dir["#{$properties["Global Resource Path"]}/Encodings/*.plist"].each do |path|
+      path =~ %r{.*/Resources/Encodings/(.*)\.plist}
+      encoders << $1 unless encoders.include?($1)
+    end
+  end
+  if $properties["Workflow Resource Path"]
+    Dir["#{$properties["Workflow Resource Path"]}/Encodings/*.plist"].each do |path|
+      path =~ %r{.*/Resources/Encodings/(.*)\.plist}
+      encoders << $1 unless encoders.include?($1)
+    end
+  end
+  encoders.sort
+end
+
+def available_mediaencoders
+  mediaencoder_list.collect do |encoder|
+    "  #{encoder}\n"
+  end
+end
+
+def require_mediaencoder(encoder)
+  unless mediaencoder_list.include? encoder
+    log_crit_and_exit("specified encoder '#{encoder}' not found",-1)
+  end
+end
+
+def settings_for_mediaencoder(encoder)
+  if $properties["Workflow Resource Path"]
+    settings = "#{$properties["Workflow Resource Path"]}/Encodings/#{encoder}.plist"
+  end
+  unless settings && File.exist?(settings)
+    if $properties["Global Resource Path"]
+      settings = "#{$properties["Global Resource Path"]}/Encodings/#{encoder}.plist"
+    end
+  end
+  unless settings && File.exist?(settings)
+    settings = File.join(File.expand_path(MCP_LIB), "mcp/transcoder/encodings", "#{encoder}.plist")
+  end
+  unless settings && File.exist?(settings)
+    settings = "/System/Library/PodcastProducer/Resources/Encodings/#{encoder}.plist"
+  end
+  settings
+end
+
 def check_input_file_exclude_dir(input_path)
   log_crit_and_exit("Input file was not specified.", -1) if input_path.nil?
   log_crit_and_exit("Input file '#{input_path}' does not exist.", -1) unless File.exists?(input_path)
