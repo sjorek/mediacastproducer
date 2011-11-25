@@ -1,18 +1,9 @@
-[submodule "Resources/cfpropertylist"]
-	path = Resources/cfpropertylist
+[submodule "lib/cfpropertylist"]
+	path = lib/cfpropertylist
 	url = https://github.com/ckruse/CFPropertyList.git
-[submodule "Resources/throxy"]
-	path = Resources/throxy
-	url = https://github.com/jcrocholl/throxy.git
-[submodule "Resources/mp4seek"]
-	path = Resources/mp4seek
+[submodule "lib/mp4seek"]
+	path = lib/mp4seek
 	url = https://github.com/arkadini/mp4seek.git
-[submodule "Resources/segmenter"]
-	path = Resources/segmenter
-	url = /Users/sjorek/Documents/Projects/Tonfabrik/Workspace/segmenter/.git
-[submodule "Resources/mediacastserver"]
-	path = Resources/mediacastserver
-	url = /Users/sjorek/Documents/Projects/Tonfabrik/Workspace/mediacastserver/.git
-[submodule "Resources/pybonjour"]
-	path = Resources/pybonjour
-	url = /Users/sjorek/Documents/Projects/Tonfabrik/Workspace/pybonjour/.git
+[submodule "lib/mcs"]
+	path = lib/mcs
+	url = https://github.com/sjorek/mediacastserver.git
