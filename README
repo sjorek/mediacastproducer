@@ -12,6 +12,11 @@ Mediacast Producer
   “ffmpeg” or ”VLC” in Apple's Podcast Producer.  This allows the automatic
   production of media-file formats that go far beyond MP4.
 
+  IMPORTANT NOTE:  This file is licensed only for use on Apple-branded computers
+  and is subject to the terms and conditions of the Software License Agreement
+  accompanying the package this file is a part of.  You may not port this file
+  to another platform without Apple's written consent.
+
 
 Installing
 ==========
