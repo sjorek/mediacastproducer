@@ -4,6 +4,9 @@
 [submodule "lib/mp4seek"]
 	path = lib/mp4seek
 	url = https://github.com/arkadini/mp4seek.git
-[submodule "lib/mcs"]
-	path = lib/mcs
+[submodule "lib/mediacastserver"]
+	path = lib/mediacastserver
 	url = https://github.com/sjorek/mediacastserver.git
+[submodule "lib/mediacastsegmenter"]
+	path = lib/mediacastsegmenter
+	url = https://github.com/sjorek/mediacastsegmenter.git

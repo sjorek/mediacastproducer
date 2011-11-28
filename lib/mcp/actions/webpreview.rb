@@ -12,7 +12,7 @@ require 'etc'
 require 'fileutils'
 require 'mcp/actions/base'
 
-MCP_MEDIACASTSERVER = File.join(MCP_LIB,"mcs")
+MCP_MEDIACASTSERVER = File.join(MCP_LIB,"mediacastserver")
 MCS_TWISTED_DAEMON = '/usr/bin/twistd'
 MCS_TWISTED_SERVER = File.join(MCP_MEDIACASTSERVER,"mcs/server.py")
 MCS_REWRITE_PROXY  = File.join(MCP_MEDIACASTSERVER,"mcs/proxy.py")

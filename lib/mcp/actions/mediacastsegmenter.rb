@@ -11,7 +11,7 @@ require 'mcp/actions/base'
 
 module PodcastProducer
   module Actions
-    class StreamSegmenter < Base
+    class MediacastSegmenter < Base
       include MediacastProducer::Actions::ToolWithArguments
     end
   end
